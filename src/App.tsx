@@ -1,11 +1,15 @@
 import "./App.css";
 import Appbar from "./Appbar";
+import Sidebar from "./Sidebar";
 
 function App() {
   return (
     <div>
       <Appbar />
-      <p>Hello</p>
+      <div className="flex">
+        <Sidebar />
+        <p>Hello</p>
+      </div>
     </div>
   );
 }
