@@ -1,7 +1,13 @@
 import "./App.css";
+import Appbar from "./Appbar";
 
 function App() {
-  return <div>Hello</div>;
+  return (
+    <div>
+      <Appbar />
+      <p>Hello</p>
+    </div>
+  );
 }
 
 export default App;
