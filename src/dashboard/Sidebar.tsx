@@ -5,14 +5,31 @@ import SubMenu from "antd/es/menu/SubMenu";
 import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
+  console.log("windows", window.location.pathname);
   return (
-    <div>
-      <Sider width={250} className="ml-2 bg-white">
+    <div className="bg-white rounded-md shadow-lg overflow-hidden py-[5px] h-[calc(100vh-80px)]">
+      <Sider width={256} className="">
         <Menu
           mode="inline"
-          defaultSelectedKeys={["1"]}
-          defaultOpenKeys={["sub1"]}
+          // defaultSelectedKeys={["1"]}
+          className="!text-xs"
+          defaultOpenKeys={["sub1", "sub2"]}
           style={{ height: "100%", borderRight: 0 }}
+          defaultSelectedKeys={[
+            window.location.pathname === "/ua"
+              ? "1"
+              : window.location.pathname === "/ua/campaign"
+              ? "2"
+              : window.location.pathname === "/ua/creative"
+              ? "3"
+              : window.location.pathname === "/product/install"
+              ? "5"
+              : window.location.pathname === "/product/cohort"
+              ? "6"
+              : window.location.pathname === "/product/player"
+              ? "7"
+              : "1",
+          ]}
         >
           <SubMenu
             key="sub1"
