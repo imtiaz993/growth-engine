@@ -226,52 +226,70 @@ const Creative = () => {
   ];
 
   return (
-    <div className="flex gap-5">
-      <div className="w-2/3">
-        <p className="font-semibold text-xl">Top Creatives</p>
-        <p className="font-medium text-lg !my-5">Top 10 Spend Creatives</p>
-        <Table
-          columns={top10columns}
-          dataSource={top10data}
-          pagination={false}
-          scroll={{ x: "max-content" }}
-          size="small"
-          style={{ overflow: "auto" }}
-        />
-        <p className="font-medium text-lg !my-5">
-          Top 5 Avg Daily Spend Increasing compare with last week
-        </p>
-        <Table
-          columns={camparingColumns}
-          dataSource={increasingData}
-          pagination={false}
-          scroll={{ x: "max-content" }}
-          size="small"
-          style={{ overflow: "auto" }}
-        />
-        <p className="font-medium text-lg !my-5">
-          Top 5 Avg Daily Spend Declining compare with last week
-        </p>
-        <Table
-          columns={camparingColumns}
-          dataSource={decliningData}
-          pagination={false}
-          scroll={{ x: "max-content" }}
-          size="small"
-          style={{ overflow: "auto" }}
-        />
+    <>
+      <p className="font-semibold text-xl">Top Creatives</p>
+      <div className="flex gap-5">
+        <div className="w-2/3 ">
+          <div className="bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium text-lg !my-3">Top 10 Spend Creatives</p>
+            <Table
+              columns={top10columns}
+              dataSource={top10data}
+              pagination={{
+                defaultPageSize: 10,
+                showSizeChanger: true,
+              }}
+              scroll={{ x: "max-content" }}
+              size="small"
+              style={{ overflow: "auto" }}
+            />
+          </div>
+          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium text-lg !my-5">
+              Top 5 Avg Daily Spend Increasing compare with last week
+            </p>
+            <Table
+              columns={camparingColumns}
+              dataSource={increasingData}
+              pagination={{
+                defaultPageSize: 10,
+                showSizeChanger: true,
+              }}
+              scroll={{ x: "max-content" }}
+              size="small"
+              style={{ overflow: "auto" }}
+            />
+          </div>
+
+          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium text-lg !my-5">
+              Top 5 Avg Daily Spend Declining compare with last week
+            </p>
+            <Table
+              columns={camparingColumns}
+              dataSource={decliningData}
+              pagination={{
+                defaultPageSize: 10,
+                showSizeChanger: true,
+              }}
+              scroll={{ x: "max-content" }}
+              size="small"
+              style={{ overflow: "auto" }}
+            />
+          </div>
+        </div>
+        <div className="p-3 bg-blue-100 rounded-md shadow-xl">
+          <p>
+            <BulbOutlined /> Creative A recently performing great, spends
+            Increasing 50% on Tiktok, scale and expand it to more campaigns!
+          </p>
+          <p>
+            <BulbOutlined /> Creative B & Creative C declined 20% week by week
+            on Applovin, please replace with new Creatives
+          </p>
+        </div>
       </div>
-      <div className="my-5 p-3 bg-blue-100 rounded-md shadow-xl">
-        <p>
-          <BulbOutlined /> Creative A recently performing great, spends
-          Increasing 50% on Tiktok, scale and expand it to more campaigns!
-        </p>
-        <p>
-          <BulbOutlined /> Creative B & Creative C declined 20% week by week on
-          Applovin, please replace with new Creatives
-        </p>
-      </div>
-    </div>
+    </>
   );
 };
 
