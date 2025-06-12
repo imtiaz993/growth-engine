@@ -1,17 +1,17 @@
 import { Outlet } from "react-router-dom";
 import Appbar from "./Appbar";
-import Filters from "./Filters";
 import Sidebar from "./Sidebar";
 
 function Dashboard() {
   return (
-    <div>
+    <div className="bg-gray-100 h-svh overflow-hidden flex flex-col">
       <Appbar />
-      <div className="flex">
-        <Sidebar />
-        <div className="w-full m-5">
-          <Filters />
-          <Outlet /> 
+      <div className="flex m-3 overflow-hidden">
+        <div className="w-64">
+          <Sidebar />
+        </div>
+        <div className="p-5 overflow-auto">
+          <Outlet />
         </div>
       </div>
     </div>
