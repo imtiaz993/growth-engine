@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Appbar from "./Appbar";
-import Sidebar from "./Sidebar";
+import Appbar from "../layout/Appbar";
+import Sidebar from "../layout/Sidebar";
 
 function Dashboard() {
   return (
@@ -10,7 +10,7 @@ function Dashboard() {
         <div className="w-64">
           <Sidebar />
         </div>
-        <div className="p-5 overflow-auto">
+        <div className="p-5 overflow-auto w-[calc(100%-256px)]">
           <Outlet />
         </div>
       </div>

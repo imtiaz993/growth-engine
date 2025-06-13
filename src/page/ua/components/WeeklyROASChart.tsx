@@ -115,7 +115,6 @@ const WeeklyROASChart = () => {
   const [activeChannels, setActiveChannels] = useState<Set<string>>(
     new Set(Object.keys(channelColors))
   );
-
   // Calculate total revenue for each week
   const processedData = mockData.map((weekData) => ({
     ...weekData,
@@ -127,6 +126,8 @@ const WeeklyROASChart = () => {
 
   // Toggle channel visibility
   const handleLegendClick = (channel: string) => {
+    console.log("Clicked Channel:", channel);
+    console.log("Active Channels:", activeChannels);
     setActiveChannels((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(channel)) {
@@ -134,6 +135,7 @@ const WeeklyROASChart = () => {
       } else {
         newSet.add(channel);
       }
+      console.log("New Active Channels:", newSet);
       return newSet;
     });
   };
@@ -209,131 +211,142 @@ const WeeklyROASChart = () => {
     );
   };
 
-  // Fixed: Added proper handling for undefined payload
-  const renderScrollableLegend = (props: any) => {
-    const { payload } = props;
+  return (
+    <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex">
+      {/* Left Column - Chart */}
+      <div className="flex-1">
+        <h2 className="text-xl font-bold text-gray-800 mb-2">
+          Total Revenue, ROAS_D0 and ROAS_D7 by Week and Channel
+        </h2>
+        <p className="text-gray-500 text-sm mb-6">
+          Stacked bars show revenue by channel, lines show ROAS metrics
+        </p>
 
-    // Handle case where payload is undefined
-    if (!payload) return null;
+        <ResponsiveContainer width="100%" height="80%">
+          <ComposedChart data={processedData}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="#f0f0f0"
+            />
+            <XAxis
+              dataKey="week"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#666", fontSize: 12 }}
+            />
+            <YAxis
+              yAxisId="revenue"
+              orientation="left"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#666", fontSize: 12 }}
+              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+              label={{
+                value: "Total Revenue (USD)",
+                angle: -90,
+                position: "insideLeft",
+                style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
+                offset: 0,
+              }}
+            />
+            <YAxis
+              yAxisId="roas"
+              orientation="right"
+              domain={[0, 0.6]}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#666", fontSize: 12 }}
+              tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+              label={{
+                value: "ROAS (%)",
+                angle: -90,
+                position: "insideRight",
+                style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
+                offset: 0,
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
 
-    const channelPayload = payload.filter((entry: any) =>
-      entry.dataKey.startsWith("channels.")
-    );
+            {/* Stacked revenue bars */}
+            {Object.keys(channelColors).map(
+              (channel) =>
+                activeChannels.has(channel) && (
+                  <Bar
+                    key={channel}
+                    yAxisId="revenue"
+                    dataKey={`channels.${channel}`}
+                    stackId="revenue"
+                    name={channel}
+                    fill={channelColors[channel]}
+                  >
+                    {processedData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={channelColors[channel]}
+                      />
+                    ))}
+                  </Bar>
+                )
+            )}
+            {/* ROAS Lines */}
+            <Line
+              yAxisId="roas"
+              type="monotone"
+              dataKey="ROAS_D0"
+              stroke="#4a5568"
+              strokeDasharray="5 5"
+              strokeWidth={2}
+              dot={{ r: 4, strokeWidth: 2 }}
+              activeDot={{ r: 6 }}
+              name="ROAS D0"
+            />
+            <Line
+              yAxisId="roas"
+              type="monotone"
+              dataKey="ROAS_D7"
+              stroke="#2e8b57"
+              strokeWidth={3}
+              dot={{ r: 5, fill: "#fff", strokeWidth: 2 }}
+              activeDot={{ r: 8 }}
+              name="ROAS D7"
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
 
-    return (
-      <div className="flex justify-center mt-4 w-3/4">
-        <div className="flex overflow-x-auto pb-2 max-w-full">
-          {channelPayload.map((entry: any) => {
-            const channelName = entry.dataKey.split(".")[1];
-            return (
+      {/* Right Column - Channel List */}
+      <div className="w-64 ml-6 pl-6 border-l border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Channels</h3>
+        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+          {Object.entries(channelColors).map(([channel, color]) => (
+            <div
+              key={channel}
+              className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-50 cursor-pointer"
+              onClick={() => handleLegendClick(channel)}
+            >
               <div
-                key={channelName}
-                onClick={() => handleLegendClick(channelName)}
-                className={`flex items-center mx-2 px-3 py-1 rounded-full cursor-pointer ${
-                  activeChannels.has(channelName)
-                    ? "bg-gray-100 border border-gray-300"
-                    : "opacity-50"
-                }`}
+                className="w-4 h-4 rounded-full mr-3 flex-shrink-0"
+                style={{ backgroundColor: color }}
+              />
+              <span className="text-sm font-medium text-gray-700 truncate">
+                {channel}
+              </span>
+              <div
+                className="ml-auto"
+                onClick={(e) => e.stopPropagation()} // Prevent checkbox click from bubbling
               >
-                <div
-                  className="w-3 h-3 mr-2 rounded-full"
-                  style={{ backgroundColor: entry.color }}
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
+                  checked={activeChannels.has(channel)}
+                  onChange={() => handleLegendClick(channel)}
                 />
-                <span className="text-xs whitespace-nowrap">{channelName}</span>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
-    );
-  };
-
-  return (
-    <div className="w-3/4 h-[500px] p-5 bg-white rounded-xl shadow-lg">
-      <h2 className="font-bold mb-2">
-        Total Revenue, ROAS_D0 and ROAS_D7 by Week and Channel
-      </h2>
-      <p className="text-gray-500 text-sm mb-6">
-        Stacked bars show revenue by channel, lines show ROAS metrics
-      </p>
-
-      <ResponsiveContainer width="100%" height="80%">
-        <ComposedChart data={processedData}>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke="#f0f0f0"
-          />
-          <XAxis
-            dataKey="week"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "#666", fontSize: 12 }}
-          />
-          <YAxis
-            yAxisId="revenue"
-            orientation="left"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "#666", fontSize: 12 }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
-          />
-          <YAxis
-            yAxisId="roas"
-            orientation="right"
-            domain={[0, 0.6]}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "#666", fontSize: 12 }}
-            tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-          />
-          <Tooltip content={<CustomTooltip />} />
-
-          {/* Stacked revenue bars */}
-          {Object.keys(channelColors).map(
-            (channel) =>
-              activeChannels.has(channel) && (
-                <Bar
-                  key={channel}
-                  yAxisId="revenue"
-                  dataKey={`channels.${channel}`}
-                  stackId="revenue"
-                  name={channel}
-                  fill={channelColors[channel]}
-                >
-                  {processedData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={channelColors[channel]} />
-                  ))}
-                </Bar>
-              )
-          )}
-
-          {/* ROAS Lines */}
-          <Line
-            yAxisId="roas"
-            type="monotone"
-            dataKey="ROAS_D0"
-            stroke="#4a5568"
-            strokeDasharray="5 5"
-            strokeWidth={2}
-            dot={{ r: 4, strokeWidth: 2 }}
-            activeDot={{ r: 6 }}
-            name="ROAS D0"
-          />
-          <Line
-            yAxisId="roas"
-            type="monotone"
-            dataKey="ROAS_D7"
-            stroke="#2e8b57"
-            strokeWidth={3}
-            dot={{ r: 5, fill: "#fff", strokeWidth: 2 }}
-            activeDot={{ r: 8 }}
-            name="ROAS D7"
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
-
-      <Legend content={renderScrollableLegend} />
     </div>
   );
 };

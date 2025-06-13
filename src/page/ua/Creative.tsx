@@ -231,7 +231,7 @@ const Creative = () => {
       <div className="flex gap-5">
         <div className="w-2/3 ">
           <div className="bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium text-lg !my-3">Top 10 Spend Creatives</p>
+            <p className="font-medium !my-3">Top 10 Spend Creatives</p>
             <Table
               columns={top10columns}
               dataSource={top10data}
@@ -241,11 +241,10 @@ const Creative = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
-              style={{ overflow: "auto" }}
             />
           </div>
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium text-lg !my-5">
+            <p className="font-medium !my-5">
               Top 5 Avg Daily Spend Increasing compare with last week
             </p>
             <Table
@@ -257,12 +256,11 @@ const Creative = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
-              style={{ overflow: "auto" }}
             />
           </div>
 
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium text-lg !my-5">
+            <p className="font-medium !my-5">
               Top 5 Avg Daily Spend Declining compare with last week
             </p>
             <Table
@@ -274,7 +272,6 @@ const Creative = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
-              style={{ overflow: "auto" }}
             />
           </div>
         </div>

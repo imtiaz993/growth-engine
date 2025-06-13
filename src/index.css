@@ -4,3 +4,7 @@
   --color-primary: #ff0000;
   --color-secondary: #00ff00;
 }
+
+.ant-table {
+  font-size: 12px !important; /* Base font size for table */
+}
