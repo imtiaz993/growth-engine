@@ -1,7 +1,5 @@
-import React from "react";
 import {
   ArrowDownOutlined,
-  ArrowRightOutlined,
   ArrowUpOutlined,
   ExclamationCircleOutlined,
   RightOutlined,

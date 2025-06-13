@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ComposedChart,
   Bar,
@@ -7,7 +7,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Cell,
 } from "recharts";
@@ -247,7 +246,7 @@ const WeeklyROASChart = () => {
                 angle: -90,
                 position: "insideLeft",
                 style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
-                offset: 0,
+                offset: 2,
               }}
             />
             <YAxis
@@ -280,7 +279,7 @@ const WeeklyROASChart = () => {
                     name={channel}
                     fill={channelColors[channel]}
                   >
-                    {processedData.map((entry, index) => (
+                    {processedData.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={channelColors[channel]}
