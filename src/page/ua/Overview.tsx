@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import Filters from "./components/Filters";
 import WeeklyROASChart from "./components/WeeklyROASChart";
+import QuadrantBubbleCharts from "./components/GradientChart";
 
 const Overview = () => {
   return (
@@ -54,13 +55,11 @@ const Overview = () => {
         </div>
       </div>
 
-      <div className="my-8 p-6 bg-gray-50 rounded-md">
-        <div className="text-gray-500 text-center py-8 rounded-lg">
-          Quadrant visualization will appear here
-        </div>
+      <div className="">
+        <QuadrantBubbleCharts />
       </div>
 
-      <div className="bg-red-50 border border-red-200 p-5 rounded-md shadow-lg flex items-start">
+      <div className="bg-red-50 border border-red-200 p-5 rounded-md shadow-lg flex items-start mt-5">
         <div className="bg-red-100 p-2 rounded-lg mr-4">
           <ExclamationCircleOutlined className="text-red-600 text-lg" />
         </div>

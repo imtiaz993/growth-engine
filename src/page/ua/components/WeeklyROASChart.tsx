@@ -23,6 +23,60 @@ interface ChartData {
 
 const mockData: ChartData[] = [
   {
+    week: "2024年11月",
+    channels: {
+      Appier: 1200,
+      Apple: 800,
+      Applovin: 900,
+      "Bilibili (呼噜哔哩)": 600,
+      Facebook: 1000,
+      "Google Ads": 1100,
+      IronSource: 800,
+      MOLOCO: 900,
+      Mintegral: 700,
+      "Ocean Engine": 600,
+      "Persona.ly": 500,
+    },
+    ROAS_D0: 0.2,
+    ROAS_D7: 0.3,
+  },
+  {
+    week: "2024年12月",
+    channels: {
+      Appier: 1000,
+      Apple: 500,
+      Applovin: 600,
+      "Bilibili (呼噜哔哩)": 400,
+      Facebook: 700,
+      "Google Ads": 800,
+      IronSource: 600,
+      MOLOCO: 700,
+      Mintegral: 500,
+      "Ocean Engine": 400,
+      "Persona.ly": 300,
+    },
+    ROAS_D0: 0.2,
+    ROAS_D7: 0.3,
+  },
+  {
+    week: "2025年1月",
+    channels: {
+      Appier: 1500,
+      Apple: 1000,
+      Applovin: 1200,
+      "Bilibili (呼噜哔哩)": 800,
+      Facebook: 1100,
+      "Google Ads": 1300,
+      IronSource: 900,
+      MOLOCO: 1100,
+      Mintegral: 1000,
+      "Ocean Engine": 800,
+      "Persona.ly": 700,
+    },
+    ROAS_D0: 0.3,
+    ROAS_D7: 0.4,
+  },
+  {
     week: "2025年2月",
     channels: {
       Appier: 2000,
@@ -278,6 +332,7 @@ const WeeklyROASChart = () => {
                     stackId="revenue"
                     name={channel}
                     fill={channelColors[channel]}
+                    barSize={60}
                   >
                     {processedData.map((_, index) => (
                       <Cell
