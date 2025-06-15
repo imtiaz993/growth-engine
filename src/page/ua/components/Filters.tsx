@@ -80,7 +80,7 @@ const Filters = () => {
           className="w-48"
           value={selectedCountries}
           onChange={setSelectedCountries}
-          maxTagCount={0}
+          maxTagCount={selectedCountries.length === 1 ? 1 : 0}
           maxTagPlaceholder={(selected) =>
             selected.length
               ? `${selected.length} countries selected`
