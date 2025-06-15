@@ -1,4 +1,8 @@
-import { BulbOutlined } from "@ant-design/icons";
+import {
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+  BulbOutlined,
+} from "@ant-design/icons";
 import { Table } from "antd";
 
 const Creative = () => {
@@ -229,7 +233,7 @@ const Creative = () => {
     <>
       <p className="font-semibold text-xl">Top Creatives</p>
       <div className="flex gap-5">
-        <div className="w-2/3 ">
+        <div className="w-2/3">
           <div className="bg-white p-3 rounded-md shadow-xl">
             <p className="font-medium !my-3">Top 10 Spend Creatives</p>
             <Table
@@ -275,15 +279,50 @@ const Creative = () => {
             />
           </div>
         </div>
-        <div className="p-3 bg-blue-100 rounded-md shadow-xl">
-          <p>
-            <BulbOutlined /> Creative A recently performing great, spends
-            Increasing 50% on Tiktok, scale and expand it to more campaigns!
-          </p>
-          <p>
-            <BulbOutlined /> Creative B & Creative C declined 20% week by week
-            on Applovin, please replace with new Creatives
-          </p>
+        <div className="w-1/3 space-y-5">
+          <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
+            <div className="flex justify-between gap-2">
+              <h3 className="font-medium">Creative Performance</h3>
+              <div className="flex items-center gap-1 text-sm text-green-600">
+                <span>50% increase</span>
+                <ArrowUpOutlined />
+              </div>
+            </div>
+            <p className="mt-3 text-sm">
+              <BulbOutlined className="mr-2" /> Creative A recently performing
+              great, spends Increasing 50% on Tiktok, scale and expand it to
+              more campaigns!
+            </p>
+          </div>
+
+          <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
+            <div className="flex justify-between gap-2">
+              <h3 className="font-medium">Creative Alert</h3>
+              <div className="flex items-center gap-1 text-sm text-red-600">
+                <span>20% decline</span>
+                <ArrowDownOutlined />
+              </div>
+            </div>
+            <p className="mt-3 text-sm">
+              <BulbOutlined className="mr-2" /> Creative B & Creative C declined
+              20% week by week on Applovin, please replace with new Creatives
+            </p>
+          </div>
+
+          <div className="p-5 rounded-md shadow-lg border border-blue-200 bg-blue-50">
+            <div className="flex items-start">
+              <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                <BulbOutlined className="text-blue-600 text-lg" />
+              </div>
+              <div>
+                <h3 className="font-medium">Optimization Tip</h3>
+                <p className="mt-2 text-sm">
+                  Consider reallocating 15% of budget from underperforming
+                  creatives to Creative A for better overall ROAS
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

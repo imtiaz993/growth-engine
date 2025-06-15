@@ -204,7 +204,7 @@ const WeeklyROASChart = () => {
     const roasD7 = payload.find((p: any) => p.dataKey === "ROAS_D7");
 
     return (
-      <div className="bg-white p-4 border border-gray-200 shadow-lg rounded-md min-w-[300px]">
+      <div className="bg-white p-4 border border-gray-200 shadow-lg rounded-md min-w-[300px]" >
         <p className="font-bold text-gray-800 mb-2">{label}</p>
 
         <div className="grid grid-cols-3 gap-4 mb-3">
@@ -265,7 +265,7 @@ const WeeklyROASChart = () => {
   };
 
   return (
-    <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex">
+    <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex relative z-10">
       {/* Left Column - Chart */}
       <div className="flex-1">
         <h2 className="text-xl font-bold text-gray-800 mb-2">
@@ -372,7 +372,7 @@ const WeeklyROASChart = () => {
       {/* Right Column - Channel List */}
       <div className="w-64 ml-6 pl-6 border-l border-gray-200">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Channels</h3>
-        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+        <div className="max-h-[400px] overflow-y-auto pr-2">
           {Object.entries(channelColors).map(([channel, color]) => (
             <div
               key={channel}

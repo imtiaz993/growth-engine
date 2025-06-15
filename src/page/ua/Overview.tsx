@@ -2,7 +2,6 @@ import {
   ArrowDownOutlined,
   ArrowUpOutlined,
   ExclamationCircleOutlined,
-  RightOutlined,
 } from "@ant-design/icons";
 import Filters from "./components/Filters";
 import WeeklyROASChart from "./components/WeeklyROASChart";
@@ -17,9 +16,9 @@ const Overview = () => {
       <div className="flex gap-5 mt-4">
         <div className="w-1/4 space-y-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <h3 className="font-medium">Weekly Revenue</h3>
-              <div className="flex items-center gap-1 text-green-600">
+              <div className="flex items-center gap-1 text-sm text-green-600">
                 <span>5% increase</span>
                 <ArrowUpOutlined />
               </div>
@@ -32,9 +31,9 @@ const Overview = () => {
           </div>
 
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <h3 className="font-medium">ROAS D0</h3>
-              <div className="flex items-center gap-1 text-red-600">
+              <div className="flex items-center text-sm gap-1 text-red-600">
                 <span>30% → 25%</span>
                 <ArrowDownOutlined />
               </div>
@@ -44,9 +43,6 @@ const Overview = () => {
               ROAS D0 on Apple decreased, please check your campaign details to
               optimize
             </p>
-            <button className="mt-3 text-sm font-medium flex items-center cursor-pointer">
-              Campaign Details <RightOutlined className="ml-1 text-xs" />
-            </button>
           </div>
         </div>
 
@@ -70,9 +66,6 @@ const Overview = () => {
             on Apple decreased and LTV D7 on Applovin decreased, please check
             your campaign details to optimize.
           </p>
-          <button className="mt-3 !text-red-700 text-sm font-medium flex items-center hover:!text-red-900 cursor-pointer">
-            Review Campaign Details <RightOutlined className="ml-1 text-xs" />
-          </button>
         </div>
       </div>
     </div>
