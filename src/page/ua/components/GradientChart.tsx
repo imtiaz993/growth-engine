@@ -22,9 +22,17 @@ interface BubbleData {
   color: string;
 }
 
+// Define proper types for tooltip payload
+interface TooltipPayloadItem {
+  payload: BubbleData;
+  name: string;
+  value: number;
+  color: string;
+}
+
 interface CustomTooltipProps {
   active?: boolean;
-  payload?: any[];
+  payload?: TooltipPayloadItem[];
   label?: string;
 }
 
@@ -335,7 +343,7 @@ const renderChart = (title: string, data: BubbleData[]) => {
                 value: "ROI",
                 position: "insideBottom",
                 offset: -5,
-                style: { fill: "#666", fontSize: 14, },
+                style: { fill: "#666", fontSize: 14 },
               }}
               domain={[minRoi * 0.9, maxRoi * 1.1]}
               tickCount={6}

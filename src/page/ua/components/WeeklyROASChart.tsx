@@ -193,18 +193,21 @@ const WeeklyROASChart = () => {
     });
   };
 
+  interface CustomTooltipProps {
+    active?: boolean;
+    payload?: any[];
+    label?: string;
+  }
   // Custom tooltip without scrolling
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (!active || !payload) return null;
 
-    const revenuePayload = payload.find(
-      (p: any) => p.dataKey === "totalRevenue"
-    );
-    const roasD0 = payload.find((p: any) => p.dataKey === "ROAS_D0");
-    const roasD7 = payload.find((p: any) => p.dataKey === "ROAS_D7");
+    const revenuePayload = payload.find((p) => p.dataKey === "totalRevenue");
+    const roasD0 = payload.find((p) => p.dataKey === "ROAS_D0");
+    const roasD7 = payload.find((p) => p.dataKey === "ROAS_D7");
 
     return (
-      <div className="bg-white p-4 border border-gray-200 shadow-lg rounded-md min-w-[300px]" >
+      <div className="bg-white p-4 border border-gray-200 shadow-lg rounded-md min-w-[300px]">
         <p className="font-bold text-gray-800 mb-2">{label}</p>
 
         <div className="grid grid-cols-3 gap-4 mb-3">
@@ -240,8 +243,8 @@ const WeeklyROASChart = () => {
           </p>
           <div className="grid grid-cols-1 gap-1 max-h-[300px]">
             {payload
-              .filter((p: any) => p.name in channelColors)
-              .map((entry: any) => (
+              .filter((p) => p.name in channelColors)
+              .map((entry) => (
                 <div
                   key={entry.name}
                   className="flex items-center py-1 px-2 hover:bg-gray-50 rounded"

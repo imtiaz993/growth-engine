@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DatePicker, Select } from "antd";
-const { RangePicker }: any = DatePicker;
+const { RangePicker } = DatePicker;
 
 const allChannels = [
   "Appier",
@@ -91,7 +91,7 @@ const Filters = () => {
             value: country,
           }))}
         />
-        <RangePicker placeholder="Date" className="w-56" />
+        <RangePicker className="w-56" />
       </div>
     </div>
   );
