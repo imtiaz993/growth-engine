@@ -193,9 +193,24 @@ const WeeklyROASChart = () => {
     });
   };
 
+  // Add these interfaces above your WeeklyROASChart component
+  interface TooltipPayloadItem {
+    dataKey: string;
+    value: number;
+    name: string;
+    color: string;
+    payload: {
+      week: string;
+      channels: Record<string, number>;
+      ROAS_D0: number;
+      ROAS_D7: number;
+      totalRevenue: number;
+    };
+  }
+
   interface CustomTooltipProps {
     active?: boolean;
-    payload?: any[];
+    payload?: TooltipPayloadItem[];
     label?: string;
   }
   // Custom tooltip without scrolling
