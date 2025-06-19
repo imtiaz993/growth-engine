@@ -143,9 +143,9 @@ const Page = () => {
         isLoading={isLoadingFilters}
         error={filterError}
       />
-      <Overview />
+      <Overview filters={filters} />
       <Campaign filters={filters} />
-      <Creative />
+      <Creative filters={filters} />
     </div>
   );
 };

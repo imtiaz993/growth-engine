@@ -6,6 +6,18 @@ import {
 import { Table } from "antd";
 import { useEffect, useState } from "react";
 
+interface FilterState {
+  appToken: string | null;
+  channels: string[];
+  countries: string[];
+  startDate: string | null;
+  endDate: string | null;
+}
+
+interface CampaignProps {
+  filters: FilterState;
+}
+
 const top10columns = [
   {
     title: "Channel",
@@ -113,12 +125,19 @@ const camparingColumns = [
   },
 ];
 
-const Campaign = () => {
+const Campaign = ({ filters }: CampaignProps) => {
   const [top10Data, setTop10Data] = useState([]);
   const [increasingData, setIncreasingData] = useState([]);
   const [decliningData, setDecliningData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchTop10 = async () => {
+    if (!filters.appToken || !filters.startDate || !filters.endDate) return;
+
+    setIsLoading(true);
+    setError(null);
+
     try {
       const response = await fetch(
         "https://sabre-api.yodo1.me/api/v1/dashboard/top10-campaigns",
@@ -128,20 +147,34 @@ const Campaign = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            app_token: "7dwqim6jl8cg",
-            end_date: "2025-03-02",
-            start_date: "2025-03-01",
+            app_token: filters.appToken,
+            start_date: filters.startDate,
+            end_date: filters.endDate,
           }),
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setTop10Data(data.data.top_campaigns);
+      setTop10Data(data.data.top_campaigns || []);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching top 10 campaigns:", error);
+      setError("Failed to load top campaigns data.");
+      setTop10Data([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchComparing = async () => {
+    if (!filters.appToken) return;
+
+    setIsLoading(true);
+    setError(null);
+
     try {
       const response = await fetch(
         "https://sabre-api.yodo1.me/api/v1/dashboard/wow-comparison",
@@ -151,32 +184,48 @@ const Campaign = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            app_token: filters.appToken,
+            mock_date: filters.endDate || "2025-06-19",
             filters: {
-              channels: [""],
-              countries: [""],
+              channels: filters.channels.length ? filters.channels : [""],
+              countries: filters.countries.length ? filters.countries : [""],
             },
-            app_token: "7dwqim6jl8cg",
-            mock_date: "2025-06-19",
           }),
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setIncreasingData(data.data.top5_increasing);
-      setDecliningData(data.data.top5_declining);
+      setIncreasingData(data.data.top5_increasing || []);
+      setDecliningData(data.data.top5_declining || []);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching comparison data:", error);
+      setError("Failed to load comparison data.");
+      setIncreasingData([]);
+      setDecliningData([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchTop10();
     fetchComparing();
-  }, []);
+  }, [
+    filters.appToken,
+    filters.channels,
+    filters.countries,
+    filters.startDate,
+    filters.endDate,
+  ]);
 
   return (
     <>
       <p className="font-semibold text-xl pt-5">Top Campaigns</p>
-
+      {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
       <div className="flex gap-5">
         <div className="w-2/3">
           <div className="bg-white p-3 rounded-md shadow-xl">
@@ -192,7 +241,7 @@ const Campaign = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
-              style={{ overflow: "auto" }}
+              loading={isLoading}
             />
           </div>
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
@@ -210,9 +259,9 @@ const Campaign = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
+              loading={isLoading}
             />
           </div>
-
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
             <p className="font-medium !my-5">
               Top 5 Avg Daily Spend{" "}
@@ -228,10 +277,10 @@ const Campaign = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
+              loading={isLoading}
             />
           </div>
         </div>
-
         <div className="w-1/3 space-y-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
             <div className="flex justify-between gap-2">
@@ -247,7 +296,6 @@ const Campaign = () => {
               more campaigns!
             </p>
           </div>
-
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
             <div className="flex justify-between gap-2">
               <h3 className="font-medium">Creative Alert</h3>
@@ -261,7 +309,6 @@ const Campaign = () => {
               20% week by week on Applovin, please replace with new Creatives
             </p>
           </div>
-
           <div className="p-5 rounded-md shadow-lg border border-blue-200 bg-blue-50">
             <div className="flex items-start">
               <div className="bg-blue-100 p-2 rounded-lg mr-3">

@@ -6,7 +6,19 @@ import {
 import WeeklyROASChart from "./WeeklyROASChart";
 import QuadrantBubbleCharts from "./GradientChart";
 
-const Overview = () => {
+interface FilterState {
+  appToken: string | null;
+  channels: string[];
+  countries: string[];
+  startDate: string | null;
+  endDate: string | null;
+}
+
+interface OverviewProps {
+  filters: FilterState;
+}
+
+const Overview = ({ filters }: OverviewProps) => {
   return (
     <div>
       <h1 className="font-semibold text-xl pt-5">Overview</h1>
@@ -45,7 +57,7 @@ const Overview = () => {
         </div>
 
         <div className="w-3/4">
-          <WeeklyROASChart />
+          <WeeklyROASChart filters={filters} />
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ComposedChart,
   Bar,
@@ -14,162 +14,146 @@ import {
 // Data structure with proper typing
 interface ChartData {
   week: string;
-  channels: {
-    [key: string]: number;
-  };
+  channels: { [key: string]: number };
   ROAS_D0: number;
   ROAS_D7: number;
 }
 
-const mockData: ChartData[] = [
-  {
-    week: "2024年11月",
-    channels: {
-      Appier: 1200,
-      Apple: 800,
-      Applovin: 900,
-      "Bilibili (呼噜哔哩)": 600,
-      Facebook: 1000,
-      "Google Ads": 1100,
-      IronSource: 800,
-      MOLOCO: 900,
-      Mintegral: 700,
-      "Ocean Engine": 600,
-      "Persona.ly": 500,
-    },
-    ROAS_D0: 0.2,
-    ROAS_D7: 0.3,
-  },
-  {
-    week: "2024年12月",
-    channels: {
-      Appier: 1000,
-      Apple: 500,
-      Applovin: 600,
-      "Bilibili (呼噜哔哩)": 400,
-      Facebook: 700,
-      "Google Ads": 800,
-      IronSource: 600,
-      MOLOCO: 700,
-      Mintegral: 500,
-      "Ocean Engine": 400,
-      "Persona.ly": 300,
-    },
-    ROAS_D0: 0.2,
-    ROAS_D7: 0.3,
-  },
-  {
-    week: "2025年1月",
-    channels: {
-      Appier: 1500,
-      Apple: 1000,
-      Applovin: 1200,
-      "Bilibili (呼噜哔哩)": 800,
-      Facebook: 1100,
-      "Google Ads": 1300,
-      IronSource: 900,
-      MOLOCO: 1100,
-      Mintegral: 1000,
-      "Ocean Engine": 800,
-      "Persona.ly": 700,
-    },
-    ROAS_D0: 0.3,
-    ROAS_D7: 0.4,
-  },
-  {
-    week: "2025年2月",
-    channels: {
-      Appier: 2000,
-      Apple: 1500,
-      Applovin: 1800,
-      "Bilibili (呼噜哔哩)": 1200,
-      Facebook: 1700,
-      "Google Ads": 1900,
-      IronSource: 1100,
-      MOLOCO: 1400,
-      Mintegral: 1300,
-      "Ocean Engine": 1000,
-      "Persona.ly": 900,
-    },
-    ROAS_D0: 0.25,
-    ROAS_D7: 0.35,
-  },
-  {
-    week: "2025年3月",
-    channels: {
-      Appier: 2200,
-      Apple: 1700,
-      Applovin: 1900,
-      "Bilibili (呼噜哔哩)": 1500,
-      Facebook: 1800,
-      "Google Ads": 2100,
-      IronSource: 1300,
-      MOLOCO: 1600,
-      Mintegral: 1500,
-      "Ocean Engine": 1200,
-      "Persona.ly": 1100,
-    },
-    ROAS_D0: 0.28,
-    ROAS_D7: 0.42,
-  },
-  {
-    week: "2025年4月",
-    channels: {
-      Appier: 2400,
-      Apple: 1800,
-      Applovin: 2100,
-      "Bilibili (呼噜哔哩)": 1600,
-      Facebook: 1900,
-      "Google Ads": 2300,
-      IronSource: 1500,
-      MOLOCO: 1700,
-      Mintegral: 1600,
-      "Ocean Engine": 1300,
-      "Persona.ly": 1200,
-    },
-    ROAS_D0: 0.3,
-    ROAS_D7: 0.5,
-  },
-  {
-    week: "2025年5月",
-    channels: {
-      Appier: 2600,
-      Apple: 2000,
-      Applovin: 2300,
-      "Bilibili (呼噜哔哩)": 1700,
-      Facebook: 2000,
-      "Google Ads": 2500,
-      IronSource: 1600,
-      MOLOCO: 1900,
-      Mintegral: 1700,
-      "Ocean Engine": 1400,
-      "Persona.ly": 1300,
-    },
-    ROAS_D0: 0.33,
-    ROAS_D7: 0.53,
-  },
-];
+interface FilterState {
+  appToken: string | null;
+  channels: string[];
+  countries: string[];
+  startDate: string | null;
+  endDate: string | null;
+}
 
-const channelColors: Record<string, string> = {
-  Appier: "#8884d8",
-  Apple: "#f08080",
-  Applovin: "#82ca9d",
-  "Bilibili (呼噜哔哩)": "#87ceeb",
-  Facebook: "#4682b4",
-  "Google Ads": "#f4a460",
-  IronSource: "#dda0dd",
-  MOLOCO: "#6495ed",
-  Mintegral: "#ffb6c1",
-  "Ocean Engine": "#ffa07a",
-  "Persona.ly": "#cd5c5c",
+interface WeeklyROASChartProps {
+  filters: FilterState;
+}
+
+// Function to generate colors for channels dynamically
+const generateChannelColors = (channels: string[]): Record<string, string> => {
+  const baseColors = [
+    "#8884d8",
+    "#f08080",
+    "#82ca9d",
+    "#87ceeb",
+    "#4682b4",
+    "#f4a460",
+    "#dda0dd",
+    "#6495ed",
+    "#ffb6c1",
+    "#ffa07a",
+    "#cd5c5c",
+    "#6b7280",
+    "#10b981",
+    "#f59e0b",
+    "#3b82f6",
+    "#ef4444",
+    "#8b5cf6",
+    "#ec4899",
+  ];
+  const colors: Record<string, string> = {};
+  channels.forEach((channel, index) => {
+    colors[channel] = baseColors[index % baseColors.length];
+  });
+  return colors;
 };
 
-const WeeklyROASChart = () => {
-  const [activeChannels, setActiveChannels] = useState<Set<string>>(
-    new Set(Object.keys(channelColors))
+const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [channelColors, setChannelColors] = useState<Record<string, string>>(
+    {}
   );
+  const [activeChannels, setActiveChannels] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchChartData = async () => {
+    if (!filters.appToken || !filters.startDate || !filters.endDate) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        "https://sabre-api.yodo1.me/api/v1/dashboard/chart/channel-weekly-roas",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            app_token: filters.appToken,
+            start_date: filters.startDate,
+            end_date: filters.endDate,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const { data } = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid response format");
+      }
+
+      // Process API data to match ChartData interface
+      const processedData: ChartData[] = data
+        .map((item: any, index: number) => ({
+          week: `${item.year}年W${item.week}`,
+          channels: item.channels,
+          ROAS_D0: item.roas_d0,
+          ROAS_D7: item.roas_d7,
+          key: index.toString(), // Add key for Recharts
+        }))
+        .sort((a, b) => {
+          // Sort by year and week numerically
+          const [yearA, weekA] = [
+            parseInt(a.week.split("年W")[0]),
+            parseInt(a.week.split("年W")[1]),
+          ];
+          const [yearB, weekB] = [
+            parseInt(b.week.split("年W")[0]),
+            parseInt(b.week.split("年W")[1]),
+          ];
+          return yearA !== yearB ? yearA - yearB : weekA - weekB;
+        });
+
+      // Extract unique channels and generate colors
+      const allChannels = Array.from(
+        new Set(processedData.flatMap((item) => Object.keys(item.channels)))
+      );
+      const newChannelColors = generateChannelColors(allChannels);
+
+      setChartData(processedData);
+      setChannelColors(newChannelColors);
+      setActiveChannels(new Set(allChannels));
+    } catch (error) {
+      console.error("Error fetching chart data:", error);
+      setError("Failed to load chart data.");
+      setChartData([]);
+      setChannelColors({});
+      setActiveChannels(new Set());
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchChartData();
+  }, [
+    filters.appToken,
+    filters.channels,
+    filters.countries,
+    filters.startDate,
+    filters.endDate,
+  ]);
+
   // Calculate total revenue for each week
-  const processedData = mockData.map((weekData) => ({
+  const processedData = chartData.map((weekData) => ({
     ...weekData,
     totalRevenue: Object.values(weekData.channels).reduce(
       (sum, val) => sum + val,
@@ -179,8 +163,6 @@ const WeeklyROASChart = () => {
 
   // Toggle channel visibility
   const handleLegendClick = (channel: string) => {
-    console.log("Clicked Channel:", channel);
-    console.log("Active Channels:", activeChannels);
     setActiveChannels((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(channel)) {
@@ -188,12 +170,11 @@ const WeeklyROASChart = () => {
       } else {
         newSet.add(channel);
       }
-      console.log("New Active Channels:", newSet);
       return newSet;
     });
   };
 
-  // Add these interfaces above your WeeklyROASChart component
+  // Custom tooltip interfaces
   interface TooltipPayloadItem {
     dataKey: string;
     value: number;
@@ -213,6 +194,7 @@ const WeeklyROASChart = () => {
     payload?: TooltipPayloadItem[];
     label?: string;
   }
+
   // Custom tooltip without scrolling
   const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (!active || !payload) return null;
@@ -256,7 +238,7 @@ const WeeklyROASChart = () => {
           <p className="text-sm font-medium text-gray-700 mb-2">
             Channel Revenue:
           </p>
-          <div className="grid grid-cols-1 gap-1 max-h-[300px]">
+          <div className="grid grid-cols-1 gap-1 maxs-hs-[300px]">
             {payload
               .filter((p) => p.name in channelColors)
               .map((entry) => (
@@ -293,98 +275,108 @@ const WeeklyROASChart = () => {
           Stacked bars show revenue by channel, lines show ROAS metrics
         </p>
 
-        <ResponsiveContainer width="100%" height="80%">
-          <ComposedChart data={processedData}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              stroke="#f0f0f0"
-            />
-            <XAxis
-              dataKey="week"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#666", fontSize: 12 }}
-            />
-            <YAxis
-              yAxisId="revenue"
-              orientation="left"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#666", fontSize: 12 }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
-              label={{
-                value: "Total Revenue (USD)",
-                angle: -90,
-                position: "insideLeft",
-                style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
-                offset: 2,
-              }}
-            />
-            <YAxis
-              yAxisId="roas"
-              orientation="right"
-              domain={[0, 0.6]}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#666", fontSize: 12 }}
-              tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-              label={{
-                value: "ROAS (%)",
-                angle: -90,
-                position: "insideRight",
-                style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
-                offset: 0,
-              }}
-            />
-            <Tooltip content={<CustomTooltip />} />
+        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
-            {/* Stacked revenue bars */}
-            {Object.keys(channelColors).map(
-              (channel) =>
-                activeChannels.has(channel) && (
-                  <Bar
-                    key={channel}
-                    yAxisId="revenue"
-                    dataKey={`channels.${channel}`}
-                    stackId="revenue"
-                    name={channel}
-                    fill={channelColors[channel]}
-                    barSize={60}
-                  >
-                    {processedData.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={channelColors[channel]}
-                      />
-                    ))}
-                  </Bar>
-                )
-            )}
-            {/* ROAS Lines */}
-            <Line
-              yAxisId="roas"
-              type="monotone"
-              dataKey="ROAS_D0"
-              stroke="#4a5568"
-              strokeDasharray="5 5"
-              strokeWidth={2}
-              dot={{ r: 4, strokeWidth: 2 }}
-              activeDot={{ r: 6 }}
-              name="ROAS D0"
-            />
-            <Line
-              yAxisId="roas"
-              type="monotone"
-              dataKey="ROAS_D7"
-              stroke="#2e8b57"
-              strokeWidth={3}
-              dot={{ r: 5, fill: "#fff", strokeWidth: 2 }}
-              activeDot={{ r: 8 }}
-              name="ROAS D7"
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
+        {processedData && processedData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="80%">
+            <ComposedChart data={processedData}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#f0f0f0"
+              />
+              <XAxis
+                dataKey="week"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#666", fontSize: 12 }}
+              />
+              <YAxis
+                yAxisId="revenue"
+                orientation="left"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#666", fontSize: 12 }}
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                label={{
+                  value: "Total Revenue (USD)",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
+                  offset: 2,
+                }}
+              />
+              <YAxis
+                yAxisId="roas"
+                orientation="right"
+                domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#666", fontSize: 12 }}
+                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+                label={{
+                  value: "ROAS (%)",
+                  angle: -90,
+                  position: "insideRight",
+                  style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
+                  offset: 0,
+                }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+
+              {/* Stacked revenue bars */}
+              {Object.keys(channelColors).map(
+                (channel) =>
+                  activeChannels.has(channel) && (
+                    <Bar
+                      key={channel}
+                      yAxisId="revenue"
+                      dataKey={`channels.${channel}`}
+                      stackId="revenue"
+                      name={channel}
+                      fill={channelColors[channel]}
+                      barSize={60}
+                    >
+                      {processedData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={channelColors[channel]}
+                        />
+                      ))}
+                    </Bar>
+                  )
+              )}
+              {/* ROAS Lines */}
+              <Line
+                yAxisId="roas"
+                type="monotone"
+                dataKey="ROAS_D0"
+                stroke="#4a5568"
+                strokeDasharray="5 5"
+                strokeWidth={2}
+                dot={{ r: 4, strokeWidth: 2 }}
+                activeDot={{ r: 6 }}
+                name="ROAS D0"
+              />
+              <Line
+                yAxisId="roas"
+                type="monotone"
+                dataKey="ROAS_D7"
+                stroke="#2e8b57"
+                strokeWidth={3}
+                dot={{ r: 5, fill: "#fff", strokeWidth: 2 }}
+                activeDot={{ r: 8 }}
+                name="ROAS D7"
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        ) : isLoading ? (
+          <div className="text-gray-500 text-sm mb-4 mt-20">Loading data...</div>
+        ) : (
+          <div className="text-gray-500 text-sm mb-4 mt-20">
+            No data available for the selected filters.
+          </div>
+        )}
       </div>
 
       {/* Right Column - Channel List */}
@@ -413,6 +405,7 @@ const WeeklyROASChart = () => {
                   className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
                   checked={activeChannels.has(channel)}
                   onChange={() => handleLegendClick(channel)}
+                  disabled={isLoading}
                 />
               </div>
             </div>

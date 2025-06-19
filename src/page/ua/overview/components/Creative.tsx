@@ -4,360 +4,382 @@ import {
   BulbOutlined,
 } from "@ant-design/icons";
 import { Table } from "antd";
+import { useEffect, useState } from "react";
 
-const Creative = () => {
-  const top10columns = [
-    {
-      title: "Channel",
-      dataIndex: "channel",
-      key: "channel",
-    },
-    {
-      title: "Creative",
-      dataIndex: "creative",
-      key: "creative",
-    },
-    {
-      title: "Create Month",
-      dataIndex: "createMonth",
-      key: "createMonth",
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Language",
-      dataIndex: "language",
-      key: "language",
-    },
-    {
-      title: "Cost Share",
-      dataIndex: "costShare",
-      key: "costShare",
-    },
-    {
-      title: "IPM",
-      dataIndex: "IPM",
-      key: "IPM",
-    },
-    {
-      title: "CTR",
-      dataIndex: "CTR",
-      key: "CTR",
-    },
-    {
-      title: "CVR",
-      dataIndex: "CVR",
-      key: "CVR",
-    },
-    {
-      title: "ROAS_D0",
-      dataIndex: "ROAS_D0",
-      key: "ROAS_D0",
-    },
-    {
-      title: "ROAS_D7",
-      dataIndex: "ROAS_D7",
-      key: "ROAS_D7",
-    },
-    {
-      title: "ROAS_D30",
-      dataIndex: "ROAS_D30",
-      key: "ROAS_D30",
-    },
-    {
-      title: "SkAN_ROAS",
-      dataIndex: "SkAN_ROAS",
-      key: "SkAN_ROAS",
-    },
-  ];
+interface FilterState {
+  appToken: string | null;
+  channels: string[];
+  countries: string[];
+  startDate: string | null;
+  endDate: string | null;
+}
 
-  const top10data = [
-    {
-      key: "1",
-      channel: "Channel 1",
-      creative: "Creative 1",
-      createMonth: "Create Month 1",
-      type: "Type 1",
-      language: "Language 1",
-      costShare: "Cost Share 1",
-      IPM: "IPM 1",
-      CTR: "CTR 1",
-      CVR: "CVR 1",
-      ROAS_D0: "ROAS_D0 1",
-      ROAS_D7: "ROAS_D7 1",
-      ROAS_D30: "ROAS_D30 1",
-      SkAN_ROAS: "SkAN_ROAS 1",
-    },
-    {
-      key: "2",
-      channel: "Channel 2",
-      creative: "Creative 2",
-      createMonth: "Create Month 2",
-      type: "Type 2",
-      language: "Language 2",
-      costShare: "Cost Share 2",
-      IPM: "IPM 2",
-      CTR: "CTR 2",
-      CVR: "CVR 2",
-      ROAS_D0: "ROAS_D0 2",
-      ROAS_D7: "ROAS_D7 2",
-      ROAS_D30: "ROAS_D30 2",
-      SkAN_ROAS: "SkAN_ROAS 2",
-    },
-  ];
+interface CreativeProps {
+  filters: FilterState;
+}
 
-  const increasingColumns = [
-    {
-      title: "Channel",
-      dataIndex: "channel",
-      key: "channel",
-    },
-    {
-      title: "Creative",
-      dataIndex: "creative",
-      key: "creative",
-    },
-    {
-      title: "Create Month",
-      dataIndex: "createMonth",
-      key: "createMonth",
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Language",
-      dataIndex: "language",
-      key: "language",
-    },
-    {
-      title: "Daily Spend",
-      dataIndex: "dailySpend",
-      key: "dailySpend",
-    },
-    {
-      title: "Daily Spend Last period",
-      dataIndex: "dailySpendLastPeriod",
-      key: "dailySpendLastPeriod",
-    },
-    {
-      title: "Diff_Daily Spend",
-      dataIndex: "diffDailySpend",
-      key: "diffDailySpend",
-    },
-    {
-      title: "IPM",
-      dataIndex: "IPM",
-      key: "IPM",
-    },
-    {
-      title: "CTR",
-      dataIndex: "CTR",
-      key: "CTR",
-    },
-    {
-      title: "CVR",
-      dataIndex: "CVR",
-      key: "CVR",
-    },
-    {
-      title: "eCPM",
-      dataIndex: "eCPM",
-      key: "eCPM",
-    },
-    {
-      title: "ROAS_D0",
-      dataIndex: "ROAS_D0",
-      key: "ROAS_D0",
-    },
-    {
-      title: "ROAS_D0 Prior Week",
-      dataIndex: "ROAS_D0PriorWeek",
-      key: "ROAS_D0PriorWeek",
-    },
-    {
-      title: "ROAS_D0 WoW",
-      dataIndex: "ROAS_D0WoW",
-      key: "ROAS_D0WoW",
-    },
-    {
-      title: "ROAS_D7",
-      dataIndex: "ROAS_D7",
-      key: "ROAS_D7",
-    },
-    {
-      title: "ROAS_D7 Previous Week",
-      dataIndex: "ROAS_D7PreviousWeek",
-      key: "ROAS_D7PreviousWeek",
-    },
-    {
-      title: "ROAS_D7 WoW",
-      dataIndex: "ROAS_D7WoW",
-      key: "ROAS_D7WoW",
-    },
-    {
-      title: "ROAS_D30",
-      dataIndex: "ROAS_D30",
-      key: "ROAS_D30",
-    },
-    {
-      title: "SkAN_ROAS",
-      dataIndex: "SkAN_ROAS",
-      key: "SkAN_ROAS",
-    },
-  ];
+const top10columns = [
+  {
+    title: "Channel",
+    dataIndex: "channel",
+    key: "channel",
+  },
+  {
+    title: "Creative",
+    dataIndex: "creative_network",
+    key: "creative_network",
+  },
+  {
+    title: "Create Month",
+    dataIndex: "createMonth",
+    key: "createMonth",
+  },
+  {
+    title: "Type",
+    dataIndex: "type",
+    key: "type",
+  },
+  {
+    title: "Language",
+    dataIndex: "language",
+    key: "language",
+  },
+  {
+    title: "Cost Share",
+    dataIndex: "cost",
+    key: "cost",
+  },
+  {
+    title: "IPM",
+    dataIndex: "ipm",
+    key: "ipm",
+  },
+  {
+    title: "CTR",
+    dataIndex: "ctr",
+    key: "ctr",
+  },
+  {
+    title: "CVR",
+    dataIndex: "cvr",
+    key: "cvr",
+  },
+  {
+    title: "ROAS_D0",
+    dataIndex: "ROAS_D0",
+    key: "ROAS_D0",
+  },
+  {
+    title: "ROAS_D7",
+    dataIndex: "ROAS_D7",
+    key: "ROAS_D7",
+  },
+  {
+    title: "ROAS_D30",
+    dataIndex: "ROAS_D30",
+    key: "ROAS_D30",
+  },
+  {
+    title: "SkAN_ROAS",
+    dataIndex: "SkAN_ROAS",
+    key: "SkAN_ROAS",
+  },
+];
 
-  const increasingData = [
-    {
-      key: "1",
-      channel: "Channel",
-      creative: "Creative 1",
-      createMonth: "Create Month 1",
-      type: "Type 1",
-      language: "Language 1",
-      dailySpend: "Daily Spend 1",
-      dailySpendLastPeriod: "Daily Spend Last Period 1",
-      diffDailySpend: "Diff Daily Spend 1",
-      IPM: "IPM 1",
-      CTR: "CTR 1",
-      CVR: "CVR 1",
-      eCPM: "eCPM 1",
-      ROAS_D0: "ROAS_D0 1",
-      ROAS_D0PriorWeek: "ROAS_D0 Prior Week 1",
-      ROAS_D0WoW: "ROAS_D0 WoW 1",
-      ROAS_D7: "ROAS_D7 1",
-      ROAS_D7PreviousWeek: "ROAS_D7 Previous Week 1",
-      ROAS_D7WoW: "ROAS_D7 WoW 1",
-      ROAS_D30: "ROAS_D30 1",
-      SkAN_ROAS: "SkAN_ROAS 1",
-    },
-  ];
+const increasingColumns = [
+  {
+    title: "Channel",
+    dataIndex: "channel",
+    key: "channel",
+  },
+  {
+    title: "Creative",
+    dataIndex: "creative",
+    key: "creative",
+  },
+  {
+    title: "Create Month",
+    dataIndex: "createMonth",
+    key: "createMonth",
+  },
+  {
+    title: "Type",
+    dataIndex: "type",
+    key: "type",
+  },
+  {
+    title: "Language",
+    dataIndex: "language",
+    key: "language",
+  },
+  {
+    title: "Daily Spend",
+    dataIndex: "dailySpend",
+    key: "dailySpend",
+  },
+  {
+    title: "Daily Spend Last Period",
+    dataIndex: "dailySpendLastPeriod",
+    key: "dailySpendLastPeriod",
+  },
+  {
+    title: "Diff_Daily Spend",
+    dataIndex: "diffDailySpend",
+    key: "diffDailySpend",
+  },
+  {
+    title: "IPM",
+    dataIndex: "IPM",
+    key: "IPM",
+  },
+  {
+    title: "CTR",
+    dataIndex: "CTR",
+    key: "CTR",
+  },
+  {
+    title: "CVR",
+    dataIndex: "CVR",
+    key: "CVR",
+  },
+  {
+    title: "eCPM",
+    dataIndex: "eCPM",
+    key: "eCPM",
+  },
+  {
+    title: "ROAS_D0",
+    dataIndex: "ROAS_D0",
+    key: "ROAS_D0",
+  },
+  {
+    title: "ROAS_D0 Prior Week",
+    dataIndex: "ROAS_D0PriorWeek",
+    key: "ROAS_D0PriorWeek",
+  },
+  {
+    title: "ROAS_D0 WoW",
+    dataIndex: "ROAS_D0WoW",
+    key: "ROAS_D0WoW",
+  },
+  {
+    title: "ROAS_D7",
+    dataIndex: "ROAS_D7",
+    key: "ROAS_D7",
+  },
+  {
+    title: "ROAS_D7 Previous Week",
+    dataIndex: "ROAS_D7PreviousWeek",
+    key: "ROAS_D7PreviousWeek",
+  },
+  {
+    title: "ROAS_D7 WoW",
+    dataIndex: "ROAS_D7WoW",
+    key: "ROAS_D7WoW",
+  },
+  {
+    title: "ROAS_D30",
+    dataIndex: "ROAS_D30",
+    key: "ROAS_D30",
+  },
+  {
+    title: "SkAN_ROAS",
+    dataIndex: "SkAN_ROAS",
+    key: "SkAN_ROAS",
+  },
+];
 
-  const decliningColumns = [
-    {
-      title: "Channel",
-      dataIndex: "channel",
-      key: "channel",
-    },
-    {
-      title: "Creative",
-      dataIndex: "creative",
-      key: "creative",
-    },
-    {
-      title: "Create Month",
-      dataIndex: "createMonth",
-      key: "createMonth",
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Language",
-      dataIndex: "language",
-      key: "language",
-    },
-    {
-      title: "Daily Spend",
-      dataIndex: "dailySpend",
-      key: "dailySpend",
-    },
-    {
-      title: "Daily Spend Last period",
-      dataIndex: "dailySpend_Last_Period",
-      key: "dailySpendLastPeriod",
-    },
-    {
-      title: "Diff_Daily Cost",
-      dataIndex: "diff_DailyCost",
-      key: "diffDailySpend",
-    },
-    {
-      title: "IPM",
-      dataIndex: "IPM",
-      key: "IPM",
-    },
-    {
-      title: "CTR",
-      dataIndex: "CTR",
-      key: "CTR",
-    },
-    {
-      title: "CVR",
-      dataIndex: "CVR",
-      key: "CVR",
-    },
-    {
-      title: "eCPM",
-      dataIndex: "eCPM",
-      key: "eCPM",
-    },
-    {
-      title: "ROAS_D0",
-      dataIndex: "ROAS_D0",
-      key: "ROAS_D0",
-    },
-    {
-      title: "ROAS_D0 Last Week",
-      dataIndex: "ROAS_D0_LastWeek",
-      key: "ROAS_D0_LastWeek",
-    },
-    {
-      title: "ROAS_D7",
-      dataIndex: "ROAS_D7",
-      key: "ROAS_D7",
-    },
-    {
-      title: "ROAS_D7 Previous Week",
-      dataIndex: "ROAS_D7_PreviousWeek",
-      key: "ROAS_D7_PreviousWeek",
-    },
-    {
-      title: "ROAS_D30",
-      dataIndex: "ROAS_D30",
-      key: "ROAS_D30",
-    },
-    {
-      title: "SkAN_ROAS",
-      dataIndex: "SkAN_ROAS",
-      key: "SkAN_ROAS",
-    },
-  ];
+const decliningColumns = [
+  {
+    title: "Channel",
+    dataIndex: "channel",
+    key: "channel",
+  },
+  {
+    title: "Creative",
+    dataIndex: "creative",
+    key: "creative",
+  },
+  {
+    title: "Create Month",
+    dataIndex: "createMonth",
+    key: "createMonth",
+  },
+  {
+    title: "Type",
+    dataIndex: "type",
+    key: "type",
+  },
+  {
+    title: "Language",
+    dataIndex: "language",
+    key: "language",
+  },
+  {
+    title: "Daily Spend",
+    dataIndex: "dailySpend",
+    key: "dailySpend",
+  },
+  {
+    title: "Daily Spend Last Period",
+    dataIndex: "dailySpendLastPeriod",
+    key: "dailySpendLastPeriod",
+  },
+  {
+    title: "Diff_Daily Cost",
+    dataIndex: "diffDailyCost",
+    key: "diffDailyCost",
+  },
+  {
+    title: "IPM",
+    dataIndex: "IPM",
+    key: "IPM",
+  },
+  {
+    title: "CTR",
+    dataIndex: "CTR",
+    key: "CTR",
+  },
+  {
+    title: "CVR",
+    dataIndex: "CVR",
+    key: "CVR",
+  },
+  {
+    title: "eCPM",
+    dataIndex: "eCPM",
+    key: "eCPM",
+  },
+  {
+    title: "ROAS_D0",
+    dataIndex: "ROAS_D0",
+    key: "ROAS_D0",
+  },
+  {
+    title: "ROAS_D0 Last Week",
+    dataIndex: "ROAS_D0LastWeek",
+    key: "ROAS_D0LastWeek",
+  },
+  {
+    title: "ROAS_D7",
+    dataIndex: "ROAS_D7",
+    key: "ROAS_D7",
+  },
+  {
+    title: "ROAS_D7 Previous Week",
+    dataIndex: "ROAS_D7PreviousWeek",
+    key: "ROAS_D7PreviousWeek",
+  },
+  {
+    title: "ROAS_D30",
+    dataIndex: "ROAS_D30",
+    key: "ROAS_D30",
+  },
+  {
+    title: "SkAN_ROAS",
+    dataIndex: "SkAN_ROAS",
+    key: "SkAN_ROAS",
+  },
+];
 
-  const decliningData = [
-    {
-      key: "1",
-      channel: "Channel",
-      creative: "Creative 1",
-      createMonth: "Create Month 1",
-      type: "Type 1",
-      language: "Language 1",
-      dailySpend: "Daily Spend 1",
-      dailySpend_Last_Period: "Daily Spend Last period 1",
-      diff_DailyCost: "Diff_Daily Cost 1",
-      IPM: "IPM 1",
-      CTR: "CTR 1",
-      CVR: "CVR 1",
-      eCPM: "eCPM 1",
-      ROAS_D0: "ROAS_D0 1",
-      ROAS_D0_LastWeek: "ROAS_D0_LastWeek 1",
-      ROAS_D7: "ROAS_D7 1",
-      ROAS_D7_PreviousWeek: "ROAS_D7_PreviousWeek 1",
-      ROAS_D30: "ROAS_D30 1",
-      SkAN_ROAS: "SkAN_ROAS 1",
-    },
-  ];
+const Creative = ({ filters }: CreativeProps) => {
+  const [top10Data, setTop10Data] = useState([]);
+  const [increasingData, setIncreasingData] = useState([]);
+  const [decliningData, setDecliningData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTop10Creatives = async () => {
+    if (!filters.appToken || !filters.startDate || !filters.endDate) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        "https://sabre-api.yodo1.me/api/v1/dashboard/top10-creatives",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            app_token: filters.appToken,
+            start_date: filters.startDate,
+            end_date: filters.endDate,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setTop10Data(data.data.top_creatives || []);
+    } catch (error) {
+      console.error("Error fetching top 10 creatives:", error);
+      setError("Failed to load top creatives data.");
+      setTop10Data([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchCreativeTrending = async () => {
+    if (!filters.appToken) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        "https://sabre-api.yodo1.me/api/v1/dashboard/creative-trending",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            app_token: filters.appToken,
+            start_date: filters.startDate,
+            end_date: filters.endDate,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setIncreasingData(data.data.top5_increasing || []);
+      setDecliningData(data.data.top5_declining || []);
+    } catch (error) {
+      console.error("Error fetching creative trending data:", error);
+      setError("Failed to load creative trending data.");
+      setIncreasingData([]);
+      setDecliningData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTop10Creatives();
+    fetchCreativeTrending();
+  }, [
+    filters.appToken,
+    filters.channels,
+    filters.countries,
+    filters.startDate,
+    filters.endDate,
+  ]);
 
   return (
     <>
       <p className="font-semibold text-xl pt-10">Top Creatives</p>
+      {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
       <div className="flex gap-5">
         <div className="w-2/3">
           <div className="bg-white p-3 rounded-md shadow-xl">
@@ -366,13 +388,14 @@ const Creative = () => {
             </p>
             <Table
               columns={top10columns}
-              dataSource={top10data}
+              dataSource={top10Data}
               pagination={{
                 defaultPageSize: 10,
                 showSizeChanger: true,
               }}
               scroll={{ x: "max-content" }}
               size="small"
+              loading={isLoading}
             />
           </div>
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
@@ -389,9 +412,9 @@ const Creative = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
+              loading={isLoading}
             />
           </div>
-
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
             <p className="font-medium !my-5">
               Top 5 Decreasing% trending Creatives(minus, ordered by{" "}
@@ -406,6 +429,7 @@ const Creative = () => {
               }}
               scroll={{ x: "max-content" }}
               size="small"
+              loading={isLoading}
             />
           </div>
         </div>
@@ -424,7 +448,6 @@ const Creative = () => {
               more campaigns!
             </p>
           </div>
-
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
             <div className="flex justify-between gap-2">
               <h3 className="font-medium">Creative Alert</h3>
@@ -438,7 +461,6 @@ const Creative = () => {
               20% week by week on Applovin, please replace with new Creatives
             </p>
           </div>
-
           <div className="p-5 rounded-md shadow-lg border border-blue-200 bg-blue-50">
             <div className="flex items-start">
               <div className="bg-blue-100 p-2 rounded-lg mr-3">
