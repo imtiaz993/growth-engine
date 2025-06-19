@@ -3,20 +3,20 @@ import {
   ArrowUpOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import Filters from "./components/Filters";
-import WeeklyROASChart from "./components/WeeklyROASChart";
-import QuadrantBubbleCharts from "./components/GradientChart";
+import Filters from "./Filters";
+import WeeklyROASChart from "./WeeklyROASChart";
+import QuadrantBubbleCharts from "./GradientChart";
 
 const Overview = () => {
   return (
-    <div className="p-4">
+    <div>
       <Filters />
       <h1 className="font-semibold text-xl pt-5">Overview</h1>
 
       <div className="flex gap-5 mt-4">
         <div className="w-1/4 space-y-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
-            <div className="flex justify-between gap-2">
+            <div className="flex justify-between items-center gap-2">
               <h3 className="font-medium">Weekly Revenue</h3>
               <div className="flex items-center gap-1 text-sm text-green-600">
                 <span>5% increase</span>

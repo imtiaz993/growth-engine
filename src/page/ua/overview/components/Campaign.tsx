@@ -166,7 +166,7 @@ const Campaign = () => {
 
   return (
     <>
-      <p className="font-semibold text-xl">Top Campaigns</p>
+      <p className="font-semibold text-xl pt-5">Top Campaigns</p>
 
       <div className="flex gap-5">
         <div className="w-2/3">

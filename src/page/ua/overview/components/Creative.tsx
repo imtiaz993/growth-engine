@@ -231,7 +231,7 @@ const Creative = () => {
 
   return (
     <>
-      <p className="font-semibold text-xl">Top Creatives</p>
+      <p className="font-semibold text-xl pt-10">Top Creatives</p>
       <div className="flex gap-5">
         <div className="w-2/3">
           <div className="bg-white p-3 rounded-md shadow-xl">
