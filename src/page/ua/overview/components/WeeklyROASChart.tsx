@@ -102,7 +102,7 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
 
       // Process API data to match ChartData interface
       const processedData: ChartData[] = data
-        .map((item: any, index: number) => ({
+        .map((item, index: number) => ({
           week: `${item.year}年W${item.week}`,
           channels: item.channels,
           ROAS_D0: item.roas_d0,
@@ -371,7 +371,9 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
             </ComposedChart>
           </ResponsiveContainer>
         ) : isLoading ? (
-          <div className="text-gray-500 text-sm mb-4 mt-20">Loading data...</div>
+          <div className="text-gray-500 text-sm mb-4 mt-20">
+            Loading data...
+          </div>
         ) : (
           <div className="text-gray-500 text-sm mb-4 mt-20">
             No data available for the selected filters.
