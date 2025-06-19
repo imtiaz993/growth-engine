@@ -4,165 +4,174 @@ import {
   BulbOutlined,
 } from "@ant-design/icons";
 import { Table } from "antd";
+import { useEffect, useState } from "react";
+
+const top10columns = [
+  {
+    title: "Channel",
+    dataIndex: "channel",
+    key: "channel",
+  },
+  {
+    title: "Campaign",
+    dataIndex: "campaign_network",
+    key: "campaign_network",
+  },
+  {
+    title: "Avg Daily Spend",
+    dataIndex: "daily_spend",
+    key: "daily_spend",
+  },
+  {
+    title: "Daily Install",
+    dataIndex: "daily_installs",
+    key: "daily_installs",
+  },
+  {
+    title: "CPI",
+    dataIndex: "cpi",
+    key: "cpi",
+  },
+  {
+    title: "ROAS_D0",
+    dataIndex: "roas_d0",
+    key: "roas_d0",
+  },
+  {
+    title: "ROAS_D7",
+    dataIndex: "roas_d7",
+    key: "roas_d7",
+  },
+  {
+    title: "ROAS_D30",
+    dataIndex: "roas_d30",
+    key: "roas_d30",
+  },
+  {
+    title: "SkAN_ROAS",
+    dataIndex: "skan_roas",
+    key: "skan_roas",
+  },
+];
+
+const camparingColumns = [
+  {
+    title: "Channel",
+    dataIndex: "channel",
+    key: "channel",
+  },
+  {
+    title: "Campaign",
+    dataIndex: "campaign",
+    key: "campaign",
+  },
+  {
+    title: "Daily Spend",
+    dataIndex: "dailySpend",
+    key: "dailySpend",
+  },
+  { title: "Diff Last Week", dataIndex: "diffLastWeek", key: "diffLastWeek" },
+  {
+    title: "Daily Install",
+    dataIndex: "dailyInstall",
+    key: "dailyInstall",
+  },
+  {
+    title: "CPI",
+    dataIndex: "CPI",
+    key: "CPI",
+  },
+  {
+    title: "ROAS_D0",
+    dataIndex: "ROAS_D0",
+    key: "ROAS_D0",
+  },
+  {
+    title: "ROAS_D0 Last Week",
+    dataIndex: "ROAS_D0LastWeek",
+    key: "ROAS_D0LastWeek",
+  },
+  {
+    title: "ROAS_D7",
+    dataIndex: "ROAS_D7",
+    key: "ROAS_D7",
+  },
+  {
+    title: "ROAS_D7 Last Week",
+    dataIndex: "ROAS_D7LastWeek",
+    key: "ROAS_D7LastWeek",
+  },
+  {
+    title: "ROAS_D30",
+    dataIndex: "ROAS_D30",
+    key: "ROAS_D30",
+  },
+  {
+    title: "SkAN_ROAS",
+    dataIndex: "SkAN_ROAS",
+    key: "SkAN_ROAS",
+  },
+];
 
 const Campaign = () => {
-  const top10columns = [
-    {
-      title: "Channel",
-      dataIndex: "channel",
-      key: "channel",
-    },
-    {
-      title: "Campaign",
-      dataIndex: "campaign",
-      key: "campaign",
-    },
-    {
-      title: "Avg Daily Spend",
-      dataIndex: "avgDailySpend",
-      key: "avgDailySpend",
-    },
-    {
-      title: "Daily Install",
-      dataIndex: "dailyInstall",
-      key: "dailyInstall",
-    },
-    {
-      title: "CPI",
-      dataIndex: "CPI",
-      key: "CPI",
-    },
-    {
-      title: "ROAS_D0",
-      dataIndex: "ROAS_D0",
-      key: "ROAS_D0",
-    },
-    {
-      title: "ROAS_D7",
-      dataIndex: "ROAS_D7",
-      key: "ROAS_D7",
-    },
-    {
-      title: "ROAS_D30",
-      dataIndex: "ROAS_D30",
-      key: "ROAS_D30",
-    },
-    {
-      title: "SkAN_ROAS",
-      dataIndex: "SkAN_ROAS",
-      key: "SkAN_ROAS",
-    },
-  ];
+  const [top10Data, setTop10Data] = useState([]);
+  const [increasingData, setIncreasingData] = useState([]);
+  const [decliningData, setDecliningData] = useState([]);
 
-  const top10data = [
-    {
-      key: "1",
-      channel: "Channel",
-      campaign: "Campaign",
-      avgDailySpend: "Avg DailySpend",
-      dailyInstall: "Daily Install",
-      CPI: "CPI",
-      ROAS_D0: "ROAS_D0",
-      ROAS_D7: "ROAS_D7",
-      ROAS_D30: "ROAS_D30",
-      SkAN_ROAS: "SkAN_ROAS",
-    },
-  ];
+  const fetchTop10 = async () => {
+    try {
+      const response = await fetch(
+        "https://sabre-api.yodo1.me/api/v1/dashboard/top10-campaigns",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            app_token: "7dwqim6jl8cg",
+            end_date: "2025-03-02",
+            start_date: "2025-03-01",
+          }),
+        }
+      );
+      const data = await response.json();
+      setTop10Data(data.data.top_campaigns);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-  const camparingColumns = [
-    {
-      title: "Channel",
-      dataIndex: "channel",
-      key: "channel",
-    },
-    {
-      title: "Campaign",
-      dataIndex: "campaign",
-      key: "campaign",
-    },
-    {
-      title: "Daily Spend",
-      dataIndex: "dailySpend",
-      key: "dailySpend",
-    },
-    { title: "Diff Last Week", dataIndex: "diffLastWeek", key: "diffLastWeek" },
-    {
-      title: "Daily Install",
-      dataIndex: "dailyInstall",
-      key: "dailyInstall",
-    },
-    {
-      title: "CPI",
-      dataIndex: "CPI",
-      key: "CPI",
-    },
-    {
-      title: "ROAS_D0",
-      dataIndex: "ROAS_D0",
-      key: "ROAS_D0",
-    },
-    {
-      title: "ROAS_D0 Last Week",
-      dataIndex: "ROAS_D0LastWeek",
-      key: "ROAS_D0LastWeek",
-    },
-    {
-      title: "ROAS_D7",
-      dataIndex: "ROAS_D7",
-      key: "ROAS_D7",
-    },
-    {
-      title: "ROAS_D7 Last Week",
-      dataIndex: "ROAS_D7LastWeek",
-      key: "ROAS_D7LastWeek",
-    },
-    {
-      title: "ROAS_D30",
-      dataIndex: "ROAS_D30",
-      key: "ROAS_D30",
-    },
-    {
-      title: "SkAN_ROAS",
-      dataIndex: "SkAN_ROAS",
-      key: "SkAN_ROAS",
-    },
-  ];
+  const fetchComparing = async () => {
+    try {
+      const response = await fetch(
+        "https://sabre-api.yodo1.me/api/v1/dashboard/wow-comparison",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            filters: {
+              channels: [""],
+              countries: [""],
+            },
+            app_token: "7dwqim6jl8cg",
+            mock_date: "2025-06-19",
+          }),
+        }
+      );
+      const data = await response.json();
+      setIncreasingData(data.data.top5_increasing);
+      setDecliningData(data.data.top5_declining);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-  const increasingData = [
-    {
-      key: "1",
-      channel: "Channel",
-      campaign: "Campaign",
-      dailySpend: "Daily Spend",
-      diffLastWeek: "Diff Last Week",
-      dailyInstall: "Daily Install",
-      CPI: "CPI",
-      ROAS_D0: "ROAS_D0",
-      ROAS_D0LastWeek: "ROAS_D0 Last Week",
-      ROAS_D7: "ROAS_D7",
-      ROAS_D7LastWeek: "ROAS_D7 Last Week",
-      ROAS_D30: "ROAS_D30",
-      SkAN_ROAS: "SkAN_ROAS",
-    },
-  ];
-
-  const decliningData = [
-    {
-      key: "1",
-      channel: "Channel",
-      campaign: "Campaign",
-      dailySpend: "Daily Spend",
-      diffLastWeek: "Diff Last Week",
-      dailyInstall: "Daily Install",
-      CPI: "CPI",
-      ROAS_D0: "ROAS_D0",
-      ROAS_D0LastWeek: "ROAS_D0 Last Week",
-      ROAS_D7: "ROAS_D7",
-      ROAS_D7LastWeek: "ROAS_D7 Last Week",
-      ROAS_D30: "ROAS_D30",
-      SkAN_ROAS: "SkAN_ROAS",
-    },
-  ];
+  useEffect(() => {
+    fetchTop10();
+    fetchComparing();
+  }, []);
 
   return (
     <>
@@ -171,10 +180,12 @@ const Campaign = () => {
       <div className="flex gap-5">
         <div className="w-2/3">
           <div className="bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-3">Top 10 Spend Campaigns</p>
+            <p className="font-medium !my-3">
+              Top 10 Spend Campaigns (under selected filter)
+            </p>
             <Table
               columns={top10columns}
-              dataSource={top10data}
+              dataSource={top10Data}
               pagination={{
                 defaultPageSize: 10,
                 showSizeChanger: true,
@@ -186,7 +197,9 @@ const Campaign = () => {
           </div>
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
             <p className="font-medium !my-5">
-              Top 5 Avg Daily Spend Increasing compare with last week
+              Top 5 Avg Daily Spend{" "}
+              <span className="text-red-600"> Increasing </span> compare with{" "}
+              <span className="text-red-600"> last week </span>
             </p>
             <Table
               columns={camparingColumns}
@@ -202,7 +215,9 @@ const Campaign = () => {
 
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
             <p className="font-medium !my-5">
-              Top 5 Avg Daily Spend Declining compare with last week
+              Top 5 Avg Daily Spend{" "}
+              <span className="text-red-600">Declining</span> compare with{" "}
+              <span className="text-red-600">last week </span>
             </p>
             <Table
               columns={camparingColumns}

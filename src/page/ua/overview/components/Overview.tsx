@@ -3,14 +3,12 @@ import {
   ArrowUpOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import Filters from "./Filters";
 import WeeklyROASChart from "./WeeklyROASChart";
 import QuadrantBubbleCharts from "./GradientChart";
 
 const Overview = () => {
   return (
     <div>
-      <Filters />
       <h1 className="font-semibold text-xl pt-5">Overview</h1>
 
       <div className="flex gap-5 mt-4">

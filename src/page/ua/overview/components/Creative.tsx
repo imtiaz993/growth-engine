@@ -109,7 +109,7 @@ const Creative = () => {
     },
   ];
 
-  const camparingColumns = [
+  const increasingColumns = [
     {
       title: "Channel",
       dataIndex: "channel",
@@ -136,9 +136,19 @@ const Creative = () => {
       key: "language",
     },
     {
-      title: "Cost Share",
-      dataIndex: "costShare",
-      key: "costShare",
+      title: "Daily Spend",
+      dataIndex: "dailySpend",
+      key: "dailySpend",
+    },
+    {
+      title: "Daily Spend Last period",
+      dataIndex: "dailySpendLastPeriod",
+      key: "dailySpendLastPeriod",
+    },
+    {
+      title: "Diff_Daily Spend",
+      dataIndex: "diffDailySpend",
+      key: "diffDailySpend",
     },
     {
       title: "IPM",
@@ -156,14 +166,24 @@ const Creative = () => {
       key: "CVR",
     },
     {
+      title: "eCPM",
+      dataIndex: "eCPM",
+      key: "eCPM",
+    },
+    {
       title: "ROAS_D0",
       dataIndex: "ROAS_D0",
       key: "ROAS_D0",
     },
     {
-      title: "ROAS_D0 Last Week",
-      dataIndex: "ROAS_D0LastWeek",
-      key: "ROAS_D0LastWeek",
+      title: "ROAS_D0 Prior Week",
+      dataIndex: "ROAS_D0PriorWeek",
+      key: "ROAS_D0PriorWeek",
+    },
+    {
+      title: "ROAS_D0 WoW",
+      dataIndex: "ROAS_D0WoW",
+      key: "ROAS_D0WoW",
     },
     {
       title: "ROAS_D7",
@@ -171,9 +191,14 @@ const Creative = () => {
       key: "ROAS_D7",
     },
     {
-      title: "ROAS_D7 Last Week",
-      dataIndex: "ROAS_D7LastWeek",
-      key: "ROAS_D7LastWeek",
+      title: "ROAS_D7 Previous Week",
+      dataIndex: "ROAS_D7PreviousWeek",
+      key: "ROAS_D7PreviousWeek",
+    },
+    {
+      title: "ROAS_D7 WoW",
+      dataIndex: "ROAS_D7WoW",
+      key: "ROAS_D7WoW",
     },
     {
       title: "ROAS_D30",
@@ -195,16 +220,114 @@ const Creative = () => {
       createMonth: "Create Month 1",
       type: "Type 1",
       language: "Language 1",
-      costShare: "Cost Share 1",
+      dailySpend: "Daily Spend 1",
+      dailySpendLastPeriod: "Daily Spend Last Period 1",
+      diffDailySpend: "Diff Daily Spend 1",
       IPM: "IPM 1",
       CTR: "CTR 1",
       CVR: "CVR 1",
+      eCPM: "eCPM 1",
       ROAS_D0: "ROAS_D0 1",
-      ROAS_D0LastWeek: "ROAS_D0LastWeek 1",
+      ROAS_D0PriorWeek: "ROAS_D0 Prior Week 1",
+      ROAS_D0WoW: "ROAS_D0 WoW 1",
       ROAS_D7: "ROAS_D7 1",
-      ROAS_D7LastWeek: "ROAS_D7LastWeek 1",
+      ROAS_D7PreviousWeek: "ROAS_D7 Previous Week 1",
+      ROAS_D7WoW: "ROAS_D7 WoW 1",
       ROAS_D30: "ROAS_D30 1",
       SkAN_ROAS: "SkAN_ROAS 1",
+    },
+  ];
+
+  const decliningColumns = [
+    {
+      title: "Channel",
+      dataIndex: "channel",
+      key: "channel",
+    },
+    {
+      title: "Creative",
+      dataIndex: "creative",
+      key: "creative",
+    },
+    {
+      title: "Create Month",
+      dataIndex: "createMonth",
+      key: "createMonth",
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
+    },
+    {
+      title: "Language",
+      dataIndex: "language",
+      key: "language",
+    },
+    {
+      title: "Daily Spend",
+      dataIndex: "dailySpend",
+      key: "dailySpend",
+    },
+    {
+      title: "Daily Spend Last period",
+      dataIndex: "dailySpend_Last_Period",
+      key: "dailySpendLastPeriod",
+    },
+    {
+      title: "Diff_Daily Cost",
+      dataIndex: "diff_DailyCost",
+      key: "diffDailySpend",
+    },
+    {
+      title: "IPM",
+      dataIndex: "IPM",
+      key: "IPM",
+    },
+    {
+      title: "CTR",
+      dataIndex: "CTR",
+      key: "CTR",
+    },
+    {
+      title: "CVR",
+      dataIndex: "CVR",
+      key: "CVR",
+    },
+    {
+      title: "eCPM",
+      dataIndex: "eCPM",
+      key: "eCPM",
+    },
+    {
+      title: "ROAS_D0",
+      dataIndex: "ROAS_D0",
+      key: "ROAS_D0",
+    },
+    {
+      title: "ROAS_D0 Last Week",
+      dataIndex: "ROAS_D0_LastWeek",
+      key: "ROAS_D0_LastWeek",
+    },
+    {
+      title: "ROAS_D7",
+      dataIndex: "ROAS_D7",
+      key: "ROAS_D7",
+    },
+    {
+      title: "ROAS_D7 Previous Week",
+      dataIndex: "ROAS_D7_PreviousWeek",
+      key: "ROAS_D7_PreviousWeek",
+    },
+    {
+      title: "ROAS_D30",
+      dataIndex: "ROAS_D30",
+      key: "ROAS_D30",
+    },
+    {
+      title: "SkAN_ROAS",
+      dataIndex: "SkAN_ROAS",
+      key: "SkAN_ROAS",
     },
   ];
 
@@ -216,14 +339,17 @@ const Creative = () => {
       createMonth: "Create Month 1",
       type: "Type 1",
       language: "Language 1",
-      costShare: "Cost Share 1",
+      dailySpend: "Daily Spend 1",
+      dailySpend_Last_Period: "Daily Spend Last period 1",
+      diff_DailyCost: "Diff_Daily Cost 1",
       IPM: "IPM 1",
       CTR: "CTR 1",
       CVR: "CVR 1",
+      eCPM: "eCPM 1",
       ROAS_D0: "ROAS_D0 1",
-      ROAS_D0LastWeek: "ROAS_D0LastWeek 1",
+      ROAS_D0_LastWeek: "ROAS_D0_LastWeek 1",
       ROAS_D7: "ROAS_D7 1",
-      ROAS_D7LastWeek: "ROAS_D7LastWeek 1",
+      ROAS_D7_PreviousWeek: "ROAS_D7_PreviousWeek 1",
       ROAS_D30: "ROAS_D30 1",
       SkAN_ROAS: "SkAN_ROAS 1",
     },
@@ -235,7 +361,9 @@ const Creative = () => {
       <div className="flex gap-5">
         <div className="w-2/3">
           <div className="bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-3">Top 10 Spend Creatives</p>
+            <p className="font-medium !my-3">
+              Top 10 Spend Creatives Table (under selected filter)
+            </p>
             <Table
               columns={top10columns}
               dataSource={top10data}
@@ -249,10 +377,11 @@ const Creative = () => {
           </div>
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
             <p className="font-medium !my-5">
-              Top 5 Avg Daily Spend Increasing compare with last week
+              Top 5 Increasing% trending Creatives(ordered by{" "}
+              <span className="text-red-600"> Diff Daily Spend</span>)
             </p>
             <Table
-              columns={camparingColumns}
+              columns={increasingColumns}
               dataSource={increasingData}
               pagination={{
                 defaultPageSize: 10,
@@ -265,10 +394,11 @@ const Creative = () => {
 
           <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
             <p className="font-medium !my-5">
-              Top 5 Avg Daily Spend Declining compare with last week
+              Top 5 Decreasing% trending Creatives(minus, ordered by{" "}
+              <span className="text-red-600"> Diff Daily Spend</span>)
             </p>
             <Table
-              columns={camparingColumns}
+              columns={decliningColumns}
               dataSource={decliningData}
               pagination={{
                 defaultPageSize: 10,
