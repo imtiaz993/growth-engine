@@ -86,7 +86,7 @@ const top10columns = [
   },
 ];
 
-const increasingColumns = [
+const comparingColumns = [
   {
     title: "Channel",
     dataIndex: "channel",
@@ -94,18 +94,18 @@ const increasingColumns = [
   },
   {
     title: "Creative",
-    dataIndex: "creative",
-    key: "creative",
+    dataIndex: "creatives",
+    key: "creatives",
   },
   {
     title: "Create Month",
-    dataIndex: "createMonth",
-    key: "createMonth",
+    dataIndex: "create_month",
+    key: "create_month",
   },
   {
     title: "Type",
-    dataIndex: "type",
-    key: "type",
+    dataIndex: "creative_type",
+    key: "creative_type",
   },
   {
     title: "Language",
@@ -114,171 +114,78 @@ const increasingColumns = [
   },
   {
     title: "Daily Spend",
-    dataIndex: "dailySpend",
-    key: "dailySpend",
+    dataIndex: "daily_spend",
+    key: "daily_spend",
   },
   {
     title: "Daily Spend Last Period",
-    dataIndex: "dailySpendLastPeriod",
-    key: "dailySpendLastPeriod",
+    dataIndex: "daily_spend_last_period",
+    key: "daily_spend_last_period",
   },
   {
     title: "Diff_Daily Spend",
-    dataIndex: "diffDailySpend",
-    key: "diffDailySpend",
+    dataIndex: "diff_daily_spend",
+    key: "diff_daily_spend",
   },
   {
     title: "IPM",
-    dataIndex: "IPM",
-    key: "IPM",
+    dataIndex: "ipm",
+    key: "ipm",
   },
   {
     title: "CTR",
-    dataIndex: "CTR",
-    key: "CTR",
+    dataIndex: "ctr",
+    key: "ctr",
   },
   {
     title: "CVR",
-    dataIndex: "CVR",
-    key: "CVR",
+    dataIndex: "cvr",
+    key: "cvr",
   },
   {
     title: "eCPM",
-    dataIndex: "eCPM",
-    key: "eCPM",
+    dataIndex: "ecpm",
+    key: "ecpm",
   },
   {
     title: "ROAS_D0",
-    dataIndex: "ROAS_D0",
-    key: "ROAS_D0",
+    dataIndex: "roas_d0",
+    key: "roas_d0",
   },
   {
     title: "ROAS_D0 Prior Week",
-    dataIndex: "ROAS_D0PriorWeek",
-    key: "ROAS_D0PriorWeek",
+    dataIndex: "roas_d0_prior_week",
+    key: "roas_d0_prior_week",
   },
   {
     title: "ROAS_D0 WoW",
-    dataIndex: "ROAS_D0WoW",
-    key: "ROAS_D0WoW",
+    dataIndex: "roas_d0_wow",
+    key: "roas_d0_wow",
   },
   {
     title: "ROAS_D7",
-    dataIndex: "ROAS_D7",
-    key: "ROAS_D7",
+    dataIndex: "roas_d7",
+    key: "roas_d7",
   },
   {
     title: "ROAS_D7 Previous Week",
-    dataIndex: "ROAS_D7PreviousWeek",
-    key: "ROAS_D7PreviousWeek",
+    dataIndex: "roas_d7_previous_week",
+    key: "roas_d7_previous_week",
   },
   {
     title: "ROAS_D7 WoW",
-    dataIndex: "ROAS_D7WoW",
-    key: "ROAS_D7WoW",
+    dataIndex: "roas_d7_wow",
+    key: "roas_d7_wow",
   },
   {
     title: "ROAS_D30",
-    dataIndex: "ROAS_D30",
-    key: "ROAS_D30",
+    dataIndex: "roas_d30",
+    key: "roas_d30",
   },
   {
     title: "SkAN_ROAS",
-    dataIndex: "SkAN_ROAS",
-    key: "SkAN_ROAS",
-  },
-];
-
-const decliningColumns = [
-  {
-    title: "Channel",
-    dataIndex: "channel",
-    key: "channel",
-  },
-  {
-    title: "Creative",
-    dataIndex: "creative",
-    key: "creative",
-  },
-  {
-    title: "Create Month",
-    dataIndex: "createMonth",
-    key: "createMonth",
-  },
-  {
-    title: "Type",
-    dataIndex: "type",
-    key: "type",
-  },
-  {
-    title: "Language",
-    dataIndex: "language",
-    key: "language",
-  },
-  {
-    title: "Daily Spend",
-    dataIndex: "dailySpend",
-    key: "dailySpend",
-  },
-  {
-    title: "Daily Spend Last Period",
-    dataIndex: "dailySpendLastPeriod",
-    key: "dailySpendLastPeriod",
-  },
-  {
-    title: "Diff_Daily Cost",
-    dataIndex: "diffDailyCost",
-    key: "diffDailyCost",
-  },
-  {
-    title: "IPM",
-    dataIndex: "IPM",
-    key: "IPM",
-  },
-  {
-    title: "CTR",
-    dataIndex: "CTR",
-    key: "CTR",
-  },
-  {
-    title: "CVR",
-    dataIndex: "CVR",
-    key: "CVR",
-  },
-  {
-    title: "eCPM",
-    dataIndex: "eCPM",
-    key: "eCPM",
-  },
-  {
-    title: "ROAS_D0",
-    dataIndex: "ROAS_D0",
-    key: "ROAS_D0",
-  },
-  {
-    title: "ROAS_D0 Last Week",
-    dataIndex: "ROAS_D0LastWeek",
-    key: "ROAS_D0LastWeek",
-  },
-  {
-    title: "ROAS_D7",
-    dataIndex: "ROAS_D7",
-    key: "ROAS_D7",
-  },
-  {
-    title: "ROAS_D7 Previous Week",
-    dataIndex: "ROAS_D7PreviousWeek",
-    key: "ROAS_D7PreviousWeek",
-  },
-  {
-    title: "ROAS_D30",
-    dataIndex: "ROAS_D30",
-    key: "ROAS_D30",
-  },
-  {
-    title: "SkAN_ROAS",
-    dataIndex: "SkAN_ROAS",
-    key: "SkAN_ROAS",
+    dataIndex: "skan_roas",
+    key: "skan_roas",
   },
 ];
 
@@ -307,6 +214,10 @@ const Creative = ({ filters }: CreativeProps) => {
             app_token: filters.appToken,
             start_date: filters.startDate,
             end_date: filters.endDate,
+            filters: {
+              channels: filters.channels.length ? filters.channels : [],
+              countries: filters.countries.length ? filters.countries : [],
+            },
           }),
         }
       );
@@ -344,6 +255,10 @@ const Creative = ({ filters }: CreativeProps) => {
             app_token: filters.appToken,
             start_date: filters.startDate,
             end_date: filters.endDate,
+            filters: {
+              channels: filters.channels.length ? filters.channels : [],
+              countries: filters.countries.length ? filters.countries : [],
+            },
           }),
         }
       );
@@ -404,7 +319,7 @@ const Creative = ({ filters }: CreativeProps) => {
               <span className="text-red-600"> Diff Daily Spend</span>)
             </p>
             <Table
-              columns={increasingColumns}
+              columns={comparingColumns}
               dataSource={increasingData}
               pagination={{
                 defaultPageSize: 10,
@@ -421,7 +336,7 @@ const Creative = ({ filters }: CreativeProps) => {
               <span className="text-red-600"> Diff Daily Spend</span>)
             </p>
             <Table
-              columns={decliningColumns}
+              columns={comparingColumns}
               dataSource={decliningData}
               pagination={{
                 defaultPageSize: 10,

@@ -85,8 +85,12 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
           },
           body: JSON.stringify({
             app_token: filters.appToken,
-            start_date: filters.startDate,
-            end_date: filters.endDate,
+            start_date: filters.startDate ?? "",
+            end_date: filters.endDate ?? "",
+            filters: {
+              channels: filters.channels.length ? filters.channels : [],
+              countries: filters.countries.length ? filters.countries : [],
+            },
           }),
         }
       );

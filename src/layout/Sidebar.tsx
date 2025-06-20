@@ -2,6 +2,7 @@ import { HomeOutlined, MailOutlined } from "@ant-design/icons";
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { NavLink, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const routes = [
   {
@@ -25,13 +26,14 @@ const routes = [
 
 const Sidebar = () => {
   const { pathname } = useLocation();
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-  const getDefaultOpenKeys = (): string[] => {
+  const getOpenKeys = (): string[] => {
     const match = routes.find((route) => route.paths?.includes(pathname));
     return match ? [match.key] : [];
   };
 
-  const getDefaultSelectedKeys = (): string[] => {
+  const getSelectedKeys = (): string[] => {
     for (const route of routes) {
       if (route.items) {
         const found = route.items.find((item) => item.path === pathname);
@@ -43,14 +45,19 @@ const Sidebar = () => {
     return [];
   };
 
+  useEffect(() => {
+    setOpenKeys(getOpenKeys());
+  }, [pathname]);
+
   return (
     <div className="bg-white rounded-md shadow-lg overflow-hidden py-[5px] h-[calc(100vh-80px)]">
       <Sider width={256}>
         <Menu
           mode="inline"
           className="!text-xs"
-          defaultOpenKeys={getDefaultOpenKeys()}
-          defaultSelectedKeys={getDefaultSelectedKeys()}
+          openKeys={openKeys}
+          onOpenChange={(keys) => setOpenKeys(keys)}
+          selectedKeys={getSelectedKeys()}
           style={{ height: "100%", borderRight: 0 }}
         >
           {routes.map((route) =>

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Filters from "./components/Filters";
-import Overview from "./components/Overview";
 import Campaign from "./components/Campaign";
+import Overview from "./components/Overview";
 import Creative from "./components/Creative";
+import dayjs from "dayjs";
 
 interface FilterItem {
   name: string;
@@ -43,8 +44,10 @@ const Page = () => {
     appToken: searchParams.get("app_token") || null,
     channels: searchParams.get("channels")?.split(",").filter(Boolean) || [],
     countries: searchParams.get("countries")?.split(",").filter(Boolean) || [],
-    startDate: searchParams.get("start_date") || null,
-    endDate: searchParams.get("end_date") || null,
+    startDate:
+      searchParams.get("start_date") ||
+      dayjs().subtract(30, "day").format("YYYY-MM-DD"),
+    endDate: searchParams.get("end_date") || dayjs().format("YYYY-MM-DD"),
   });
   const [allChannels, setAllChannels] = useState<FilterItem[]>([]);
   const [allCountries, setAllCountries] = useState<FilterItem[]>([]);
@@ -94,6 +97,30 @@ const Page = () => {
             ),
           }));
         }
+
+        // If URL has countries=all, set countries to all values after API fetch
+        if (
+          searchParams.get("countries") === "all" &&
+          responseData.data.countries.length > 0
+        ) {
+          setFilters((prev) => ({
+            ...prev,
+            countries: responseData.data.countries.map(
+              (country) => country.value
+            ),
+          }));
+        }
+
+        // Set first app token if none is selected
+        if (
+          !searchParams.get("app_token") &&
+          responseData.data.app_tokens.length > 0
+        ) {
+          setFilters((prev) => ({
+            ...prev,
+            appToken: responseData.data.app_tokens[0].value,
+          }));
+        }
       } else {
         throw new Error("Invalid response format");
       }
@@ -124,13 +151,20 @@ const Page = () => {
     } else if (filters.channels.length) {
       queryParams.set("channels", filters.channels.join(","));
     }
-    if (filters.countries.length)
+    if (
+      filters.countries.length &&
+      filters.countries.length === allCountries.length &&
+      allCountries.length > 0
+    ) {
+      queryParams.set("countries", "all");
+    } else if (filters.countries.length) {
       queryParams.set("countries", filters.countries.join(","));
+    }
     if (filters.startDate) queryParams.set("start_date", filters.startDate);
     if (filters.endDate) queryParams.set("end_date", filters.endDate);
     const queryString = queryParams.toString();
     navigate(queryString ? `?${queryString}` : "", { replace: true });
-  }, [filters, allChannels, navigate]);
+  }, [filters, allChannels, allCountries, navigate]);
 
   return (
     <div className="p-4">

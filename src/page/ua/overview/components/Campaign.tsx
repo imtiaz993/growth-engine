@@ -74,54 +74,58 @@ const camparingColumns = [
   },
   {
     title: "Campaign",
-    dataIndex: "campaign",
-    key: "campaign",
+    dataIndex: "campaign_network",
+    key: "campaign_network",
   },
   {
     title: "Daily Spend",
-    dataIndex: "dailySpend",
-    key: "dailySpend",
+    dataIndex: "daily_spend",
+    key: "daily_spend",
   },
-  { title: "Diff Last Week", dataIndex: "diffLastWeek", key: "diffLastWeek" },
+  {
+    title: "Diff Last Week",
+    dataIndex: "diff_last_week",
+    key: "diff_last_week",
+  },
   {
     title: "Daily Install",
-    dataIndex: "dailyInstall",
-    key: "dailyInstall",
+    dataIndex: "daily_installs",
+    key: "daily_installs",
   },
   {
     title: "CPI",
-    dataIndex: "CPI",
-    key: "CPI",
+    dataIndex: "cpi",
+    key: "cpi",
   },
   {
     title: "ROAS_D0",
-    dataIndex: "ROAS_D0",
-    key: "ROAS_D0",
+    dataIndex: "roas_d0",
+    key: "roas_d0",
   },
   {
     title: "ROAS_D0 Last Week",
-    dataIndex: "ROAS_D0LastWeek",
-    key: "ROAS_D0LastWeek",
+    dataIndex: "roas_d0_last_week",
+    key: "roas_d0_last_week",
   },
   {
     title: "ROAS_D7",
-    dataIndex: "ROAS_D7",
-    key: "ROAS_D7",
+    dataIndex: "roas_d7",
+    key: "roas_d7",
   },
   {
     title: "ROAS_D7 Last Week",
-    dataIndex: "ROAS_D7LastWeek",
-    key: "ROAS_D7LastWeek",
+    dataIndex: "roas_d7_previous_week",
+    key: "roas_d7_previous_week",
   },
   {
     title: "ROAS_D30",
-    dataIndex: "ROAS_D30",
-    key: "ROAS_D30",
+    dataIndex: "roas_d30",
+    key: "roas_d30",
   },
   {
     title: "SkAN_ROAS",
-    dataIndex: "SkAN_ROAS",
-    key: "SkAN_ROAS",
+    dataIndex: "skan_roas",
+    key: "skan_roas",
   },
 ];
 
@@ -133,7 +137,7 @@ const Campaign = ({ filters }: CampaignProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchTop10 = async () => {
-    if (!filters.appToken || !filters.startDate || !filters.endDate) return;
+    if (!filters.appToken) return;
 
     setIsLoading(true);
     setError(null);
@@ -150,6 +154,10 @@ const Campaign = ({ filters }: CampaignProps) => {
             app_token: filters.appToken,
             start_date: filters.startDate,
             end_date: filters.endDate,
+            filters: {
+              channels: filters.channels.length ? filters.channels : [],
+              countries: filters.countries.length ? filters.countries : [],
+            },
           }),
         }
       );
@@ -185,10 +193,11 @@ const Campaign = ({ filters }: CampaignProps) => {
           },
           body: JSON.stringify({
             app_token: filters.appToken,
-            mock_date: filters.endDate || "2025-06-19",
+            start_date: filters.startDate,
+            end_date: filters.endDate,
             filters: {
-              channels: filters.channels.length ? filters.channels : [""],
-              countries: filters.countries.length ? filters.countries : [""],
+              channels: filters.channels.length ? filters.channels : [],
+              countries: filters.countries.length ? filters.countries : [],
             },
           }),
         }

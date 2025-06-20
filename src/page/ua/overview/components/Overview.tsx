@@ -62,7 +62,7 @@ const Overview = ({ filters }: OverviewProps) => {
       </div>
 
       <div className="">
-        <QuadrantBubbleCharts />
+        <QuadrantBubbleCharts filters={filters} />
       </div>
 
       <div className="bg-red-50 border border-red-200 p-5 rounded-md shadow-lg flex items-start mt-5">
