@@ -1,5 +1,7 @@
 import { DatePicker, Select } from "antd";
 import dayjs, { Dayjs } from "dayjs";
+import { useEffect } from "react";
+
 const { RangePicker } = DatePicker;
 
 interface FilterItem {
@@ -48,7 +50,20 @@ const Filters = ({
     setFilters((prev) => ({ ...prev, channels: value }));
   };
 
-  // Fixed the type signature for handleDateChange
+  const handleCountryChange = (value: string[]) => {
+    if (value.includes("all")) {
+      setFilters((prev) => ({
+        ...prev,
+        countries:
+          prev.countries.length === allCountries.length
+            ? []
+            : allCountries.map((country) => country.value),
+      }));
+      return;
+    }
+    setFilters((prev) => ({ ...prev, countries: value }));
+  };
+
   const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
     setFilters((prev) => ({
       ...prev,
@@ -56,6 +71,16 @@ const Filters = ({
       endDate: dates?.[1]?.format("YYYY-MM-DD") || null,
     }));
   };
+
+  // Set first app token when allAppTokens changes and appToken is null
+  useEffect(() => {
+    if (!filters.appToken && allAppTokens.length > 0 && !isLoading) {
+      setFilters((prev) => ({
+        ...prev,
+        appToken: allAppTokens[0].value,
+      }));
+    }
+  }, [allAppTokens, filters.appToken, isLoading, setFilters]);
 
   return (
     <div className="flex justify-between">
@@ -111,9 +136,7 @@ const Filters = ({
           placeholder="Country"
           className="w-48"
           value={filters.countries}
-          onChange={(value) =>
-            setFilters((prev) => ({ ...prev, countries: value }))
-          }
+          onChange={handleCountryChange}
           maxTagCount={filters.countries.length === 1 ? 1 : 0}
           maxTagPlaceholder={(selected) =>
             selected.length
@@ -122,10 +145,19 @@ const Filters = ({
           }
           options={
             allCountries.length
-              ? allCountries.map((country) => ({
-                  label: country.name,
-                  value: country.value,
-                }))
+              ? [
+                  {
+                    label:
+                      filters.countries.length !== allCountries.length
+                        ? "Select All"
+                        : "Unselect All",
+                    value: "all",
+                  },
+                  ...allCountries.map((country) => ({
+                    label: country.name,
+                    value: country.value,
+                  })),
+                ]
               : []
           }
           disabled={isLoading || !allCountries.length}
