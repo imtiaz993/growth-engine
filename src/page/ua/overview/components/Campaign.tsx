@@ -32,7 +32,13 @@ interface TableRow {
   roas_d0_last_week?: number;
   roas_d7_previous_week?: number;
 }
-
+const customToFixed = (value: number, digit?: number) => {
+  if (Number.isInteger(value)) {
+    return value;
+  } else {
+    return value ? parseFloat(value.toFixed(digit || 2)) : value;
+  }
+};
 const top10columns = [
   {
     title: "Channel",
@@ -52,42 +58,49 @@ const top10columns = [
     dataIndex: "daily_spend",
     key: "daily_spend",
     sorter: (a: TableRow, b: TableRow) => a.daily_spend - b.daily_spend,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "Daily Install",
     dataIndex: "daily_installs",
     key: "daily_installs",
     sorter: (a: TableRow, b: TableRow) => a.daily_installs - b.daily_installs,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "CPI",
     dataIndex: "cpi",
     key: "cpi",
     sorter: (a: TableRow, b: TableRow) => a.cpi - b.cpi,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D0",
     dataIndex: "roas_d0",
     key: "roas_d0",
     sorter: (a: TableRow, b: TableRow) => a.roas_d0 - b.roas_d0,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7",
     dataIndex: "roas_d7",
     key: "roas_d7",
     sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D30",
     dataIndex: "roas_d30",
     key: "roas_d30",
     sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "SkAN_ROAS",
     dataIndex: "skan_roas",
     key: "skan_roas",
     sorter: (a: TableRow, b: TableRow) => a.skan_roas - b.skan_roas,
+    render: (value: number) => value && customToFixed(value),
   },
 ];
 
@@ -110,6 +123,7 @@ const camparingColumns = [
     dataIndex: "daily_spend",
     key: "daily_spend",
     sorter: (a: TableRow, b: TableRow) => a.daily_spend - b.daily_spend,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "Diff Last Week",
@@ -117,24 +131,28 @@ const camparingColumns = [
     key: "diff_last_week",
     sorter: (a: TableRow, b: TableRow) =>
       (a.diff_last_week || 0) - (b.diff_last_week || 0),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "Daily Install",
     dataIndex: "daily_installs",
     key: "daily_installs",
     sorter: (a: TableRow, b: TableRow) => a.daily_installs - b.daily_installs,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "CPI",
     dataIndex: "cpi",
     key: "cpi",
     sorter: (a: TableRow, b: TableRow) => a.cpi - b.cpi,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D0",
     dataIndex: "roas_d0",
     key: "roas_d0",
     sorter: (a: TableRow, b: TableRow) => a.roas_d0 - b.roas_d0,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D0 Last Week",
@@ -142,12 +160,14 @@ const camparingColumns = [
     key: "roas_d0_last_week",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d0_last_week || 0) - (b.roas_d0_last_week || 0),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7",
     dataIndex: "roas_d7",
     key: "roas_d7",
     sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7 Last Week",
@@ -155,18 +175,21 @@ const camparingColumns = [
     key: "roas_d7_previous_week",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d7_previous_week || 0) - (b.roas_d7_previous_week || 0),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D30",
     dataIndex: "roas_d30",
     key: "roas_d30",
     sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "SkAN_ROAS",
     dataIndex: "skan_roas",
     key: "skan_roas",
     sorter: (a: TableRow, b: TableRow) => a.skan_roas - b.skan_roas,
+    render: (value: number) => value && customToFixed(value),
   },
 ];
 

@@ -41,6 +41,14 @@ interface TableRow {
   roas_d7_wow?: number;
 }
 
+const customToFixed = (value: number, digit?: number) => {
+  if (Number.isInteger(value)) {
+    return value;
+  } else {
+    return value ? parseFloat(value.toFixed(digit || 2)) : value;
+  }
+};
+
 const top10columns = [
   {
     title: "Channel",
@@ -60,24 +68,28 @@ const top10columns = [
     dataIndex: "cost",
     key: "cost",
     sorter: (a: TableRow, b: TableRow) => a.cost - b.cost,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "IPM",
     dataIndex: "ipm",
     key: "ipm",
     sorter: (a: TableRow, b: TableRow) => a.ipm - b.ipm,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "CTR",
     dataIndex: "ctr",
     key: "ctr",
     sorter: (a: TableRow, b: TableRow) => a.ctr - b.ctr,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "CVR",
     dataIndex: "cvr",
     key: "cvr",
     sorter: (a: TableRow, b: TableRow) => a.cvr - b.cvr,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D0",
@@ -124,6 +136,7 @@ const comparingColumns = [
     dataIndex: "daily_spend",
     key: "daily_spend",
     sorter: (a: TableRow, b: TableRow) => a.daily_spend - b.daily_spend,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "Daily Spend Last Period",
@@ -131,12 +144,13 @@ const comparingColumns = [
     key: "daily_spend_last_period",
     sorter: (a: TableRow, b: TableRow) =>
       (a.daily_spend_last_period || 0) - (b.daily_spend_last_period || 0),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "Diff Daily Spend",
     dataIndex: "diff_daily_spend_percentage_change",
     key: "diff_daily_spend_percentage_change",
-    render: (value: number) => value && value + "%",
+    render: (value: number) => value && customToFixed(value) + "%",
     sorter: (a: TableRow, b: TableRow) =>
       (a.diff_daily_spend_percentage_change || 0) -
       (b.diff_daily_spend_percentage_change || 0),
@@ -146,30 +160,35 @@ const comparingColumns = [
     dataIndex: "ipm",
     key: "ipm",
     sorter: (a: TableRow, b: TableRow) => a.ipm - b.ipm,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "CTR",
     dataIndex: "ctr",
     key: "ctr",
     sorter: (a: TableRow, b: TableRow) => a.ctr - b.ctr,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "CVR",
     dataIndex: "cvr",
     key: "cvr",
     sorter: (a: TableRow, b: TableRow) => a.cvr - b.cvr,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "eCPM",
     dataIndex: "ecpm",
     key: "ecpm",
     sorter: (a: TableRow, b: TableRow) => (a.ecpm || 0) - (b.ecpm || 0),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D0",
     dataIndex: "roas_d0",
     key: "roas_d0",
     sorter: (a: TableRow, b: TableRow) => a.roas_d0 - b.roas_d0,
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D0 Prior Week",
@@ -177,6 +196,7 @@ const comparingColumns = [
     key: "roas_d0_prior_week",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d0_prior_week || 0) - (b.roas_d0_prior_week || 0),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D0 WoW",
@@ -184,12 +204,14 @@ const comparingColumns = [
     key: "roas_d0_wow",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d0_wow || 0) - (b.roas_d0_wow || 0),
+     render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7",
     dataIndex: "roas_d7",
     key: "roas_d7",
     sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
+     render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7 Previous Week",
@@ -197,6 +219,7 @@ const comparingColumns = [
     key: "roas_d7_previous_week",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d7_previous_week || 0) - (b.roas_d7_previous_week || 0),
+     render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7 WoW",
@@ -204,18 +227,21 @@ const comparingColumns = [
     key: "roas_d7_wow",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d7_wow || 0) - (b.roas_d7_wow || 0),
+     render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D30",
     dataIndex: "roas_d30",
     key: "roas_d30",
     sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
+     render: (value: number) => value && customToFixed(value),
   },
   {
     title: "SkAN ROAS",
     dataIndex: "skan_roas",
     key: "skan_roas",
     sorter: (a: TableRow, b: TableRow) => a.skan_roas - b.skan_roas,
+     render: (value: number) => value && customToFixed(value),
   },
 ];
 
