@@ -8,3 +8,12 @@
 .ant-table {
   font-size: 12px !important; /* Base font size for table */
 }
+/* Remove tick icons from selected options */
+.ant-select-item-option-selected .ant-select-item-option-state {
+  display: none !important;
+}
+
+/* Change background of selected options */
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #f5f5f5 !important;
+}
