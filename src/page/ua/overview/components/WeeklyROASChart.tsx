@@ -182,6 +182,14 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
     coordinate?: { x: number; y: number };
   }
 
+  const customToFixed = (value: number, digit?: number) => {
+    if (Number.isInteger(value)) {
+      return value;
+    } else {
+      return value ? parseFloat(value.toFixed(digit || 2)) : value;
+    }
+  };
+
   const CustomTooltip = ({
     active,
     payload,
@@ -240,7 +248,7 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
             <div className="bg-gray-100 p-2 rounded">
               <p className="text-xs text-gray-500">ROAS D0</p>
               <p className="font-semibold">
-                {(roasD0.value * 100).toFixed(0)}%
+                {roasD0.value !== null && customToFixed(roasD0.value * 100)}%
               </p>
             </div>
           )}
@@ -248,7 +256,7 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
             <div className="bg-green-50 p-2 rounded">
               <p className="text-xs text-gray-500">ROAS D7</p>
               <p className="font-semibold">
-                {(roasD7.value * 100).toFixed(0)}%
+                {roasD7.value !== null && customToFixed(roasD7.value * 100)}%
               </p>
             </div>
           )}
@@ -272,7 +280,7 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
                   {entry.name}
                 </span>
                 <span className="text-sm font-semibold ml-2 flex-shrink-0">
-                  ${entry.value.toLocaleString()}
+                  ${entry.value && customToFixed(entry.value).toLocaleString()}
                 </span>
               </div>
             ))}

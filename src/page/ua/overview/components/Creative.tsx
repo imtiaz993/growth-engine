@@ -135,7 +135,7 @@ const comparingColumns = [
     title: "Diff Daily Spend",
     dataIndex: "diff_daily_spend_percentage_change",
     key: "diff_daily_spend_percentage_change",
-    render: (value: number) => value + "%",
+    render: (value: number) => value && value + "%",
     sorter: (a: TableRow, b: TableRow) =>
       (a.diff_daily_spend_percentage_change || 0) -
       (b.diff_daily_spend_percentage_change || 0),
@@ -370,56 +370,55 @@ const Creative = ({ filters }: CreativeProps) => {
         </div>
         <div className="w-1/3 space-y-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
-            <div className="flex items-start">
-              <div className="bg-blue-100 p-2 rounded-lg mr-3">
+            <div className="flex">
+              <div className="bg-green-100 p-2 rounded-lg mr-3">
                 <BulbOutlined className="text-blue-600 text-lg" />
               </div>
-              <div>
+              <div className="w-full">
                 <h3 className="font-medium !mb-0">Creative Performance</h3>
-                <div className="flex items-center gap-1 text-sm text-green-600 justify-end">
+                <div className="flex items-center gap-1 text-sm text-green-600">
                   <span>50% increase</span>
                   <ArrowUpOutlined />
                 </div>
-                <p className="mt-2 text-sm leading-[1.6]">
-                  Creative A recently performing great, spends Increasing 50% on
-                  Tiktok, scale and expand it to more campaigns!
-                </p>
               </div>
             </div>
+            <p className="!mt-2 text-sm leading-[1.6]">
+              Creative A recently performing great, spends Increasing 50% on
+              Tiktok, scale and expand it to more campaigns!
+            </p>
           </div>
 
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
-            <div className="flex items-start">
-              <div className="bg-blue-100 p-2 rounded-lg mr-3">
+            <div className="flex">
+              <div className="bg-amber-100 p-2 rounded-lg mr-3">
                 <BulbOutlined className="text-blue-600 text-lg" />
               </div>
               <div>
-                <h3 className="font-medium">Creative Alert</h3>
+                <h3 className="font-medium !mb-0">Creative Alert</h3>
                 <div className="flex items-center gap-1 text-sm text-red-600 justify-end">
                   <span>20% decline</span>
                   <ArrowDownOutlined />
                 </div>
-                <p className="mt-2 text-sm leading-[1.6]">
-                  Creative B & Creative C declined 20% week by week on Applovin,
-                  please replace with new Creatives
-                </p>
               </div>
             </div>
+            <p className="!mt-2 text-sm leading-[1.6]">
+              Creative B & Creative C declined 20% week by week on Applovin,
+              please replace with new Creatives
+            </p>
           </div>
 
           <div className="p-5 rounded-md shadow-lg border border-blue-200 bg-blue-50">
-            <div className="flex items-start">
+            <div className="flex">
               <div className="bg-blue-100 p-2 rounded-lg mr-3">
                 <BulbOutlined className="text-blue-600 text-lg" />
               </div>
-              <div>
-                <h3 className="font-medium">Optimization Tip</h3>
-                <p className="mt-2 text-sm leading-[1.6]">
-                  Consider reallocating 15% of budget from underperforming
-                  creatives to Creative A for better overall ROAS
-                </p>
-              </div>
+
+              <h3 className="font-medium">Optimization Tip</h3>
             </div>
+            <p className="!mt-2 text-sm leading-[1.6]">
+              Consider reallocating 15% of budget from underperforming creatives
+              to Creative A for better overall ROAS
+            </p>
           </div>
         </div>
       </div>

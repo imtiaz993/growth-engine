@@ -62,8 +62,8 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
   const data = payload[0].payload;
   return (
     <div className="bg-white p-4 border border-gray-300 rounded-md shadow-lg min-w-[200px]">
-      <p className="font-bold text-gray-800 mb-2">{data.name}</p>
-      <div className="grid grid-cols-2 gap-2">
+      <p className="font-bold text-gray-800 mb-2 text-left">{data.name}</p>
+      <div className="grid grid-cols-2 gap-2 text-left">
         <span className="text-gray-600 text-sm">ROAS D7:</span>
         <span className="font-semibold text-sm">{data.roi.toFixed(2)}</span>
         <span className="text-gray-600 text-sm">LTV D7:</span>
