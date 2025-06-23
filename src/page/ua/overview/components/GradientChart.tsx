@@ -9,7 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
-  LabelList,
   Legend,
 } from "recharts";
 
@@ -147,11 +146,27 @@ const calculateAverages = (data: BubbleData[]) => {
   };
 };
 
+// Calculate percentiles for outlier trimming
+const calculatePercentile = (data: BubbleData[], percentile: number) => {
+  const roiValues = data.map((d) => d.roi).sort((a, b) => a - b);
+  const investmentValues = data.map((d) => d.investment).sort((a, b) => a - b);
+  const roiIndex = Math.floor(roiValues.length * percentile);
+  const investmentIndex = Math.floor(investmentValues.length * percentile);
+  return {
+    pRoi: roiValues[roiIndex] || 0,
+    pInvestment: investmentValues[investmentIndex] || 0,
+  };
+};
+
 const renderChart = (
   title: string,
   data: BubbleData[],
   isLoading: boolean,
-  error: string | null
+  error: string | null,
+  isNormalized: boolean,
+  setIsNormalized: (value: boolean) => void,
+  showTooltip: boolean,
+  setShowTooltip: (value: boolean) => void
 ) => {
   if (isLoading) {
     return (
@@ -190,19 +205,57 @@ const renderChart = (
     );
   }
 
-  const {
-    avgRoi,
-    avgInvestment,
-    minRoi,
-    maxRoi,
-    minInvestment,
-    maxInvestment,
-  } = calculateAverages(data);
+  const { avgRoi, avgInvestment } = calculateAverages(data);
+  const { pRoi, pInvestment } = calculatePercentile(data, 0.95);
+
+  // Filter data for normalized view
+  const displayData = isNormalized
+    ? data.filter((d) => d.roi <= pRoi && d.investment <= pInvestment)
+    : data;
+
+  // Calculate axis domains
+  const roiDomain = isNormalized
+    ? [0, pRoi * 1.1]
+    : [0, Math.max(...data.map((d) => d.roi)) * 1.1];
+  const investmentDomain = isNormalized
+    ? [0, pInvestment * 1.1]
+    : [0, Math.max(...data.map((d) => d.investment)) * 1.1];
+
+  // Count trimmed outliers
+  const trimmedCount = data.length - displayData.length;
 
   return (
     <div className="w-full md:w-1/2">
       <div className="bg-white p-4 rounded-md shadow-md h-[500px]">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">{title}</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center text-sm text-gray-600">
+              <input
+                type="checkbox"
+                checked={isNormalized}
+                onChange={() => setIsNormalized(!isNormalized)}
+                className="!mr-1"
+              />
+              Normalize View
+            </label>
+            <label className="flex items-center text-sm text-gray-600">
+              <input
+                type="checkbox"
+                checked={showTooltip}
+                onChange={() => setShowTooltip(!showTooltip)}
+                className="!mr-1"
+              />
+              Show Tooltips
+            </label>
+          </div>
+        </div>
+        {trimmedCount > 0 && isNormalized && (
+          <div className="text-xs text-yellow-600 mb-2">
+            ⚠️ {trimmedCount} outlier{trimmedCount > 1 ? "s" : ""} trimmed (top
+            5%)
+          </div>
+        )}
         <ResponsiveContainer width="100%" height="80%">
           <ScatterChart margin={{ top: 20, right: 30, bottom: 30, left: 40 }}>
             <CartesianGrid
@@ -214,25 +267,31 @@ const renderChart = (
               type="number"
               dataKey="roi"
               name="ROAS D7"
+              scale="log"
               label={{
-                value: "ROAS D7",
+                value: "ROAS D7 (Log Scale)",
                 position: "insideBottom",
                 offset: 0,
                 style: { fill: "#666", fontSize: 14 },
               }}
-              domain={[minRoi * 0.9, maxRoi * 1.1]}
+              domain={roiDomain}
               tickCount={6}
               tick={{ fontSize: 12, fill: "#666" }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(value) => value.toFixed(2)}
+              tickFormatter={(value) =>
+                value >= 1000
+                  ? `${(value / 1000).toFixed(1)}K`
+                  : value.toFixed(2)
+              }
             />
             <YAxis
               type="number"
               dataKey="investment"
               name="LTV D7"
+              scale="log"
               label={{
-                value: "LTV D7 (USD)",
+                value: "LTV D7 (USD, Log Scale)",
                 angle: -90,
                 position: "insideLeft",
                 style: { fill: "#666", fontSize: 14, textAnchor: "middle" },
@@ -241,16 +300,13 @@ const renderChart = (
               tickFormatter={(v) =>
                 v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v.toFixed(2)}`
               }
-              domain={[
-                Math.max(minInvestment * 0.9, 0.01),
-                maxInvestment * 1.1,
-              ]}
+              domain={investmentDomain}
               tick={{ fontSize: 12, fill: "#666" }}
               axisLine={false}
               tickLine={false}
             />
             <ZAxis dataKey="contribution" range={[20, 2000]} name="Cost" />
-            <Tooltip content={<CustomTooltip />} />
+            {showTooltip && <Tooltip content={<CustomTooltip />} />}
             <ReferenceLine
               x={avgRoi}
               stroke="#888"
@@ -273,21 +329,14 @@ const renderChart = (
                 fontSize: 12,
               }}
             />
-            {data.map((entry) => (
+            {displayData.map((entry) => (
               <Scatter
                 key={entry.name}
                 name={entry.name}
                 data={[entry]}
                 fill={entry.color}
                 opacity={0.8}
-              >
-                <LabelList
-                  dataKey="name"
-                  position="top"
-                  fontSize={10}
-                  fill="#666"
-                />
-              </Scatter>
+              />
             ))}
             <Legend
               align="right"
@@ -313,6 +362,8 @@ const QuadrantBubbleCharts = ({ filters }: QuadrantBubbleChartsProps) => {
   const [isLoadingGeos, setIsLoadingGeos] = useState(false);
   const [channelError, setChannelError] = useState<string | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
+  const [isNormalized, setIsNormalized] = useState<boolean>(true);
+  const [showTooltip, setShowTooltip] = useState<boolean>(true);
 
   const fetchBubbleData = async (type: "channel" | "geo") => {
     if (!filters.appToken || !filters.startDate || !filters.endDate) {
@@ -419,9 +470,22 @@ const QuadrantBubbleCharts = ({ filters }: QuadrantBubbleChartsProps) => {
         "Quadrant of Main Channels",
         channelData,
         isLoadingChannels,
-        channelError
+        channelError,
+        isNormalized,
+        setIsNormalized,
+        showTooltip,
+        setShowTooltip
       )}
-      {renderChart("Quadrant of Main GEOs", geoData, isLoadingGeos, geoError)}
+      {renderChart(
+        "Quadrant of Main GEOs",
+        geoData,
+        isLoadingGeos,
+        geoError,
+        isNormalized,
+        setIsNormalized,
+        showTooltip,
+        setShowTooltip
+      )}
     </div>
   );
 };
