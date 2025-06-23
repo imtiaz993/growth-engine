@@ -18,51 +18,76 @@ interface CampaignProps {
   filters: FilterState;
 }
 
+interface TableRow {
+  channel: string;
+  campaign_network: string;
+  daily_spend: number;
+  daily_installs: number;
+  cpi: number;
+  roas_d0: number;
+  roas_d7: number;
+  roas_d30: number;
+  skan_roas: number;
+  diff_last_week?: number;
+  roas_d0_last_week?: number;
+  roas_d7_previous_week?: number;
+}
+
 const top10columns = [
   {
     title: "Channel",
     dataIndex: "channel",
     key: "channel",
+    sorter: (a: TableRow, b: TableRow) => a.channel.localeCompare(b.channel),
   },
   {
     title: "Campaign",
     dataIndex: "campaign_network",
     key: "campaign_network",
+    sorter: (a: TableRow, b: TableRow) =>
+      a.campaign_network.localeCompare(b.campaign_network),
   },
   {
     title: "Avg Daily Spend",
     dataIndex: "daily_spend",
     key: "daily_spend",
+    sorter: (a: TableRow, b: TableRow) => a.daily_spend - b.daily_spend,
   },
   {
     title: "Daily Install",
     dataIndex: "daily_installs",
     key: "daily_installs",
+    sorter: (a: TableRow, b: TableRow) => a.daily_installs - b.daily_installs,
   },
   {
     title: "CPI",
     dataIndex: "cpi",
     key: "cpi",
+    sorter: (a: TableRow, b: TableRow) => a.cpi - b.cpi,
   },
   {
     title: "ROAS_D0",
     dataIndex: "roas_d0",
     key: "roas_d0",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d0 - b.roas_d0,
   },
   {
     title: "ROAS_D7",
     dataIndex: "roas_d7",
     key: "roas_d7",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
   },
   {
     title: "ROAS_D30",
     dataIndex: "roas_d30",
     key: "roas_d30",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
   },
   {
     title: "SkAN_ROAS",
     dataIndex: "skan_roas",
     key: "skan_roas",
+    sorter: (a: TableRow, b: TableRow) => a.skan_roas - b.skan_roas,
   },
 ];
 
@@ -71,61 +96,77 @@ const camparingColumns = [
     title: "Channel",
     dataIndex: "channel",
     key: "channel",
+    sorter: (a: TableRow, b: TableRow) => a.channel.localeCompare(b.channel),
   },
   {
     title: "Campaign",
     dataIndex: "campaign_network",
     key: "campaign_network",
+    sorter: (a: TableRow, b: TableRow) =>
+      a.campaign_network.localeCompare(b.campaign_network),
   },
   {
     title: "Daily Spend",
     dataIndex: "daily_spend",
     key: "daily_spend",
+    sorter: (a: TableRow, b: TableRow) => a.daily_spend - b.daily_spend,
   },
   {
     title: "Diff Last Week",
     dataIndex: "diff_last_week",
     key: "diff_last_week",
+    sorter: (a: TableRow, b: TableRow) =>
+      (a.diff_last_week || 0) - (b.diff_last_week || 0),
   },
   {
     title: "Daily Install",
     dataIndex: "daily_installs",
     key: "daily_installs",
+    sorter: (a: TableRow, b: TableRow) => a.daily_installs - b.daily_installs,
   },
   {
     title: "CPI",
     dataIndex: "cpi",
     key: "cpi",
+    sorter: (a: TableRow, b: TableRow) => a.cpi - b.cpi,
   },
   {
     title: "ROAS_D0",
     dataIndex: "roas_d0",
     key: "roas_d0",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d0 - b.roas_d0,
   },
   {
     title: "ROAS_D0 Last Week",
     dataIndex: "roas_d0_last_week",
     key: "roas_d0_last_week",
+    sorter: (a: TableRow, b: TableRow) =>
+      (a.roas_d0_last_week || 0) - (b.roas_d0_last_week || 0),
   },
   {
     title: "ROAS_D7",
     dataIndex: "roas_d7",
     key: "roas_d7",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
   },
   {
     title: "ROAS_D7 Last Week",
     dataIndex: "roas_d7_previous_week",
     key: "roas_d7_previous_week",
+    sorter: (a: TableRow, b: TableRow) =>
+      (a.roas_d7_previous_week || 0) - (b.roas_d7_previous_week || 0),
   },
   {
     title: "ROAS_D30",
     dataIndex: "roas_d30",
     key: "roas_d30",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
   },
   {
     title: "SkAN_ROAS",
     dataIndex: "skan_roas",
     key: "skan_roas",
+    sorter: (a: TableRow, b: TableRow) => a.skan_roas - b.skan_roas,
   },
 ];
 
@@ -244,10 +285,7 @@ const Campaign = ({ filters }: CampaignProps) => {
             <Table
               columns={top10columns}
               dataSource={top10Data}
-              pagination={{
-                defaultPageSize: 10,
-                showSizeChanger: true,
-              }}
+              pagination={false}
               scroll={{ x: "max-content" }}
               size="small"
               loading={isLoading}
@@ -262,10 +300,7 @@ const Campaign = ({ filters }: CampaignProps) => {
             <Table
               columns={camparingColumns}
               dataSource={increasingData}
-              pagination={{
-                defaultPageSize: 10,
-                showSizeChanger: true,
-              }}
+              pagination={false}
               scroll={{ x: "max-content" }}
               size="small"
               loading={isLoading}
@@ -280,10 +315,7 @@ const Campaign = ({ filters }: CampaignProps) => {
             <Table
               columns={camparingColumns}
               dataSource={decliningData}
-              pagination={{
-                defaultPageSize: 10,
-                showSizeChanger: true,
-              }}
+              pagination={false}
               scroll={{ x: "max-content" }}
               size="small"
               loading={isLoading}
@@ -292,32 +324,43 @@ const Campaign = ({ filters }: CampaignProps) => {
         </div>
         <div className="w-1/3 space-y-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
-            <div className="flex justify-between gap-2">
-              <h3 className="font-medium">Creative Performance</h3>
-              <div className="flex items-center gap-1 text-sm text-green-600">
-                <span>50% increase</span>
-                <ArrowUpOutlined />
+            <div className="flex items-start">
+              <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                <BulbOutlined className="text-blue-600 text-lg" />
+              </div>
+              <div>
+                <h3 className="font-medium !mb-0">Creative Performance</h3>
+                <div className="flex items-center gap-1 text-sm text-green-600 justify-end">
+                  <span>50% increase</span>
+                  <ArrowUpOutlined />
+                </div>
+                <p className="mt-2 text-sm leading-[1.6]">
+                  Creative A recently performing great, spends Increasing 50% on
+                  Tiktok, scale and expand it to more campaigns!
+                </p>
               </div>
             </div>
-            <p className="mt-3 text-sm">
-              <BulbOutlined className="mr-2" /> Creative A recently performing
-              great, spends Increasing 50% on Tiktok, scale and expand it to
-              more campaigns!
-            </p>
           </div>
+
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
-            <div className="flex justify-between gap-2">
-              <h3 className="font-medium">Creative Alert</h3>
-              <div className="flex items-center gap-1 text-sm text-red-600">
-                <span>20% decline</span>
-                <ArrowDownOutlined />
+            <div className="flex items-start">
+              <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                <BulbOutlined className="text-blue-600 text-lg" />
+              </div>
+              <div>
+                <h3 className="font-medium">Creative Alert</h3>
+                <div className="flex items-center gap-1 text-sm text-red-600 justify-end">
+                  <span>20% decline</span>
+                  <ArrowDownOutlined />
+                </div>
+                <p className="mt-2 text-sm leading-[1.6]">
+                  Creative B & Creative C declined 20% week by week on Applovin,
+                  please replace with new Creatives
+                </p>
               </div>
             </div>
-            <p className="mt-3 text-sm">
-              <BulbOutlined className="mr-2" /> Creative B & Creative C declined
-              20% week by week on Applovin, please replace with new Creatives
-            </p>
           </div>
+
           <div className="p-5 rounded-md shadow-lg border border-blue-200 bg-blue-50">
             <div className="flex items-start">
               <div className="bg-blue-100 p-2 rounded-lg mr-3">
@@ -325,7 +368,7 @@ const Campaign = ({ filters }: CampaignProps) => {
               </div>
               <div>
                 <h3 className="font-medium">Optimization Tip</h3>
-                <p className="mt-2 text-sm">
+                <p className="mt-2 text-sm leading-[1.6]">
                   Consider reallocating 15% of budget from underperforming
                   creatives to Creative A for better overall ROAS
                 </p>

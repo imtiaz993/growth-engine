@@ -231,7 +231,6 @@ const renderChart = (
               type="number"
               dataKey="investment"
               name="LTV D7"
-              scale="log"
               label={{
                 value: "LTV D7 (USD)",
                 angle: -90,
@@ -381,6 +380,7 @@ const QuadrantBubbleCharts = ({ filters }: QuadrantBubbleChartsProps) => {
       if (type === "channel") {
         setChannelData(finalData);
       } else {
+        console.log("finalData", finalData);
         setGeoData(finalData);
       }
     } catch (error) {
