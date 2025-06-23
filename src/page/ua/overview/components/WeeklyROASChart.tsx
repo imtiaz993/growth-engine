@@ -13,7 +13,7 @@ import {
 
 // Data structure with proper typing
 interface ChartData {
-  week: string;
+  week_to_date_range: string;
   channels: { [key: string]: number };
   ROAS_D0: number;
   ROAS_D7: number;
@@ -104,29 +104,14 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
         throw new Error("Invalid response format");
       }
 
-      // Process API data to match ChartData interface
-      const processedData: ChartData[] = data
-        .map((item, index: number) => ({
-          week: `${item.year}年W${item.week}`,
-          channels: item.channels,
-          ROAS_D0: item.roas_d0,
-          ROAS_D7: item.roas_d7,
-          key: index.toString(), // Add key for Recharts
-        }))
-        .sort((a, b) => {
-          // Sort by year and week numerically
-          const [yearA, weekA] = [
-            parseInt(a.week.split("年W")[0]),
-            parseInt(a.week.split("年W")[1]),
-          ];
-          const [yearB, weekB] = [
-            parseInt(b.week.split("年W")[0]),
-            parseInt(b.week.split("年W")[1]),
-          ];
-          return yearA !== yearB ? yearA - yearB : weekA - weekB;
-        });
+      const processedData: ChartData[] = data.map((item, index: number) => ({
+        week_to_date_range: item.week_to_date_range,
+        channels: item.channels,
+        ROAS_D0: item.roas_d0,
+        ROAS_D7: item.roas_d7,
+        key: index.toString(),
+      }));
 
-      // Extract unique channels and generate colors
       const allChannels = Array.from(
         new Set(processedData.flatMap((item) => Object.keys(item.channels)))
       );
@@ -156,7 +141,6 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
     filters.endDate,
   ]);
 
-  // Calculate total revenue for each week
   const processedData = chartData.map((weekData) => ({
     ...weekData,
     totalRevenue: Object.values(weekData.channels).reduce(
@@ -165,7 +149,6 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
     ),
   }));
 
-  // Toggle channel visibility
   const handleLegendClick = (channel: string) => {
     setActiveChannels((prev) => {
       const newSet = new Set(prev);
@@ -178,14 +161,13 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
     });
   };
 
-  // Custom tooltip interfaces
   interface TooltipPayloadItem {
     dataKey: string;
     value: number;
     name: string;
     color: string;
     payload: {
-      week: string;
+      week_to_date_range: string;
       channels: Record<string, number>;
       ROAS_D0: number;
       ROAS_D7: number;
@@ -197,18 +179,52 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
     active?: boolean;
     payload?: TooltipPayloadItem[];
     label?: string;
+    coordinate?: { x: number; y: number };
   }
 
-  // Custom tooltip without scrolling
-  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-    if (!active || !payload) return null;
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
+    coordinate,
+  }: CustomTooltipProps) => {
+    if (!active || !payload || !coordinate) return null;
 
     const revenuePayload = payload.find((p) => p.dataKey === "totalRevenue");
     const roasD0 = payload.find((p) => p.dataKey === "ROAS_D0");
     const roasD7 = payload.find((p) => p.dataKey === "ROAS_D7");
+    const channelData = payload.filter((p) => p.name in channelColors);
+
+    // Sort channel data in descending order
+    const sortedChannelData = [...channelData].sort(
+      (a, b) => (b.value || 0) - (a.value || 0)
+    );
+
+    // Calculate tooltip position
+    const tooltipWidth = 300; // Approximate width of tooltip
+    const windowWidth = window.innerWidth;
+    let leftPos = coordinate.x + 10; // Position to the right of cursor
+    let topPos = coordinate.y - 10; // Align with top of bar
+    if (leftPos + tooltipWidth > windowWidth) {
+      leftPos = coordinate.x - tooltipWidth - 10; // Move to left if overflow
+    }
+    const chartContainer = document.querySelector(".recharts-wrapper");
+    const chartHeight = chartContainer?.clientHeight || 400;
+    if (topPos + 200 > chartHeight) {
+      // 200 is approximate tooltip height
+      topPos = chartHeight - 210;
+    } else if (topPos < 0) {
+      topPos = 0;
+    }
 
     return (
-      <div className="bg-white p-4 border border-gray-200 shadow-lg rounded-md min-w-[300px]">
+      <div
+        className="bg-white p-4 border border-gray-200 shadow-lg rounded-md min-w-[300px] absolute z-50"
+        style={{
+          top: `${topPos}px`,
+          left: `${leftPos}px`,
+        }}
+      >
         <p className="font-bold text-gray-800 mb-2">{label}</p>
 
         <div className="grid grid-cols-3 gap-4 mb-3">
@@ -242,26 +258,24 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
           <p className="text-sm font-medium text-gray-700 mb-2">
             Channel Revenue:
           </p>
-          <div className="grid grid-cols-1 gap-1 maxs-hs-[300px]">
-            {payload
-              .filter((p) => p.name in channelColors)
-              .map((entry) => (
+          <div className="grid grid-cols-1 gap-1">
+            {sortedChannelData.map((entry) => (
+              <div
+                key={entry.name}
+                className="flex items-center py-1 px-2 hover:bg-gray-50 rounded"
+              >
                 <div
-                  key={entry.name}
-                  className="flex items-center py-1 px-2 hover:bg-gray-50 rounded"
-                >
-                  <div
-                    className="w-3 h-3 mr-2 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: entry.color }}
-                  />
-                  <span className="text-sm truncate flex-grow min-w-0">
-                    {entry.name}
-                  </span>
-                  <span className="text-sm font-semibold ml-2 flex-shrink-0">
-                    ${entry.value.toLocaleString()}
-                  </span>
-                </div>
-              ))}
+                  className="w-3 h-3 mr-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-sm truncate flex-grow min-w-0">
+                  {entry.name}
+                </span>
+                <span className="text-sm font-semibold ml-2 flex-shrink-0">
+                  ${entry.value.toLocaleString()}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -270,7 +284,6 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
 
   return (
     <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex relative z-10">
-      {/* Left Column - Chart */}
       <div className="flex-1">
         <h2 className="text-xl font-bold text-gray-800 mb-2">
           Total Revenue, ROAS_D0 and ROAS_D7 by Week and Channel
@@ -290,10 +303,10 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
                 stroke="#f0f0f0"
               />
               <XAxis
-                dataKey="week"
+                dataKey="week_to_date_range"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#666", fontSize: 12 }}
+                tick={{ fill: "#666", fontSize: 10 }}
               />
               <YAxis
                 yAxisId="revenue"
@@ -328,7 +341,6 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
               />
               <Tooltip content={<CustomTooltip />} />
 
-              {/* Stacked revenue bars */}
               {Object.keys(channelColors).map(
                 (channel) =>
                   activeChannels.has(channel) && (
@@ -350,7 +362,6 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
                     </Bar>
                   )
               )}
-              {/* ROAS Lines */}
               <Line
                 yAxisId="roas"
                 type="monotone"
@@ -385,7 +396,6 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
         )}
       </div>
 
-      {/* Right Column - Channel List */}
       <div className="w-64 ml-6 pl-6 border-l border-gray-200">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Channels</h3>
         <div className="max-h-[400px] overflow-y-auto pr-2">
@@ -402,10 +412,7 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
               <span className="text-sm font-medium text-gray-700 truncate">
                 {channel}
               </span>
-              <div
-                className="ml-auto"
-                onClick={(e) => e.stopPropagation()} // Prevent checkbox click from bubbling
-              >
+              <div className="ml-auto" onClick={(e) => e.stopPropagation()}>
                 <input
                   type="checkbox"
                   className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"

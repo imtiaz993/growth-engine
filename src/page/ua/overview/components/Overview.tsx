@@ -5,6 +5,7 @@ import {
 } from "@ant-design/icons";
 import WeeklyROASChart from "./WeeklyROASChart";
 import QuadrantBubbleCharts from "./GradientChart";
+import { useEffect, useState } from "react";
 
 interface FilterState {
   appToken: string | null;
@@ -18,22 +19,47 @@ interface OverviewProps {
   filters: FilterState;
 }
 
+interface BasicData {
+  adjust_latest_data_date: string;
+}
+
 const Overview = ({ filters }: OverviewProps) => {
+  const [basicData, setBasicData] = useState<BasicData | null>(null);
+  const getBasicData = async () => {
+    const response = await fetch(
+      "https://sabre-api.yodo1.me/api/v1/info/basic",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    setBasicData(data.data);
+  };
+
+  useEffect(() => {
+    getBasicData();
+  }, []);
   return (
     <div>
-      <h1 className="font-semibold text-xl pt-5">Overview</h1>
+      <div className="flex justify-between pt-5">
+        <h1 className="font-semibold text-xl">Overview</h1>
+        {basicData && (
+          <p>Data updated by {basicData?.adjust_latest_data_date}</p>
+        )}
+      </div>
 
       <div className="flex gap-5 mt-4">
         <div className="w-1/4 space-y-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
-            <div className="flex justify-between items-center gap-2">
-              <h3 className="font-medium">Weekly Revenue</h3>
-              <div className="flex items-center gap-1 text-sm text-green-600">
-                <span>5% increase</span>
-                <ArrowUpOutlined />
-              </div>
+            <h3 className="font-medium !mb-0">Weekly Revenue</h3>
+            <div className="flex items-center gap-1 text-sm text-green-600 justify-end">
+              <span>5% increase</span>
+              <ArrowUpOutlined />
             </div>
-            <p className="mt-3 text-sm">
+            <p className="mt-3 text-sm leading-[1.6]">
               Your Revenue increase by 5% last week, the key contributors on
               channels are from Tiktok and Snapchat, with your campaign scaling
               on Korea and China
@@ -41,14 +67,12 @@ const Overview = ({ filters }: OverviewProps) => {
           </div>
 
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
-            <div className="flex justify-between gap-2">
-              <h3 className="font-medium">ROAS D0</h3>
-              <div className="flex items-center text-sm gap-1 text-red-600">
-                <span>30% → 25%</span>
-                <ArrowDownOutlined />
-              </div>
+            <h3 className="font-medium !mb-0">ROAS D0</h3>
+            <div className="flex items-center text-sm gap-1 text-red-600 justify-end">
+              <span>30% → 25%</span>
+              <ArrowDownOutlined />
             </div>
-            <p className="mt-3 text-sm">
+            <p className="mt-3 text-sm leading-[1.6]">
               Your overall ROAS D0 decreased from 30% to 25%, the reason was
               ROAS D0 on Apple decreased, please check your campaign details to
               optimize

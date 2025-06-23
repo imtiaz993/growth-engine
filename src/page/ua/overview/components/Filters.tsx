@@ -91,7 +91,7 @@ const Filters = ({
             label: app.name,
             value: app.value,
           }))}
-          className="w-40"
+          className="w-64"
           value={filters.appToken}
           onChange={(value) =>
             setFilters((prev) => ({ ...prev, appToken: value }))
@@ -130,6 +130,7 @@ const Filters = ({
           }
           disabled={isLoading || !allChannels.length}
           loading={isLoading}
+          allowClear
         />
         <Select
           mode="multiple"
@@ -143,6 +144,7 @@ const Filters = ({
               ? `${selected.length} countries selected`
               : undefined
           }
+          allowClear
           options={
             allCountries.length
               ? [
@@ -164,7 +166,7 @@ const Filters = ({
           loading={isLoading}
         />
         <RangePicker
-          className="w-56"
+          className="w-60"
           value={
             filters.startDate && filters.endDate
               ? [
