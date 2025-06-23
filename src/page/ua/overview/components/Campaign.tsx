@@ -349,7 +349,7 @@ const Campaign = ({ filters }: CampaignProps) => {
               </div>
               <div>
                 <h3 className="font-medium !mb-0">Creative Alert</h3>
-                <div className="flex items-center gap-1 text-sm text-red-600 justify-end">
+                <div className="flex items-center gap-1 text-sm text-red-600">
                   <span>20% decline</span>
                   <ArrowDownOutlined />
                 </div>
