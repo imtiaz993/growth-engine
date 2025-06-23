@@ -21,18 +21,19 @@ interface CreativeProps {
 interface TableRow {
   channel: string;
   creative_network: string;
+  creatives: string;
   daily_spend: number;
   cost: number;
   ipm: number;
   ctr: number;
   cvr: number;
-  ROAS_D0: number;
-  ROAS_D7: number;
-  ROAS_D30: number;
+  roas_d0: number;
+  roas_d7: number;
+  roas_d30: number;
   skan_roas: number;
   diff_last_week?: number;
-  ROAS_D0_last_week?: number;
-  ROAS_D7_previous_week?: number;
+  roas_d0_prior_week?: number;
+  roas_d7_previous_week?: number;
   daily_spend_last_period?: number;
   diff_daily_spend_percentage_change?: number;
   ecpm?: number;
@@ -80,21 +81,21 @@ const top10columns = [
   },
   {
     title: "ROAS_D0",
-    dataIndex: "ROAS_D0",
-    key: "ROAS_D0",
-    sorter: (a: TableRow, b: TableRow) => a.ROAS_D0 - b.ROAS_D0,
+    dataIndex: "roas_d0",
+    key: "roas_d0",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d0 - b.roas_d0,
   },
   {
     title: "ROAS_D7",
-    dataIndex: "ROAS_D7",
-    key: "ROAS_D7",
-    sorter: (a: TableRow, b: TableRow) => a.ROAS_D7 - b.ROAS_D7,
+    dataIndex: "roas_d7",
+    key: "roas_d7",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
   },
   {
     title: "ROAS_D30",
-    dataIndex: "ROAS_D30",
-    key: "ROAS_D30",
-    sorter: (a: TableRow, b: TableRow) => a.ROAS_D30 - b.ROAS_D30,
+    dataIndex: "roas_d30",
+    key: "roas_d30",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
   },
   {
     title: "SkAN ROAS",
@@ -113,10 +114,10 @@ const comparingColumns = [
   },
   {
     title: "Creative",
-    dataIndex: "creative_network",
-    key: "creative_network",
+    dataIndex: "creatives",
+    key: "creatives",
     sorter: (a: TableRow, b: TableRow) =>
-      a.creative_network.localeCompare(b.creative_network),
+      a.creatives.localeCompare(b.creatives),
   },
   {
     title: "Daily Spend",
@@ -166,16 +167,16 @@ const comparingColumns = [
   },
   {
     title: "ROAS_D0",
-    dataIndex: "ROAS_D0",
-    key: "ROAS_D0",
-    sorter: (a: TableRow, b: TableRow) => a.ROAS_D0 - b.ROAS_D0,
+    dataIndex: "roas_d0",
+    key: "roas_d0",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d0 - b.roas_d0,
   },
   {
     title: "ROAS_D0 Prior Week",
-    dataIndex: "ROAS_D0_last_week",
-    key: "ROAS_D0_last_week",
+    dataIndex: "roas_d0_prior_week",
+    key: "roas_d0_prior_week",
     sorter: (a: TableRow, b: TableRow) =>
-      (a.ROAS_D0_last_week || 0) - (b.ROAS_D0_last_week || 0),
+      (a.roas_d0_prior_week || 0) - (b.roas_d0_prior_week || 0),
   },
   {
     title: "ROAS_D0 WoW",
@@ -186,16 +187,16 @@ const comparingColumns = [
   },
   {
     title: "ROAS_D7",
-    dataIndex: "ROAS_D7",
-    key: "ROAS_D7",
-    sorter: (a: TableRow, b: TableRow) => a.ROAS_D7 - b.ROAS_D7,
+    dataIndex: "roas_d7",
+    key: "roas_d7",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
   },
   {
     title: "ROAS_D7 Previous Week",
-    dataIndex: "ROAS_D7_previous_week",
-    key: "ROAS_D7_previous_week",
+    dataIndex: "roas_d7_previous_week",
+    key: "roas_d7_previous_week",
     sorter: (a: TableRow, b: TableRow) =>
-      (a.ROAS_D7_previous_week || 0) - (b.ROAS_D7_previous_week || 0),
+      (a.roas_d7_previous_week || 0) - (b.roas_d7_previous_week || 0),
   },
   {
     title: "ROAS_D7 WoW",
@@ -206,9 +207,9 @@ const comparingColumns = [
   },
   {
     title: "ROAS_D30",
-    dataIndex: "ROAS_D30",
-    key: "ROAS_D30",
-    sorter: (a: TableRow, b: TableRow) => a.ROAS_D30 - b.ROAS_D30,
+    dataIndex: "roas_d30",
+    key: "roas_d30",
+    sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
   },
   {
     title: "SkAN ROAS",

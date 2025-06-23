@@ -1,6 +1,7 @@
 import {
   ArrowDownOutlined,
   ArrowUpOutlined,
+  BulbOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import WeeklyROASChart from "./WeeklyROASChart";
@@ -54,12 +55,19 @@ const Overview = ({ filters }: OverviewProps) => {
       <div className="flex gap-5 mt-4">
         <div className="w-1/4 space-y-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
-            <h3 className="font-medium !mb-0">Weekly Revenue</h3>
-            <div className="flex items-center gap-1 text-sm text-green-600 justify-end">
-              <span>5% increase</span>
-              <ArrowUpOutlined />
+            <div className="flex">
+              <div className="bg-green-100 p-2 rounded-lg mr-3">
+                <BulbOutlined className="text-blue-600 text-lg" />
+              </div>
+              <div>
+                <h3 className="font-medium !mb-0">Weekly Revenue</h3>
+                <div className="flex items-center gap-1 text-sm text-green-600">
+                  <span>5% increase</span>
+                  <ArrowUpOutlined />
+                </div>
+              </div>
             </div>
-            <p className="mt-3 text-sm leading-[1.6]">
+            <p className="!mt-2 text-sm leading-[1.6]">
               Your Revenue increase by 5% last week, the key contributors on
               channels are from Tiktok and Snapchat, with your campaign scaling
               on Korea and China
@@ -67,12 +75,19 @@ const Overview = ({ filters }: OverviewProps) => {
           </div>
 
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
-            <h3 className="font-medium !mb-0">ROAS D0</h3>
-            <div className="flex items-center text-sm gap-1 text-red-600 justify-end">
-              <span>30% → 25%</span>
-              <ArrowDownOutlined />
+            <div className="flex">
+              <div className="bg-amber-100 p-2 rounded-lg mr-3">
+                <BulbOutlined className="text-blue-600 text-lg" />
+              </div>
+              <div>
+                <h3 className="font-medium !mb-0">ROAS D0</h3>
+                <div className="flex items-center gap-1 text-sm text-red-600">
+                  <span>30% → 25%</span>
+                  <ArrowDownOutlined />
+                </div>
+              </div>
             </div>
-            <p className="mt-3 text-sm leading-[1.6]">
+            <p className="!mt-2 text-sm leading-[1.6]">
               Your overall ROAS D0 decreased from 30% to 25%, the reason was
               ROAS D0 on Apple decreased, please check your campaign details to
               optimize
