@@ -150,7 +150,7 @@ const comparingColumns = [
     title: "Diff Daily Spend",
     dataIndex: "diff_daily_spend_percentage_change",
     key: "diff_daily_spend_percentage_change",
-    render: (value: number) => value && customToFixed(value) + "%",
+    render: (value: number) => value && customToFixed(value * 100) + "%",
     sorter: (a: TableRow, b: TableRow) =>
       (a.diff_daily_spend_percentage_change || 0) -
       (b.diff_daily_spend_percentage_change || 0),
@@ -204,14 +204,14 @@ const comparingColumns = [
     key: "roas_d0_wow",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d0_wow || 0) - (b.roas_d0_wow || 0),
-     render: (value: number) => value && customToFixed(value),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7",
     dataIndex: "roas_d7",
     key: "roas_d7",
     sorter: (a: TableRow, b: TableRow) => a.roas_d7 - b.roas_d7,
-     render: (value: number) => value && customToFixed(value),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7 Previous Week",
@@ -219,7 +219,7 @@ const comparingColumns = [
     key: "roas_d7_previous_week",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d7_previous_week || 0) - (b.roas_d7_previous_week || 0),
-     render: (value: number) => value && customToFixed(value),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D7 WoW",
@@ -227,21 +227,21 @@ const comparingColumns = [
     key: "roas_d7_wow",
     sorter: (a: TableRow, b: TableRow) =>
       (a.roas_d7_wow || 0) - (b.roas_d7_wow || 0),
-     render: (value: number) => value && customToFixed(value),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "ROAS_D30",
     dataIndex: "roas_d30",
     key: "roas_d30",
     sorter: (a: TableRow, b: TableRow) => a.roas_d30 - b.roas_d30,
-     render: (value: number) => value && customToFixed(value),
+    render: (value: number) => value && customToFixed(value),
   },
   {
     title: "SkAN ROAS",
     dataIndex: "skan_roas",
     key: "skan_roas",
     sorter: (a: TableRow, b: TableRow) => a.skan_roas - b.skan_roas,
-     render: (value: number) => value && customToFixed(value),
+    render: (value: number) => value && customToFixed(value),
   },
 ];
 

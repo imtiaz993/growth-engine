@@ -158,16 +158,31 @@ const calculatePercentile = (data: BubbleData[], percentile: number) => {
   };
 };
 
-const renderChart = (
-  title: string,
-  data: BubbleData[],
-  isLoading: boolean,
-  error: string | null,
-  isNormalized: boolean,
-  setIsNormalized: (value: boolean) => void,
-  showTooltip: boolean,
-  setShowTooltip: (value: boolean) => void
-) => {
+const RenderChart = ({
+  title,
+  data,
+  isLoading,
+  error,
+}: {
+  title: string;
+  data: BubbleData[];
+  isLoading: boolean;
+  error: string | null;
+}) => {
+  const [showTooltip, setShowTooltip] = useState<boolean>(true);
+  const [percentile, setPercentile] = useState<number>(0.9); // Default percentile set to 0.9 (90%)
+
+  const percentileOptions = [
+    { label: "95%", value: 0.95 },
+    { label: "90%", value: 0.9 },
+    { label: "85%", value: 0.85 },
+    { label: "80%", value: 0.8 },
+    { label: "75%", value: 0.75 },
+    { label: "70%", value: 0.7 },
+    { label: "60%", value: 0.6 },
+    { label: "50%", value: 0.5 },
+  ];
+
   if (isLoading) {
     return (
       <div className="w-full md:w-1/2">
@@ -206,56 +221,68 @@ const renderChart = (
   }
 
   const { avgRoi, avgInvestment } = calculateAverages(data);
-  const { pRoi, pInvestment } = calculatePercentile(data, 0.95);
+  const { pRoi, pInvestment } = calculatePercentile(data, percentile);
 
   // Filter data for normalized view
-  const displayData = isNormalized
-    ? data.filter((d) => d.roi <= pRoi && d.investment <= pInvestment)
-    : data;
+  const displayData = data.filter(
+    (d) => d.roi <= pRoi && d.investment <= pInvestment
+  );
 
   // Calculate axis domains
-  const roiDomain = isNormalized
-    ? [0, pRoi * 1.1]
-    : [0, Math.max(...data.map((d) => d.roi)) * 1.1];
-  const investmentDomain = isNormalized
-    ? [0, pInvestment * 1.1]
-    : [0, Math.max(...data.map((d) => d.investment)) * 1.1];
+  const roiDomain = [0, pRoi * 1.1];
+  const investmentDomain = [0, pInvestment * 1.1];
 
   // Count trimmed outliers
   const trimmedCount = data.length - displayData.length;
 
+  const customToFixed = (value: number, digit?: number) => {
+    if (Number.isInteger(value)) {
+      return value;
+    } else {
+      return value ? parseFloat(value.toFixed(digit || 2)) : value;
+    }
+  };
+
   return (
     <div className="w-full md:w-1/2">
       <div className="bg-white p-4 rounded-md shadow-md h-[500px]">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4">
           <h3 className="text-xl font-bold text-gray-800">{title}</h3>
-          <div className="flex items-center gap-4">
-            <label className="flex items-center text-sm text-gray-600">
-              <input
-                type="checkbox"
-                checked={isNormalized}
-                onChange={() => setIsNormalized(!isNormalized)}
-                className="!mr-1"
-              />
-              Normalize View
-            </label>
-            <label className="flex items-center text-sm text-gray-600">
-              <input
-                type="checkbox"
-                checked={showTooltip}
-                onChange={() => setShowTooltip(!showTooltip)}
-                className="!mr-1"
-              />
-              Show Tooltips
-            </label>
+          <div>
+            {trimmedCount > 0 && (
+              <div className="text-xs text-yellow-600 mb-2">
+                ⚠️ {trimmedCount} outlier{trimmedCount > 1 ? "s" : ""} trimmed
+                (top {customToFixed((1 - percentile) * 100)}%)
+              </div>
+            )}
+            <div className="flex justify-between items-center gap-4">
+              <label className="flex items-center text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  checked={showTooltip}
+                  onChange={() => setShowTooltip(!showTooltip)}
+                  className="!mr-1"
+                />
+                Show Tooltips
+              </label>
+              <label className="flex items-center text-sm text-gray-600">
+                Percentile:
+                <select
+                  value={percentile}
+                  onChange={(e) => setPercentile(parseFloat(e.target.value))}
+                  className="!ml-2 border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+                >
+                  {percentileOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
         </div>
-        {trimmedCount > 0 && isNormalized && (
-          <div className="text-xs text-yellow-600 mb-2">
-            ⚠️ {trimmedCount} outlier{trimmedCount > 1 ? "s" : ""} trimmed (top
-            5%)
-          </div>
-        )}
+
         <ResponsiveContainer width="100%" height="80%">
           <ScatterChart margin={{ top: 20, right: 30, bottom: 30, left: 40 }}>
             <CartesianGrid
@@ -267,11 +294,10 @@ const renderChart = (
               type="number"
               dataKey="roi"
               name="ROAS D7"
-              scale="log"
               label={{
-                value: "ROAS D7 (Log Scale)",
+                value: "ROAS D7",
                 position: "insideBottom",
-                offset: 0,
+                offset: -10,
                 style: { fill: "#666", fontSize: 14 },
               }}
               domain={roiDomain}
@@ -289,13 +315,12 @@ const renderChart = (
               type="number"
               dataKey="investment"
               name="LTV D7"
-              scale="log"
               label={{
-                value: "LTV D7 (USD, Log Scale)",
+                value: "LTV D7 (USD)",
                 angle: -90,
                 position: "insideLeft",
                 style: { fill: "#666", fontSize: 14, textAnchor: "middle" },
-                offset: 10,
+                offset: -10,
               }}
               tickFormatter={(v) =>
                 v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v.toFixed(2)}`
@@ -362,8 +387,6 @@ const QuadrantBubbleCharts = ({ filters }: QuadrantBubbleChartsProps) => {
   const [isLoadingGeos, setIsLoadingGeos] = useState(false);
   const [channelError, setChannelError] = useState<string | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
-  const [isNormalized, setIsNormalized] = useState<boolean>(true);
-  const [showTooltip, setShowTooltip] = useState<boolean>(true);
 
   const fetchBubbleData = async (type: "channel" | "geo") => {
     if (!filters.appToken || !filters.startDate || !filters.endDate) {
@@ -466,26 +489,18 @@ const QuadrantBubbleCharts = ({ filters }: QuadrantBubbleChartsProps) => {
 
   return (
     <div className="flex flex-col md:flex-row gap-5 mt-4 text-center">
-      {renderChart(
-        "Quadrant of Main Channels",
-        channelData,
-        isLoadingChannels,
-        channelError,
-        isNormalized,
-        setIsNormalized,
-        showTooltip,
-        setShowTooltip
-      )}
-      {renderChart(
-        "Quadrant of Main GEOs",
-        geoData,
-        isLoadingGeos,
-        geoError,
-        isNormalized,
-        setIsNormalized,
-        showTooltip,
-        setShowTooltip
-      )}
+      <RenderChart
+        title={"Quadrant of Main Channels"}
+        data={channelData}
+        isLoading={isLoadingChannels}
+        error={channelError}
+      />
+      <RenderChart
+        title={"Quadrant of Main GEOs"}
+        data={geoData}
+        isLoading={isLoadingGeos}
+        error={geoError}
+      />
     </div>
   );
 };

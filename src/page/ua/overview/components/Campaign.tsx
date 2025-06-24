@@ -22,13 +22,14 @@ interface TableRow {
   channel: string;
   campaign_network: string;
   daily_spend: number;
+  daily_spend_last_week: number;
   daily_installs: number;
   cpi: number;
   roas_d0: number;
   roas_d7: number;
   roas_d30: number;
   skan_roas: number;
-  diff_last_week?: number;
+  diff_last_week_percentage_change?: number;
   roas_d0_last_week?: number;
   roas_d7_previous_week?: number;
 }
@@ -119,19 +120,28 @@ const camparingColumns = [
       a.campaign_network.localeCompare(b.campaign_network),
   },
   {
-    title: "Daily Spend",
+    title: "Daily Spend This Week",
     dataIndex: "daily_spend",
     key: "daily_spend",
     sorter: (a: TableRow, b: TableRow) => a.daily_spend - b.daily_spend,
     render: (value: number) => value && customToFixed(value),
   },
   {
-    title: "Diff Last Week",
-    dataIndex: "diff_last_week",
-    key: "diff_last_week",
+    title: "Daily Spend Last Week",
+    dataIndex: "daily_spend_last_week",
+    key: "daily_spend_last_week",
     sorter: (a: TableRow, b: TableRow) =>
-      (a.diff_last_week || 0) - (b.diff_last_week || 0),
+      a.daily_spend_last_week - b.daily_spend_last_week,
     render: (value: number) => value && customToFixed(value),
+  },
+  {
+    title: "Diff Last Week",
+    dataIndex: "diff_last_week_percentage_change",
+    key: "diff_last_week_percentage_change",
+    sorter: (a: TableRow, b: TableRow) =>
+      (a.diff_last_week_percentage_change || 0) -
+      (b.diff_last_week_percentage_change || 0),
+    render: (value: number) => value && customToFixed(value * 100) + "%",
   },
   {
     title: "Daily Install",

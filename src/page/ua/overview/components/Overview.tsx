@@ -3,10 +3,12 @@ import {
   ArrowUpOutlined,
   BulbOutlined,
   ExclamationCircleOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import WeeklyROASChart from "./WeeklyROASChart";
 import QuadrantBubbleCharts from "./GradientChart";
 import { useEffect, useState } from "react";
+import { Tooltip } from "antd";
 
 interface FilterState {
   appToken: string | null;
@@ -43,12 +45,38 @@ const Overview = ({ filters }: OverviewProps) => {
   useEffect(() => {
     getBasicData();
   }, []);
+
   return (
     <div>
       <div className="flex justify-between pt-5">
         <h1 className="font-semibold text-xl">Overview</h1>
         {basicData && (
-          <p>Data updated by {basicData?.adjust_latest_data_date}</p>
+          <p>
+            Data updated by {basicData?.adjust_latest_data_date}{" "}
+            <Tooltip
+              title={`This report was updated on ${new Intl.DateTimeFormat(
+                "en-US",
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  timeZone: "UTC",
+                }
+              ).format(
+                new Date()
+              )}, based on Adjust data. However, due to Adjust’s reporting delay, the latest available data is only up to ${new Intl.DateTimeFormat(
+                "en-US",
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  timeZone: "UTC",
+                }
+              ).format(new Date(basicData?.adjust_latest_data_date))}.`}
+            >
+              <QuestionCircleOutlined style={{ cursor: "pointer" }} />
+            </Tooltip>{" "}
+          </p>
         )}
       </div>
 
