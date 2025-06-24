@@ -307,55 +307,10 @@ const Campaign = ({ filters }: CampaignProps) => {
 
   return (
     <>
-      <p className="font-semibold text-xl pt-5">Top Campaigns</p>
+      <p className="font-semibold text-xl pt-10">Top Campaigns</p>
       {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
-      <div className="flex gap-5">
-        <div className="w-2/3">
-          <div className="bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-3">
-              Top 10 Spend Campaigns (under selected filter)
-            </p>
-            <Table
-              columns={top10columns}
-              dataSource={top10Data}
-              pagination={false}
-              scroll={{ x: "max-content" }}
-              size="small"
-              loading={isLoading}
-            />
-          </div>
-          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-5">
-              Top 5 Avg Daily Spend{" "}
-              <span className="text-red-600"> Increasing </span> compare with{" "}
-              <span className="text-red-600"> last week </span>
-            </p>
-            <Table
-              columns={camparingColumns}
-              dataSource={increasingData}
-              pagination={false}
-              scroll={{ x: "max-content" }}
-              size="small"
-              loading={isLoading}
-            />
-          </div>
-          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-5">
-              Top 5 Avg Daily Spend{" "}
-              <span className="text-red-600">Declining</span> compare with{" "}
-              <span className="text-red-600">last week </span>
-            </p>
-            <Table
-              columns={camparingColumns}
-              dataSource={decliningData}
-              pagination={false}
-              scroll={{ x: "max-content" }}
-              size="small"
-              loading={isLoading}
-            />
-          </div>
-        </div>
-        <div className="w-1/3 space-y-5">
+      <div>
+        <div className="flex space-x-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
             <div className="flex">
               <div className="bg-green-100 p-2 rounded-lg mr-3">
@@ -374,7 +329,6 @@ const Campaign = ({ filters }: CampaignProps) => {
               Tiktok, scale and expand it to more campaigns!
             </p>
           </div>
-
           <div className="p-5 rounded-md shadow-lg border border-amber-200 bg-amber-50">
             <div className="flex">
               <div className="bg-amber-100 p-2 rounded-lg mr-3">
@@ -393,7 +347,6 @@ const Campaign = ({ filters }: CampaignProps) => {
               please replace with new Creatives
             </p>
           </div>
-
           <div className="p-5 rounded-md shadow-lg border border-blue-200 bg-blue-50">
             <div className="flex">
               <div className="bg-blue-100 p-2 rounded-lg mr-3">
@@ -406,6 +359,47 @@ const Campaign = ({ filters }: CampaignProps) => {
               Consider reallocating 15% of budget from underperforming creatives
               to Creative A for better overall ROAS
             </p>
+          </div>
+        </div>
+        <div className="mt-5">
+          <div className="bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium !my-3">
+              Top 10 Spend Campaigns (under selected filter)
+            </p>
+            <Table
+              columns={top10columns}
+              dataSource={top10Data}
+              pagination={false}
+              scroll={{ x: "max-content" }}
+              size="small"
+              loading={isLoading}
+            />
+          </div>
+          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium !my-5">
+              Top 5 Avg Daily Spend Increasing compare with last week
+            </p>
+            <Table
+              columns={camparingColumns}
+              dataSource={increasingData}
+              pagination={false}
+              scroll={{ x: "max-content" }}
+              size="small"
+              loading={isLoading}
+            />
+          </div>
+          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium !my-5">
+              Top 5 Avg Daily Spend Declining compare with last week
+            </p>
+            <Table
+              columns={camparingColumns}
+              dataSource={decliningData}
+              pagination={false}
+              scroll={{ x: "max-content" }}
+              size="small"
+              loading={isLoading}
+            />
           </div>
         </div>
       </div>

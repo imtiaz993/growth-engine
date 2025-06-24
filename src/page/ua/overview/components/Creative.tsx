@@ -351,51 +351,8 @@ const Creative = ({ filters }: CreativeProps) => {
     <>
       <p className="font-semibold text-xl pt-10">Top Creatives</p>
       {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
-      <div className="flex gap-5">
-        <div className="w-2/3">
-          <div className="bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-3">
-              Top 10 Spend Creatives Table (under selected filter)
-            </p>
-            <Table
-              columns={top10columns}
-              dataSource={top10Data}
-              pagination={false}
-              scroll={{ x: "max-content" }}
-              size="small"
-              loading={isLoading}
-            />
-          </div>
-          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-5">
-              Top 5 Increasing% trending Creatives(ordered by{" "}
-              <span className="text-red-600"> Diff Daily Spend</span>)
-            </p>
-            <Table
-              columns={comparingColumns}
-              dataSource={increasingData}
-              pagination={false}
-              scroll={{ x: "max-content" }}
-              size="small"
-              loading={isLoading}
-            />
-          </div>
-          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
-            <p className="font-medium !my-5">
-              Top 5 Decreasing% trending Creatives(minus, ordered by{" "}
-              <span className="text-red-600"> Diff Daily Spend</span>)
-            </p>
-            <Table
-              columns={comparingColumns}
-              dataSource={decliningData}
-              pagination={false}
-              scroll={{ x: "max-content" }}
-              size="small"
-              loading={isLoading}
-            />
-          </div>
-        </div>
-        <div className="w-1/3 space-y-5">
+      <div>
+        <div className="flex space-x-5">
           <div className="p-5 rounded-md shadow-lg border border-green-200 bg-green-50">
             <div className="flex">
               <div className="bg-green-100 p-2 rounded-lg mr-3">
@@ -446,6 +403,47 @@ const Creative = ({ filters }: CreativeProps) => {
               Consider reallocating 15% of budget from underperforming creatives
               to Creative A for better overall ROAS
             </p>
+          </div>
+        </div>
+        <div className="mt-5">
+          <div className="bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium !my-3">
+              Top 10 Spend Creatives Table (under selected filter)
+            </p>
+            <Table
+              columns={top10columns}
+              dataSource={top10Data}
+              pagination={false}
+              scroll={{ x: "max-content" }}
+              size="small"
+              loading={isLoading}
+            />
+          </div>
+          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium !my-5">
+              Top 5 Increasing trending Creatives
+            </p>
+            <Table
+              columns={comparingColumns}
+              dataSource={increasingData}
+              pagination={false}
+              scroll={{ x: "max-content" }}
+              size="small"
+              loading={isLoading}
+            />
+          </div>
+          <div className="mt-5 bg-white p-3 rounded-md shadow-xl">
+            <p className="font-medium !my-5">
+              Top 5 Decreasing trending Creatives
+            </p>
+            <Table
+              columns={comparingColumns}
+              dataSource={decliningData}
+              pagination={false}
+              scroll={{ x: "max-content" }}
+              size="small"
+              loading={isLoading}
+            />
           </div>
         </div>
       </div>
