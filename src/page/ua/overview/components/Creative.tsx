@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
-const BASE_URL = import.meta.env.VITE_APP_BASE_API;
+import { getCreativeTrending, getTop10Creatives } from "../../../../api/ua";
 
 interface FilterState {
   appToken: string | null;
@@ -260,30 +260,13 @@ const Creative = ({ filters }: CreativeProps) => {
     setError(null);
 
     try {
-      const response = await fetch(
-       `${BASE_URL}/api/v1/dashboard/top10-creatives`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            app_token: filters.appToken,
-            start_date: filters.startDate,
-            end_date: filters.endDate,
-            filters: {
-              channels: filters.channels.length ? filters.channels : [],
-              countries: filters.countries.length ? filters.countries : [],
-            },
-          }),
-        }
-      );
+      const response = await getTop10Creatives(filters);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.data;
       setTop10Data(data.data.top_creatives || []);
     } catch (error) {
       console.error("Error fetching top 10 creatives:", error);
@@ -301,30 +284,13 @@ const Creative = ({ filters }: CreativeProps) => {
     setError(null);
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/v1/dashboard/creative-trending`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            app_token: filters.appToken,
-            start_date: filters.startDate,
-            end_date: filters.endDate,
-            filters: {
-              channels: filters.channels.length ? filters.channels : [],
-              countries: filters.countries.length ? filters.countries : [],
-            },
-          }),
-        }
-      );
+      const response = await getCreativeTrending(filters);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.data;
       setIncreasingData(data.data.top5_increasing || []);
       setDecliningData(data.data.top5_declining || []);
     } catch (error) {

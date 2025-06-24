@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
-const BASE_URL = import.meta.env.VITE_APP_BASE_API;
+import { getCampaignCamparison, getTop10Campaigns } from "../../../../api/ua";
 
 interface FilterState {
   appToken: string | null;
@@ -218,30 +218,13 @@ const Campaign = ({ filters }: CampaignProps) => {
     setError(null);
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/v1/dashboard/top10-campaigns`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            app_token: filters.appToken,
-            start_date: filters.startDate,
-            end_date: filters.endDate,
-            filters: {
-              channels: filters.channels.length ? filters.channels : [],
-              countries: filters.countries.length ? filters.countries : [],
-            },
-          }),
-        }
-      );
+      const response = await getTop10Campaigns(filters);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.data;
       setTop10Data(data.data.top_campaigns || []);
     } catch (error) {
       console.error("Error fetching top 10 campaigns:", error);
@@ -259,30 +242,13 @@ const Campaign = ({ filters }: CampaignProps) => {
     setError(null);
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/v1/dashboard/wow-comparison`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            app_token: filters.appToken,
-            start_date: filters.startDate,
-            end_date: filters.endDate,
-            filters: {
-              channels: filters.channels.length ? filters.channels : [],
-              countries: filters.countries.length ? filters.countries : [],
-            },
-          }),
-        }
-      );
+      const response = await getCampaignCamparison(filters);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.data;
       setIncreasingData(data.data.top5_increasing || []);
       setDecliningData(data.data.top5_declining || []);
     } catch (error) {

@@ -9,7 +9,7 @@ import WeeklyROASChart from "./WeeklyROASChart";
 import QuadrantBubbleCharts from "./GradientChart";
 import { useEffect, useState } from "react";
 import { Tooltip } from "antd";
-const BASE_URL = import.meta.env.VITE_APP_BASE_API;
+import { getBasicInfo } from "../../../../api/ua";
 
 interface FilterState {
   appToken: string | null;
@@ -30,14 +30,16 @@ interface BasicData {
 const Overview = ({ filters }: OverviewProps) => {
   const [basicData, setBasicData] = useState<BasicData | null>(null);
   const getBasicData = async () => {
-    const response = await fetch(`${BASE_URL}/api/v1/info/basic`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    setBasicData(data.data);
+    try {
+      const response = await getBasicInfo();
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.data;
+      setBasicData(data.data);
+    } catch (error) {
+      console.error("Error fetching basic data:", error);
+    }
   };
 
   useEffect(() => {
