@@ -5,6 +5,7 @@ import Campaign from "./components/Campaign";
 import Overview from "./components/Overview";
 import Creative from "./components/Creative";
 import dayjs from "dayjs";
+const BASE_URL = import.meta.env.VITE_APP_BASE_API;
 
 interface FilterItem {
   name: string;
@@ -60,15 +61,12 @@ const Page = () => {
     setFilterError(null);
 
     try {
-      const response = await fetch(
-        "https://sabre-api.yodo1.me/api/v1/filters/all",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/v1/filters/all`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

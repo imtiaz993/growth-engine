@@ -5,6 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
+const BASE_URL = import.meta.env.VITE_APP_BASE_API;
 
 interface FilterState {
   appToken: string | null;
@@ -218,7 +219,7 @@ const Campaign = ({ filters }: CampaignProps) => {
 
     try {
       const response = await fetch(
-        "https://sabre-api.yodo1.me/api/v1/dashboard/top10-campaigns",
+        `${BASE_URL}/api/v1/dashboard/top10-campaigns`,
         {
           method: "POST",
           headers: {
@@ -259,7 +260,7 @@ const Campaign = ({ filters }: CampaignProps) => {
 
     try {
       const response = await fetch(
-        "https://sabre-api.yodo1.me/api/v1/dashboard/wow-comparison",
+        `${BASE_URL}/api/v1/dashboard/wow-comparison`,
         {
           method: "POST",
           headers: {

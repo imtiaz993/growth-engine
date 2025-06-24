@@ -5,6 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
+const BASE_URL = import.meta.env.VITE_APP_BASE_API;
 
 interface FilterState {
   appToken: string | null;
@@ -260,7 +261,7 @@ const Creative = ({ filters }: CreativeProps) => {
 
     try {
       const response = await fetch(
-        "https://sabre-api.yodo1.me/api/v1/dashboard/top10-creatives",
+       `${BASE_URL}/api/v1/dashboard/top10-creatives`,
         {
           method: "POST",
           headers: {
@@ -301,7 +302,7 @@ const Creative = ({ filters }: CreativeProps) => {
 
     try {
       const response = await fetch(
-        "https://sabre-api.yodo1.me/api/v1/dashboard/creative-trending",
+        `${BASE_URL}/api/v1/dashboard/creative-trending`,
         {
           method: "POST",
           headers: {

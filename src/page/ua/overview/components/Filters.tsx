@@ -104,7 +104,7 @@ const Filters = ({
         <Select
           mode="multiple"
           placeholder="Channel"
-          className="w-48"
+          className="w-52"
           value={filters.channels}
           onChange={handleChannelChange}
           maxTagCount={0}
@@ -135,7 +135,7 @@ const Filters = ({
         <Select
           mode="multiple"
           placeholder="Country"
-          className="w-48"
+          className="w-52"
           value={filters.countries}
           onChange={handleCountryChange}
           maxTagCount={filters.countries.length === 1 ? 1 : 0}

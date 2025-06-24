@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+const BASE_URL = import.meta.env.VITE_APP_BASE_API;
 
 // Data structure with proper typing
 interface ChartData {
@@ -77,7 +78,7 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
 
     try {
       const response = await fetch(
-        "https://sabre-api.yodo1.me/api/v1/dashboard/chart/channel-weekly-roas",
+        `${BASE_URL}/api/v1/dashboard/chart/channel-weekly-roas`,
         {
           method: "POST",
           headers: {

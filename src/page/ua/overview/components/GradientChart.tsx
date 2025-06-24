@@ -11,6 +11,7 @@ import {
   ReferenceLine,
   Legend,
 } from "recharts";
+const BASE_URL = import.meta.env.VITE_APP_BASE_API;
 
 interface BubbleData {
   name: string;
@@ -395,8 +396,8 @@ const QuadrantBubbleCharts = ({ filters }: QuadrantBubbleChartsProps) => {
 
     const endpoint =
       type === "channel"
-        ? "https://sabre-api.yodo1.me/api/v1/dashboard/chart/channel-bubble"
-        : "https://sabre-api.yodo1.me/api/v1/dashboard/chart/geo-bubble";
+        ? `${BASE_URL}/api/v1/dashboard/chart/channel-bubble`
+        : `${BASE_URL}/api/v1/dashboard/chart/geo-bubble`;
 
     try {
       if (type === "channel") {
