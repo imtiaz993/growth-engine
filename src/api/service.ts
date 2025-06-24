@@ -3,12 +3,12 @@ import { message, notification } from "antd";
 import { ssoLogin } from "../utils/sso";
 import { getToken } from "../utils/auth";
 
-const growthService = axios.create({
+const sabreService = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,
   timeout: 60 * 1000,
 });
 
-growthService.interceptors.request.use(
+sabreService.interceptors.request.use(
   (config) => {
     config.headers["Authorization"] = `Bearer ${getToken()}`;
     return config;
@@ -18,15 +18,17 @@ growthService.interceptors.request.use(
   }
 );
 
-growthService.interceptors.response.use(
+sabreService.interceptors.response.use(
   (response) => {
-    const { status, data } = response;
-    switch (status) {
+    switch (response.status) {
       case 200:
-        if (data && data.code && data.code !== 0) {
-          notification.error({ message: "Error", description: data.msg });
+        if (response && response.data.code && response.data.code !== 0) {
+          notification.error({
+            message: "Error",
+            description: response.data.msg,
+          });
         }
-        return data;
+        return response;
       default:
         return Promise.reject(new Error("Network Error"));
     }
@@ -52,4 +54,4 @@ growthService.interceptors.response.use(
   }
 );
 
-export { growthService };
+export { sabreService };

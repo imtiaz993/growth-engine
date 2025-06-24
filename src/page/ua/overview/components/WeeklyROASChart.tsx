@@ -1,3 +1,4 @@
+import { Spin } from "antd";
 import { useState, useEffect } from "react";
 import {
   ComposedChart,
@@ -10,7 +11,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-const BASE_URL = import.meta.env.VITE_APP_BASE_API;
+import { getChannelWeeklyROAS } from "../../../../api/ua";
 
 // Data structure with proper typing
 interface ChartData {
@@ -67,7 +68,7 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
     {}
   );
   const [activeChannels, setActiveChannels] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchChartData = async () => {
@@ -77,30 +78,13 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
     setError(null);
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/v1/dashboard/chart/channel-weekly-roas`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            app_token: filters.appToken,
-            start_date: filters.startDate ?? "",
-            end_date: filters.endDate ?? "",
-            filters: {
-              channels: filters.channels.length ? filters.channels : [],
-              countries: filters.countries.length ? filters.countries : [],
-            },
-          }),
-        }
-      );
+      const response = await getChannelWeeklyROAS(filters);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const { data } = await response.json();
+      const { data } = await response.data;
       if (!Array.isArray(data)) {
         throw new Error("Invalid response format");
       }
@@ -292,149 +276,160 @@ const WeeklyROASChart = ({ filters }: WeeklyROASChartProps) => {
   };
 
   return (
-    <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex relative z-10">
-      <div className="flex-1">
-        <h2 className="text-xl font-bold text-gray-800 mb-2">
-          Total Revenue, ROAS_D0 and ROAS_D7 by Week and Channel
-        </h2>
-        <p className="text-gray-500 text-sm mb-6">
-          Stacked bars show revenue by channel, lines show ROAS metrics
-        </p>
+    <>
+      <Spin spinning={isLoading} className="!top-1/10">
+        <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex relative z-10">
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-800 mb-2">
+              Total Revenue, ROAS_D0 and ROAS_D7 by Week and Channel
+            </h2>
+            <p className="text-gray-500 text-sm mb-6">
+              Stacked bars show revenue by channel, lines show ROAS metrics
+            </p>
 
-        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+            {processedData && processedData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="80%">
+                <ComposedChart data={processedData}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#f0f0f0"
+                  />
+                  <XAxis
+                    dataKey="week_to_date_range"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#666", fontSize: 10 }}
+                  />
+                  <YAxis
+                    yAxisId="revenue"
+                    orientation="left"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#666", fontSize: 12 }}
+                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                    label={{
+                      value: "Total Revenue (USD)",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: 14,
+                      },
+                      offset: 2,
+                    }}
+                  />
+                  <YAxis
+                    yAxisId="roas"
+                    orientation="right"
+                    domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#666", fontSize: 12 }}
+                    tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+                    label={{
+                      value: "ROAS (%)",
+                      angle: -90,
+                      position: "insideRight",
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: 14,
+                      },
+                      offset: 0,
+                    }}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
 
-        {processedData && processedData.length > 0 ? (
-          <ResponsiveContainer width="100%" height="80%">
-            <ComposedChart data={processedData}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#f0f0f0"
-              />
-              <XAxis
-                dataKey="week_to_date_range"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#666", fontSize: 10 }}
-              />
-              <YAxis
-                yAxisId="revenue"
-                orientation="left"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#666", fontSize: 12 }}
-                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
-                label={{
-                  value: "Total Revenue (USD)",
-                  angle: -90,
-                  position: "insideLeft",
-                  style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
-                  offset: 2,
-                }}
-              />
-              <YAxis
-                yAxisId="roas"
-                orientation="right"
-                domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#666", fontSize: 12 }}
-                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-                label={{
-                  value: "ROAS (%)",
-                  angle: -90,
-                  position: "insideRight",
-                  style: { textAnchor: "middle", fill: "#666", fontSize: 14 },
-                  offset: 0,
-                }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-
-              {Object.keys(channelColors).map(
-                (channel) =>
-                  activeChannels.has(channel) && (
-                    <Bar
-                      key={channel}
-                      yAxisId="revenue"
-                      dataKey={`channels.${channel}`}
-                      stackId="revenue"
-                      name={channel}
-                      fill={channelColors[channel]}
-                      barSize={60}
-                    >
-                      {processedData.map((_, index) => (
-                        <Cell
-                          key={`cell-${index}`}
+                  {Object.keys(channelColors).map(
+                    (channel) =>
+                      activeChannels.has(channel) && (
+                        <Bar
+                          key={channel}
+                          yAxisId="revenue"
+                          dataKey={`channels.${channel}`}
+                          stackId="revenue"
+                          name={channel}
                           fill={channelColors[channel]}
-                        />
-                      ))}
-                    </Bar>
-                  )
-              )}
-              <Line
-                yAxisId="roas"
-                type="monotone"
-                dataKey="ROAS_D0"
-                stroke="#4a5568"
-                strokeDasharray="5 5"
-                strokeWidth={2}
-                dot={{ r: 4, strokeWidth: 2 }}
-                activeDot={{ r: 6 }}
-                name="ROAS D0"
-              />
-              <Line
-                yAxisId="roas"
-                type="monotone"
-                dataKey="ROAS_D7"
-                stroke="#2e8b57"
-                strokeWidth={3}
-                dot={{ r: 5, fill: "#fff", strokeWidth: 2 }}
-                activeDot={{ r: 8 }}
-                name="ROAS D7"
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        ) : isLoading ? (
-          <div className="text-gray-500 text-sm mb-4 mt-20">
-            Loading data...
+                          barSize={60}
+                        >
+                          {processedData.map((_, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={channelColors[channel]}
+                            />
+                          ))}
+                        </Bar>
+                      )
+                  )}
+                  <Line
+                    yAxisId="roas"
+                    type="monotone"
+                    dataKey="ROAS_D0"
+                    stroke="#4a5568"
+                    strokeDasharray="5 5"
+                    strokeWidth={2}
+                    dot={{ r: 4, strokeWidth: 2 }}
+                    activeDot={{ r: 6 }}
+                    name="ROAS D0"
+                  />
+                  <Line
+                    yAxisId="roas"
+                    type="monotone"
+                    dataKey="ROAS_D7"
+                    stroke="#2e8b57"
+                    strokeWidth={3}
+                    dot={{ r: 5, fill: "#fff", strokeWidth: 2 }}
+                    activeDot={{ r: 8 }}
+                    name="ROAS D7"
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            ) : (
+              !isLoading && (
+                <div className="text-gray-500 text-sm mb-4 mt-20">
+                  No data available for the selected filters.
+                </div>
+              )
+            )}
           </div>
-        ) : (
-          <div className="text-gray-500 text-sm mb-4 mt-20">
-            No data available for the selected filters.
-          </div>
-        )}
-      </div>
 
-      <div className="w-64 ml-6 pl-6 border-l border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Channels</h3>
-        <div className="max-h-[400px] overflow-y-auto pr-2">
-          {Object.entries(channelColors).map(([channel, color]) => (
-            <div
-              key={channel}
-              className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-50 cursor-pointer"
-              onClick={() => handleLegendClick(channel)}
-            >
-              <div
-                className="w-4 h-4 rounded-full mr-3 flex-shrink-0"
-                style={{ backgroundColor: color }}
-              />
-              <span className="text-sm font-medium text-gray-700 truncate">
-                {channel}
-              </span>
-              <div className="ml-auto" onClick={(e) => e.stopPropagation()}>
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
-                  checked={activeChannels.has(channel)}
-                  onChange={() => handleLegendClick(channel)}
-                  disabled={isLoading}
-                />
-              </div>
+          <div className="w-64 ml-6 pl-6 border-l border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4">
+              Channels
+            </h3>
+            <div className="max-h-[400px] overflow-y-auto pr-2">
+              {Object.entries(channelColors).map(([channel, color]) => (
+                <div
+                  key={channel}
+                  className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleLegendClick(channel)}
+                >
+                  <div
+                    className="w-4 h-4 rounded-full mr-3 flex-shrink-0"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="text-sm font-medium text-gray-700 truncate">
+                    {channel}
+                  </span>
+                  <div className="ml-auto" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
+                      checked={activeChannels.has(channel)}
+                      onChange={() => handleLegendClick(channel)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-    </div>
+      </Spin>
+    </>
   );
 };
 

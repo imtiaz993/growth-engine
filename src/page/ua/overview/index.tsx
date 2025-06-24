@@ -5,7 +5,7 @@ import Campaign from "./components/Campaign";
 import Overview from "./components/Overview";
 import Creative from "./components/Creative";
 import dayjs from "dayjs";
-const BASE_URL = import.meta.env.VITE_APP_BASE_API;
+import { getFilters } from "../../../api/ua";
 
 interface FilterItem {
   name: string;
@@ -61,18 +61,12 @@ const Page = () => {
     setFilterError(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/api/v1/filters/all`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
+      const response = await getFilters();
+      console.log("Raw response:", response);
+      if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      const responseData: FiltersResponse = await response.json();
+      const responseData: FiltersResponse = response.data;
 
       if (
         Array.isArray(responseData.data.channels) &&
