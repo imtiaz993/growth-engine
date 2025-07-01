@@ -17,3 +17,20 @@
 .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
   background-color: #f5f5f5 !important;
 }
+.ant-select-item-option-state {
+  display: none !important;
+}
+.ant-select-item-option-state {
+  display: none !important;
+}
+:global(.ant-select-item-option-state) {
+  display: none !important;
+}
+
+
+
+.recharts-legend-item .recharts-legend-icon {
+  border-radius: 0 !important;
+  width: 12px !important;
+  height: 12px !important;
+}

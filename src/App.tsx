@@ -1,10 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Dashboard from "./page/index";
 import "./App.css";
-import Overview from "./page/ua/overview";
-import Install from "./page/product/Install";
-import Cohort from "./page/product/Cohort";
-import Player from "./page/product/Player";
+import Overview from "./page/ua";
+import Product from "./page/product";
+import Dashboard from "./page";
 
 function App() {
   return (
@@ -13,9 +11,7 @@ function App() {
         <Route path="/" element={<Dashboard />}>
           <Route index element={<Navigate to="/ua/overview" replace />} />
           <Route path="ua/overview" element={<Overview />} />
-          <Route path="product/install" element={<Install />} />
-          <Route path="product/cohort" element={<Cohort />} />
-          <Route path="product/player" element={<Player />} />
+          <Route path="/product/overview" element={<Product/>} />
         </Route>
       </Routes>
     </div>

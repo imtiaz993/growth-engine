@@ -1,26 +1,22 @@
-import { HomeOutlined, MailOutlined } from "@ant-design/icons";
+import { HomeOutlined, AppstoreOutlined } from "@ant-design/icons";
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+// ✅ Only flat-level UA and Product dashboards, no dropdowns
 const routes = [
   {
-    key: "sub1",
+    key: "ua",
     title: "UA Dashboard",
     icon: <HomeOutlined className="mr-2" />,
     path: "/ua/overview",
   },
   {
-    key: "sub2",
+    key: "product",
     title: "Product Dashboard",
-    icon: <MailOutlined className="mr-2" />,
-    paths: ["/product/install", "/product/cohort", "/product/player"],
-    items: [
-      { key: "5", path: "/product/install", label: "Install" },
-      { key: "6", path: "/product/cohort", label: "Cohort" },
-      { key: "7", path: "/product/player", label: "Player" },
-    ],
+    icon: <AppstoreOutlined className="mr-2" />,
+    path: "/product/overview",
   },
 ];
 
@@ -29,20 +25,13 @@ const Sidebar = () => {
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
   const getOpenKeys = (): string[] => {
-    const match = routes.find((route) => route.paths?.includes(pathname));
+    const match = routes.find((route) => route.path === pathname);
     return match ? [match.key] : [];
   };
 
   const getSelectedKeys = (): string[] => {
-    for (const route of routes) {
-      if (route.items) {
-        const found = route.items.find((item) => item.path === pathname);
-        if (found) return [found.key];
-      } else if (route.path === pathname) {
-        return [route.key];
-      }
-    }
-    return [];
+    const route = routes.find((r) => r.path === pathname);
+    return route ? [route.key] : [];
   };
 
   useEffect(() => {
@@ -60,29 +49,11 @@ const Sidebar = () => {
           selectedKeys={getSelectedKeys()}
           style={{ height: "100%", borderRight: 0 }}
         >
-          {routes.map((route) =>
-            route.items ? (
-              <Menu.SubMenu
-                key={route.key}
-                title={
-                  <span>
-                    {route.icon}
-                    {route.title}
-                  </span>
-                }
-              >
-                {route.items.map((item) => (
-                  <Menu.Item key={item.key}>
-                    <NavLink to={item.path}>{item.label}</NavLink>
-                  </Menu.Item>
-                ))}
-              </Menu.SubMenu>
-            ) : (
-              <Menu.Item key={route.key} icon={route.icon}>
-                <NavLink to={route.path}>{route.title}</NavLink>
-              </Menu.Item>
-            )
-          )}
+          {routes.map((route) => (
+            <Menu.Item key={route.key} icon={route.icon}>
+              <NavLink to={route.path}>{route.title}</NavLink>
+            </Menu.Item>
+          ))}
         </Menu>
       </Sider>
     </div>

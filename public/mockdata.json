@@ -1,0 +1,13 @@
+{
+  "code": 0,
+  "data": {
+    "games": ["Mock Game A", "Mock Game B"],
+    "platforms": ["iOS", "Android"],
+    "countries": ["US", "UK", "PK"],
+    "dateRange": {
+      "min": "2024-01-01",
+      "max": "2025-12-31"
+    }
+  },
+  "msg": "success"
+}

@@ -6,7 +6,7 @@ function Dashboard() {
   return (
     <div className="bg-gray-100 h-svh overflow-hidden flex flex-col">
       <Appbar />
-      <div className="flex m-3 overflow-hidden">
+      <div className="flex m-3 mr-0 overflow-hidden">
         <div className="w-64">
           <Sidebar />
         </div>

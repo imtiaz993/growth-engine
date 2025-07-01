@@ -17,7 +17,6 @@ sabreService.interceptors.request.use(
     Promise.reject(error);
   }
 );
-
 sabreService.interceptors.response.use(
   (response) => {
     switch (response.status) {

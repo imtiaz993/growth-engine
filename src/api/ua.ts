@@ -1,5 +1,5 @@
+import type { FilterState } from "../types";
 import { sabreService } from "./service";
-import type { FilterState } from "./type";
 
 export const getFilters = () => {
   return sabreService.get(`/api/v1/filters/all`);
