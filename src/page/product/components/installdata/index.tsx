@@ -23,8 +23,8 @@ const InstallData:FC<InstallDataProps> = ({ filters }: InstallDataProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-4">
         <InstallAge filters={filters} />
         <InstallDays  filters={filters} />
-        <IAPInstall />
-        <ConversionInstall />
+        <IAPInstall filters={filters} />
+        <ConversionInstall filters={filters} />
       </div>
     </div>
   );

@@ -1,12 +1,91 @@
+import { useState, useEffect } from "react";
 import MultilineAreaChart from "../../../../components/charts/MultilineAreaChart";
- import PayValueLabels from "./PayValueLabels";
+import PayValueLabels from "./PayValueLabels";
+import { getDailyIapRevenueStacked } from "../../../../api/product";
+import type { ProductFilterState } from "../../../../types";
 
-const PayAge = () => {
-  const payGroups = [
-    { label: "Whale", color: "#276EF1", value: 48.07 },
-    { label: "Dolphin", color: "#F37D38", value: 31.82 },
-    { label: "Fish", color: "#66C2A5", value: 8.89 },
-  ];
+const colorPalette = [
+  "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
+];
+function extractGroupsFromApiData(apiData: any[]): string[] {
+  if (Array.isArray(apiData) && apiData.length > 0 && apiData[0].group_0) {
+    return apiData.map((item: any) => item.group_0);
+  }
+  return [];
+}
+function groupDataToDateCentric(data: any[]): any[] {
+  const dateMap: Record<string, any> = {};
+  const allGroups = new Set<string>();
+  data.forEach((item: any) => {
+    const group = item.group_0;
+    allGroups.add(group);
+    const dataMap = item.data_map_0 || {};
+    Object.entries(dataMap).forEach(([date, value]) => {
+      if (!dateMap[date]) dateMap[date] = { date };
+      dateMap[date][group] = value;
+    });
+  });
+  // Fill missing group values with 0 for each date
+  const groupList = Array.from(allGroups);
+  const processedData = Object.values(dateMap).map((row: any) => {
+    groupList.forEach(group => {
+      if (!(group in row)) row[group] = 0;
+    });
+    return row;
+  });
+  // Sort by date
+  processedData.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return processedData;
+}
+
+interface PayAgeProps {
+  filters: ProductFilterState;
+}
+
+const PayAge = ({ filters }: PayAgeProps) => {
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [apiData, setApiData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // if (!filters.game || !filters.dateRange[0] || !filters.dateRange[1]) return;
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getDailyIapRevenueStacked(filters);
+        if (response.status !== 200) throw new Error(`HTTP error! Status: ${response.status}`);
+        const { data } = response.data;
+        if (!Array.isArray(data)) throw new Error("Invalid response format");
+        setApiData(data);
+        const processedData = groupDataToDateCentric(data);
+        setChartData(processedData);
+      } catch (err) {
+        setError("Failed to load pay age data.");
+        setChartData([]);
+        setApiData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [filters]);
+
+  const groupNames = extractGroupsFromApiData(apiData);
+  const payGroups = groupNames.map((name, idx) => {
+    const groupObj = apiData.find((item: any) => item.group_0 === name);
+    return {
+      label: name,
+      color: colorPalette[idx % colorPalette.length],
+      value: groupObj ? groupObj.total_amount.toFixed(2) : 0
+    };
+  });
+  const lineKeys = groupNames.map((name, idx) => ({
+    key: name,
+    color: colorPalette[idx % colorPalette.length],
+    name
+  }));
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full mx-auto">
@@ -14,14 +93,9 @@ const PayAge = () => {
         <h2 className="text-lg font-bold text-gray-800 mb-2">
           Daily IAP Revenue (stacked by pay user)
         </h2>
-        <div className="text-xs text-gray-500 mt-1">
-          Daily &nbsp; | &nbsp; Groups (4/4) &nbsp; | &nbsp; 2025/06/13 — 2025/06/19
-        </div>
-        <div className="text-xs text-gray-500 mt-4">Jun 19, 2025</div>
-
         <PayValueLabels items={payGroups} />
       </div>
-      <MultilineAreaChart />
+      <MultilineAreaChart chartData={chartData} isLoading={isLoading} error={error} areaKeys={lineKeys} />
     </div>
   );
 };

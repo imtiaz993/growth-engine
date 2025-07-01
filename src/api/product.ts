@@ -3,60 +3,75 @@ import type { ProductFilterState } from "../types";
 export const getFilters = () => {
   return sabreService.get("/mockdata.json");
 };
-export const getIAPData = (filters: ProductFilterState) => {
-  return sabreService.post(`/api/v1/dashboard/chart/platform-bubble`, {
-    game: filters.game,
-    start_date: filters.dateRange,
-    end_date: filters.dateRange,
 
-    filters: {
-      platforms: filters.platforms.length ? filters.platforms : [],
-      countries: filters.countries.length ? filters.countries : [],
-    },
-  });
-};
 export const getIapArppuByInstallAge = (filters: ProductFilterState) => {
-  return sabreService.post(`/api/v1/dashboard/chart/platform-bubble`, {
-    game: filters.game,
-    start_date: filters.dateRange,
-    end_date: filters.dateRange,
-    filters: {
-      platforms: filters.platforms.length ? filters.platforms : [],
-      countries: filters.countries.length ? filters.countries : [],
+  return sabreService.get("/api/v1/product-dashboard/rodeo_ios/iap_arppu_by_install_age", {
+    params: {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
     },
   });
 };
 
-export const getDailyIapRevenueByPayUser = (filters: ProductFilterState) => {
-  return sabreService.post(`/api/v1/dashboard/chart/platform-bubble`, {
-    game: filters.game,
-    start_date: filters.dateRange,
-    end_date: filters.dateRange,
-    filters: {
-      platforms: filters.platforms.length ? filters.platforms : [],
-      countries: filters.countries.length ? filters.countries : [],
+export const getDailyIapRevenueByInstallAge = (filters: ProductFilterState) => {
+  return sabreService.get("/api/v1/product-dashboard/rodeo_ios/daily_iap_revenue_by_install_age", {
+    params: {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
     },
   });
 };
-export const getDAUTrends = (filters: ProductFilterState) => {
-  return sabreService.post(`/api/v1/dashboard/chart/platform-bubble`, {
-    game: filters.game,
-    start_date: filters.dateRange,
-    end_date: filters.dateRange,
-    filters: {
-      platforms: filters.platforms.length ? filters.platforms : [],
-      countries: filters.countries.length ? filters.countries : [],
+
+export const getDauByInstallAge = (filters: ProductFilterState) => {
+  return sabreService.get("/api/v1/product-dashboard/rodeo_ios/dau_by_install_age", {
+    params: {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
     },
   });
 };
-export const getLtvDetailedCurve = (filters: ProductFilterState) => {
-  return sabreService.post(`/api/v1/dashboard/chart/platform-bubble`, {
-    game: filters.game,
-    start_date: filters.dateRange,
-    end_date: filters.dateRange,
-    filters: {
-      platforms: filters.platforms.length ? filters.platforms : [],
-      countries: filters.countries.length ? filters.countries : [],
+
+export const getDailyIapPayerConversion = (filters: ProductFilterState) => {
+  return sabreService.get("/api/v1/product-dashboard/rodeo_ios/daily_iap_payer_conversion", {
+    params: {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
     },
+  });
+};
+
+export const getDailyIapRevenueStacked = (filters: ProductFilterState) => {
+  return sabreService.get("/api/v1/product-dashboard/suit_sdk/daily_iap_revenue_stacked", {
+    params: {},
+  });
+};
+
+export const getDauByPayUser = (filters: ProductFilterState) => {
+  return sabreService.get("/api/v1/product-dashboard/suit_sdk/dau_by_pay_user", {
+    params: {},
+  });
+};
+
+export const getDailyIapConversionRate = (filters: ProductFilterState) => {
+  return sabreService.get("/api/v1/product-dashboard/suit_sdk/daily_iap_conversion_rate", {
+    params: {},
+  });
+};
+
+export const getDailyArppu = (filters: ProductFilterState) => {
+  return sabreService.get("/api/v1/product-dashboard/suit_sdk/daily_arppu", {
+    params: {},
   });
 };

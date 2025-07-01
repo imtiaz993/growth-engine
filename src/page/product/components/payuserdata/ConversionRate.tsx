@@ -1,44 +1,100 @@
+import { useState, useEffect } from "react";
 import LineCharts from "../../../../components/charts/LineCharts";
 import PayValueLabels from "./PayValueLabels";
-const conversionData = [
-  { date: "Jun 13", whale: 0.45, dolphin: 0.26, minnow: 0.18 },
-  { date: "Jun 14", whale: 0.6, dolphin: 0.38, minnow: 0.28 },
-  { date: "Jun 15", whale: 0.41, dolphin: 0.44, minnow: 0.33 },
-  { date: "Jun 16", whale: 0.46, dolphin: 0.32, minnow: 0.31 },
-  { date: "Jun 17", whale: 0.59, dolphin: 0.31, minnow: 0.3 },
-  { date: "Jun 18", whale: 0.53, dolphin: 0.33, minnow: 0.33 },
-  { date: "Jun 19", whale: 0.61, dolphin: 0.39, minnow: 0.28 },
-];
-const payGroups = [
-  { label: "Whale", color: "#276EF1", value: 48.07 },
-  { label: "Dolphin", color: "#F37D38", value: 31.82 },
-  { label: "Fish", color: "#66C2A5", value: 8.89 },
-];
+import { getDailyIapConversionRate } from "../../../../api/product";
+import type { ProductFilterState } from "../../../../types";
 
-const lineKeys = [
-  { key: "whale", color: "#276EF1", name: "Whale" },
-  { key: "dolphin", color: "#F37D38", name: "Dolphin" },
-  { key: "minnow", color: "#5E72E4", name: "Minnow" },
+const colorPalette = [
+  "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
 ];
-const ConversionRate = () => {
+function extractGroupsFromApiData(apiData: any[]): string[] {
+  if (Array.isArray(apiData) && apiData.length > 0 && apiData[0].group_0) {
+    return apiData.map((item: any) => item.group_0);
+  }
+  return [];
+}
+function groupDataToDateCentric(data: any[]): any[] {
+  const dateMap: Record<string, any> = {};
+  const allGroups = new Set<string>();
+  data.forEach((item: any) => {
+    const group = item.group_0;
+    allGroups.add(group);
+    const dataMap = item.data_map_0 || {};
+    Object.entries(dataMap).forEach(([date, value]) => {
+      if (!dateMap[date]) dateMap[date] = { date };
+      dateMap[date][group] = value;
+    });
+  });
+  // Fill missing group values with 0 for each date
+  const groupList = Array.from(allGroups);
+  const processedData = Object.values(dateMap).map((row: any) => {
+    groupList.forEach(group => {
+      if (!(group in row)) row[group] = 0;
+    });
+    return row;
+  });
+  // Sort by date
+  processedData.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return processedData;
+}
+
+interface ConversionRateProps {
+  filters: ProductFilterState;
+}
+
+const ConversionRate = ({ filters }: ConversionRateProps) => {
+  const [data, setData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [apiData, setApiData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getDailyIapConversionRate(filters);
+        if (response.status !== 200) throw new Error(`HTTP error! Status: ${response.status}`);
+        const { data } = response.data;
+        if (!Array.isArray(data)) throw new Error("Invalid response format");
+        setApiData(data);
+        const processedData = groupDataToDateCentric(data);
+        setData(processedData);
+      } catch (err) {
+        setError("Failed to load conversion rate data.");
+        setData([]);
+        setApiData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [filters]);
+
+  const groupNames = extractGroupsFromApiData(apiData);
+  const payGroups = groupNames.map((name, idx) => {
+    const groupObj = apiData.find((item: any) => item.group_0 === name);
+    return {
+      label: name,
+      color: colorPalette[idx % colorPalette.length],
+      value: groupObj ? groupObj.total_amount.toFixed(2) : 0
+    };
+  });
+  const lineKeys = groupNames.map((name, idx) => ({
+    key: name,
+    color: colorPalette[idx % colorPalette.length],
+    name
+  }));
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full  mx-auto">
       <div className="text-start mb-4">
         <h2 className="text-lg font-bold text-gray-800 mb-2">
           Daily IAP Conversion Rate
         </h2>
-        <div className="text-xs text-gray-500 mt-1">
-          Daily &nbsp; | &nbsp; Groups (4/4) &nbsp; | &nbsp; Last 7D
-        </div>
-        <div className="text-xs text-gray-500 mt-4">Jun 19, 2025</div>
         <PayValueLabels items={payGroups} />
       </div>
-      <LineCharts
-        data={conversionData}
-        lineKeys={lineKeys}
-        xKey="date"
-        yDomain={[0.1, 0.7]}
-      />
+      <LineCharts data={data} lineKeys={lineKeys} xKey="date" />
     </div>
   );
 };

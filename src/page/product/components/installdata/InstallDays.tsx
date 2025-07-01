@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react";
 import type { FC } from "react";
 
-import { getIAPData } from "../../../../api/product";
+import { getDauByInstallAge } from "../../../../api/product";
 import BarCharts from "../../../../components/charts/BarChart";
 import type { ProductFilterState } from "../../../../types";
 
+const colorPalette = [
+  "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
+];
+
 interface BarData {
   date: string;
-  day0?: number;
-  week1?: number;
-  month1?: number;
-  before3?: number;
-  after3?: number;
-  key: string;
+  [key: string]: any;
 }
 
 interface InstallAgeProps {
@@ -23,15 +22,16 @@ const InstallDays: FC<InstallAgeProps> = ({ filters }: InstallAgeProps) => {
   const [chartData, setChartData] = useState<BarData[]>([]);
   const [isLoadingBar, setIsLoadingBar] = useState(false);
   const [barError, setBarError] = useState<string | null>(null);
+  const [apiData, setApiData] = useState<any[]>([]);
 
   const fetchInstallAgeData = async () => {
-    if (!filters.game || !filters.dateRange[0] || !filters.dateRange[1]) return;
+    // if (!filters.game || !filters.dateRange[0] || !filters.dateRange[1]) return;
 
     try {
       setIsLoadingBar(true);
       setBarError(null);
 
-      const response = await getIAPData(filters);
+      const response = await getDauByInstallAge(filters);
 
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -42,16 +42,22 @@ const InstallDays: FC<InstallAgeProps> = ({ filters }: InstallAgeProps) => {
         throw new Error("Invalid response format");
       }
 
-      const processedData: BarData[] = data.map((item: any, index: number) => ({
-        date: item.date,
-        ...(item.values || {}),
-        key: index.toString(),
-      }));
-
+      setApiData(data);
+      // Pivot data by date and age_install_bucket, using 'dau' as value
+      const dateMap: Record<string, any> = {};
+      data.forEach((item: any) => {
+        const date = item.$part_date;
+        if (!dateMap[date]) {
+          dateMap[date] = { date };
+        }
+        dateMap[date][item.age_install_bucket] = item.dau;
+      });
+      const processedData = Object.values(dateMap);
       setChartData(processedData);
     } catch (error) {
       setBarError("Failed to load install age data.");
       setChartData([]);
+      setApiData([]);
     } finally {
       setIsLoadingBar(false);
     }
@@ -67,16 +73,25 @@ const InstallDays: FC<InstallAgeProps> = ({ filters }: InstallAgeProps) => {
     filters.dateRange[1],
   ]);
 
+  // Dynamic legend/value label
+  const bucketNames = Array.from(new Set(apiData.map((item: any) => item.age_install_bucket)));
+  const barKeys = bucketNames.map((bucket, idx) => ({
+    key: bucket,
+    color: colorPalette[idx % colorPalette.length],
+    name: bucket
+  }));
+
   return (
     <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex relative z-10 overflow-visible">
       <div className="flex-1 overflow-visible">
         <h2 className="text-lg font-bold text-gray-800 mb-2">
-         DAU by Install Age - Last 40 dayswa
+         DAU by Install Age - Last 40 days
         </h2>
         <BarCharts
           chartData={chartData}
           isLoading={isLoadingBar}
           error={barError}
+          barKeys={barKeys}
         />
       </div>
     </div>

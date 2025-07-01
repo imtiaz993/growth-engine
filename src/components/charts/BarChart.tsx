@@ -1,3 +1,4 @@
+import React from "react";
 import {
   BarChart,
   Bar,
@@ -12,66 +13,53 @@ import type { TooltipProps } from "recharts";
 
 type BarData = {
   date: string;
-  day0?: number;
-  week1?: number;
-  month1?: number;
-  before3?: number;
-  after3?: number;
+  [key: string]: any;
 };
+
+export interface BarKey {
+  key: string;
+  color: string;
+  name: string;
+}
 
 interface BarChartsProps {
   chartData: BarData[];
   isLoading: boolean;
   error: string | null;
+  barKeys: BarKey[];
 }
-
-const barKeys = [
-  { key: "day0", color: "#1f77b4", name: "0. Day" },
-  { key: "week1", color: "#ff7f0e", name: "1. Week 1" },
-  { key: "month1", color: "#1fc9ff", name: "2. Month 1" },
-  { key: "before3", color: "#9467bd", name: "3. Before month 3" },
-  { key: "after3", color: "#fdbf00", name: "4. After month 3" },
-] as const;
 
 const CustomTooltip = ({
   active,
   payload,
   label,
   coordinate,
-}: TooltipProps<number, string>) => {
+  barKeys
+}: TooltipProps<number, string> & { barKeys: BarKey[] }) => {
   if (!active || !payload?.length || !coordinate) return null;
-
   const tooltipWidth = 200;
   const tooltipHeight = 140;
   const minMargin = 8;
-
-  const chartWrapper = document.querySelector(
-    ".recharts-wrapper"
-  ) as HTMLElement;
+  const chartWrapper = document.querySelector(".recharts-wrapper") as HTMLElement;
   const chartWidth = chartWrapper?.offsetWidth || 800;
   const chartHeight = chartWrapper?.offsetHeight || 400;
   const x = coordinate?.x ?? 0;
   const y = coordinate?.y ?? 0;
-
   let leftPos = x + 12;
   let topPos = y - tooltipHeight / 2;
-
   const canFitRight = x + 12 + tooltipWidth <= chartWidth - minMargin;
   const canFitLeft = x - tooltipWidth - 12 >= minMargin;
-
   if (!canFitRight && canFitLeft) {
     leftPos = x - tooltipWidth - 12;
   } else if (!canFitRight && !canFitLeft) {
     leftPos = Math.max(minMargin, chartWidth - tooltipWidth - minMargin);
   }
-
   if (topPos + tooltipHeight > chartHeight) {
     topPos = chartHeight - tooltipHeight - 10;
   }
   if (topPos < minMargin) {
     topPos = minMargin;
   }
-
   return (
     <div
       className="bg-white p-2 border border-gray-300 shadow-md rounded text-xs absolute z-50"
@@ -88,7 +76,6 @@ const CustomTooltip = ({
         {payload.map((entry) => {
           const barInfo = barKeys.find((b) => b.key === entry.dataKey);
           if (!barInfo) return null;
-
           return (
             <div
               key={entry.dataKey}
@@ -114,7 +101,7 @@ const CustomTooltip = ({
   );
 };
 
-const BarCharts = ({ chartData, isLoading, error }: BarChartsProps) => {
+const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => {
   if (isLoading)
     return <div className="text-center py-8">Loading chart...</div>;
   if (error)
@@ -122,12 +109,13 @@ const BarCharts = ({ chartData, isLoading, error }: BarChartsProps) => {
   if (!chartData.length)
     return <div className="text-center py-8">No data available.</div>;
 
-  const tickStep = 5000;
   const maxValue = Math.max(
-    ...chartData.map((item) =>
-      barKeys.reduce((sum, { key }) => sum + (item[key] || 0), 0)
+    ...chartData.flatMap((item) =>
+      barKeys.map(({ key }) => item[key] || 0)
     )
   );
+  const autoStep = maxValue > 10000 ? 5000 : maxValue > 1000 ? 1000 : maxValue > 100 ? 100 : 10;
+  const tickStep = autoStep;
   const maxTick = Math.ceil(maxValue / tickStep) * tickStep;
   const ticks = Array.from(
     { length: maxTick / tickStep + 1 },
@@ -150,8 +138,32 @@ const BarCharts = ({ chartData, isLoading, error }: BarChartsProps) => {
           dataKey="date"
           axisLine={false}
           tickLine={false}
-          interval={3}
-          tick={{ fill: "#999", fontSize: 11, dx: 10 }}
+          interval={0}
+          angle={-45}
+          textAnchor="end"
+          height={60}
+          tickMargin={12}
+          tick={(props) => {
+            const { x, y, payload, index } = props;
+            const total = props && props.payload && props.payload.length ? props.payload.length : (chartData?.length || 0);
+            const shouldShow = total > 20 ? index % 2 === 0 : true;
+            if (!shouldShow) return <g />;
+            return (
+              <g transform={`translate(${x},${y})`}>
+                <text
+                  x={0}
+                  y={0}
+                  dy={16}
+                  textAnchor="end"
+                  fill="#999"
+                  fontSize={11}
+                  transform="rotate(-45)"
+                >
+                  {payload.value}
+                </text>
+              </g>
+            );
+          }}
           padding={{ left: 10, right: 10 }}
         />
         <YAxis
@@ -162,7 +174,7 @@ const BarCharts = ({ chartData, isLoading, error }: BarChartsProps) => {
           ticks={ticks}
         />
         <Tooltip
-          content={<CustomTooltip />}
+          content={<CustomTooltip barKeys={barKeys} />}
           cursor={{ fill: "transparent" }}
           wrapperStyle={{ overflow: "visible", pointerEvents: "none" }}
         />
@@ -179,16 +191,15 @@ const BarCharts = ({ chartData, isLoading, error }: BarChartsProps) => {
             fontSize: 12,
             width: "100%",
           }}
+          payload={barKeys.map(({ key, color, name }) => ({
+            value: name,
+            type: "rect",
+            id: key,
+            color,
+          }))}
         />
         {barKeys.map(({ key, color, name }) => (
-          <Bar
-            key={key}
-            dataKey={key}
-            stackId="a"
-            fill={color}
-            name={name}
-            barSize={50}
-          />
+          <Bar key={key} dataKey={key} fill={color} name={name} />
         ))}
       </BarChart>
     </ResponsiveContainer>

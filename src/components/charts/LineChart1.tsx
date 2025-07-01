@@ -9,38 +9,10 @@ import {
     Legend,
 } from "recharts";
 import type { TooltipProps } from 'recharts';
-const rawData = [
-    { date: '2025-04-27', day0: 3486, week1: 2210, month1: 1810, before3: 2235, after3: 7225 },
-    { date: '2025-04-28', day0: 2919, week1: 2714, month1: 2285, before3: 2737, after3: 7782 },
-    { date: '2025-04-29', day0: 2710, week1: 2813, month1: 2037, before3: 2250, after3: 7878 },
-    { date: '2025-05-31', day0: 2776, week1: 2277, month1: 2800, before3: 2971, after3: 8617 },
-    { date: '2025-04-28', day0: 2919, week1: 2714, month1: 2285, before3: 2737, after3: 7782 },
-    { date: '2025-04-29', day0: 2710, week1: 2813, month1: 2037, before3: 2250, after3: 7878 },
-    { date: '2025-04-30', day0: 3816, week1: 2576, month1: 1900, before3: 2391, after3: 8094 },
-    { date: '2025-05-01', day0: 2661, week1: 2243, month1: 2430, before3: 2954, after3: 8319 },
-    { date: '2025-05-02', day0: 3130, week1: 2288, month1: 2362, before3: 2906, after3: 7353 },
-    { date: '2025-05-03', day0: 3906, week1: 1604, month1: 1919, before3: 2876, after3: 8728 },
-    { date: '2025-05-04', day0: 2512, week1: 2787, month1: 1903, before3: 2895, after3: 8443 },
-    { date: '2025-05-05', day0: 3951, week1: 1591, month1: 2740, before3: 2495, after3: 8339 },
-    { date: '2025-05-06', day0: 3710, week1: 2896, month1: 1951, before3: 2373, after3: 8161 },
-    { date: '2025-05-07', day0: 2766, week1: 2505, month1: 2204, before3: 2054, after3: 8547 },
-    { date: '2025-05-08', day0: 3454, week1: 2411, month1: 2375, before3: 2319, after3: 8475 },
-    { date: '2025-05-09', day0: 2816, week1: 2397, month1: 2548, before3: 2781, after3: 7727 },
-    { date: '2025-05-10', day0: 2502, week1: 2716, month1: 2292, before3: 2774, after3: 7159 },
-    { date: '2025-05-11', day0: 3741, week1: 2251, month1: 1893, before3: 2961, after3: 7237 },
+import React from "react";
 
-];
-
-const data = rawData.map((d) => ({
-    ...d,
-    day0: d.day0 / 10000,
-    week1: d.week1 / 10000,
-    month1: d.month1 / 10000,
-    before3: d.before3 / 10000,
-    after3: d.after3 / 10000,
-}));
-
-const lineKeys = [
+// Default line keys for fallback
+const defaultLineKeys = [
     { key: "day0", color: "#1f77b4", name: "0. Day" },
     { key: "week1", color: "#ff7f0e", name: "1. Week 1" },
     { key: "month1", color: "#1fc9ff", name: "2. Month 1" },
@@ -48,25 +20,21 @@ const lineKeys = [
     { key: "after3", color: "#fdbf00", name: "4. After month 3" },
 ];
 
-const maxDataValue = Math.max(
-    ...data.flatMap((d) =>
-        lineKeys.map(({ key }) => d[key as keyof Omit<typeof d, 'date'>])
-    )
-);
+const colorPalette = [
+    "#1f77b4", "#ff7f0e", "#1fc9ff", "#9467bd", "#fdbf00",
+    "#e377c2", "#2ca02c", "#d62728", "#8c564b", "#bcbd22"
+];
 
-const tickStep = 0.3;
-const maxTick = Math.ceil(maxDataValue / tickStep) * tickStep;
-const ticks = Array.from(
-    { length: Math.ceil(maxTick / tickStep) + 1 },
-    (_, i) => parseFloat((i * tickStep).toFixed(2))
-);
-const barKeys = [
-    { key: "day0", color: "#1f77b4", name: "0. Day" },
-    { key: "week1", color: "#ff7f0e", name: "1. Week 1" },
-    { key: "month1", color: "#1fc9ff", name: "2. Month 1" },
-    { key: "before3", color: "#9467bd", name: "3. Before month 3" },
-    { key: "after3", color: "#fdbf00", name: "4. After month 3" },
-] as const;
+function getLineKeysFromData(data: any[]): { key: string, color: string, name: string }[] {
+    if (!data || data.length === 0) return defaultLineKeys;
+    const allKeys = Object.keys(data[0]).filter(k => k !== "date");
+    return allKeys.map((key, idx) => ({
+        key,
+        color: colorPalette[idx % colorPalette.length],
+        name: key
+    }));
+}
+
 const CustomTooltip = ({
     active,
     payload,
@@ -121,9 +89,6 @@ const CustomTooltip = ({
             <p className="font-semibold text-gray-700 mb-1 text-sm">{label}</p>
             <div className="space-y-1">
                 {payload.map((entry) => {
-                    const barInfo = barKeys.find((b) => b.key === entry.dataKey);
-                    if (!barInfo) return null;
-
                     return (
                         <div
                             key={entry.dataKey}
@@ -132,9 +97,9 @@ const CustomTooltip = ({
                             <div className="flex items-center gap-1">
                                 <div
                                     className="w-2 h-2 rounded-full"
-                                    style={{ backgroundColor: barInfo.color }}
+                                    style={{ backgroundColor: entry.color }}
                                 />
-                                <span className="text-[11px] text-gray-700">{barInfo.name}</span>
+                                <span className="text-[11px] text-gray-700">{entry.dataKey}</span>
                             </div>
                             <span className="text-[11px] font-medium text-gray-800">
                                 {Number(entry.value).toLocaleString()}
@@ -146,7 +111,8 @@ const CustomTooltip = ({
         </div>
     );
 };
-const CustomLegend = () => (
+
+const CustomLegend = ({ lineKeys }: { lineKeys: { key: string, color: string, name: string }[] }) => (
     <div className="flex flex-wrap gap-1 justify-center pt-2">
         {lineKeys.map(({ key, color, name }) => (
             <div key={key} className="flex items-center gap-2">
@@ -159,9 +125,48 @@ const CustomLegend = () => (
         ))}
     </div>
 );
-const LineChart1 = () => {
-    return (
 
+export interface LineKey {
+    key: string;
+    color: string;
+    name: string;
+}
+
+export interface LineChart1Props {
+    chartData?: any[];
+    isLoading?: boolean;
+    error?: string | null;
+    lineKeys?: LineKey[];
+}
+
+const LineChart1: React.FC<LineChart1Props> = ({ chartData, isLoading, error, lineKeys }) => {
+    const data = chartData && chartData.length > 0 ? chartData : [];
+    const keys = lineKeys && lineKeys.length > 0 ? lineKeys : getLineKeysFromData(data);
+    const maxDataValue = data.length > 0
+        ? Math.max(
+            ...data.flatMap((d) =>
+                keys.map(({ key }) => Number(d[key]) || 0)
+            )
+        )
+        : 1;
+    const tickStep = maxDataValue > 1 ? Math.ceil(maxDataValue / 5) : 0.3;
+    const maxTick = Math.ceil(maxDataValue / tickStep) * tickStep;
+    const ticks = Array.from(
+        { length: Math.ceil(maxTick / tickStep) + 1 },
+        (_, i) => parseFloat((i * tickStep).toFixed(2))
+    );
+
+    if (isLoading) {
+        return <div className="flex items-center justify-center h-full">Loading...</div>;
+    }
+    if (error) {
+        return <div className="flex items-center justify-center h-full text-red-500">{error}</div>;
+    }
+    if (!data || data.length === 0) {
+        return <div className="flex items-center justify-center h-full">No data available</div>;
+    }
+
+    return (
         <ResponsiveContainer width="100%" height="90%">
             <LineChart
                 data={data}
@@ -175,27 +180,48 @@ const LineChart1 = () => {
                 />
                 <XAxis
                     dataKey="date"
-                    tick={{ fill: "#999", fontSize: 11, dx: 10 }}
                     padding={{ left: 20, right: 20 }}
-                    interval={3}
-                    axisLine={false}
-                    tickLine={false}
+                    interval={0}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    tickMargin={12}
+                    tick={(props) => {
+                        // If too many ticks, skip every other
+                        const { x, y, payload, index } = props;
+                        const total = props && props.payload && props.payload.length ? props.payload.length : (chartData?.length || 0);
+                        const shouldShow = total > 20 ? index % 2 === 0 : true;
+                        if (!shouldShow) return <g />;
+                        return (
+                            <g transform={`translate(${x},${y})`}>
+                                <text
+                                    x={0}
+                                    y={0}
+                                    dy={16}
+                                    textAnchor="end"
+                                    fill="#999"
+                                    fontSize={11}
+                                    transform="rotate(-45)"
+                                >
+                                    {payload.value}
+                                </text>
+                            </g>
+                        );
+                    }}
                 />
-
                 <YAxis
                     domain={[0, maxTick]}
                     ticks={ticks}
                     tick={{ fill: "#666", fontSize: 12 }}
                     axisLine={false}
                     tickLine={false}
-
                 />
                 <Tooltip
                     content={<CustomTooltip />}
                     cursor={{ fill: "transparent" }}
                 />
-                <Legend verticalAlign="bottom" height={40} content={<CustomLegend />} />
-                {lineKeys.map(({ key, color, name }) => (
+                <Legend verticalAlign="bottom" height={40} content={<CustomLegend lineKeys={keys} />} />
+                {keys.map(({ key, color, name }) => (
                     <Line
                         key={key}
                         type="monotone"
@@ -205,11 +231,11 @@ const LineChart1 = () => {
                         strokeWidth={2}
                         dot={{ r: 2 }}
                         activeDot={{ r: 4 }}
+                        isAnimationActive={false}
                     />
                 ))}
             </LineChart>
         </ResponsiveContainer>
-
     );
 };
 
