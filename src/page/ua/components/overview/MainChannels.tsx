@@ -53,6 +53,7 @@ const MainChannels = ({ filters }: QuadrantBubbleChartsProps) => {
 
       setChannelData(finalData);
     } catch (error) {
+      console.error(error);
       const errorMessage = `Failed to load channel bubble data.`;
       setChannelError(errorMessage);
       setChannelData([]);

@@ -152,6 +152,7 @@ const Campaign: FC<CampaignProps> = ({ filters }) => {
       const data = await response.data;
       setTop10Data(data.data.top_campaigns || []);
     } catch (error) {
+      console.error(error);
       setError("Failed to load top campaigns data.");
       setTop10Data([]);
     } finally {
@@ -176,6 +177,7 @@ const Campaign: FC<CampaignProps> = ({ filters }) => {
       setIncreasingData(data.data.top5_increasing || []);
       setDecliningData(data.data.top5_declining || []);
     } catch (error) {
+      console.error(error);
       setError("Failed to load comparison data.");
       setIncreasingData([]);
       setDecliningData([]);

@@ -108,6 +108,7 @@ const Page = () => {
       setAllChannels([]);
       setAllCountries([]);
       setAllAppTokens([]);
+      console.error(error);
     } finally {
       setIsLoadingFilters(false);
     }

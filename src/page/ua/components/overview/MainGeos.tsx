@@ -54,6 +54,7 @@ const MainGeos = ({ filters }: QuadrantBubbleChartsProps) => {
 
       setGeoData(finalData);
     } catch (error) {
+      console.error(error);
       const errorMessage = `Failed to load geo bubble data.`;
       setGeoError(errorMessage);
       setGeoData([]);

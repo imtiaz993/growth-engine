@@ -1,39 +1,43 @@
 import { useState, useEffect } from "react";
 import { getIapArppuByInstallAge } from "../../../../api/product";
 import LineChart1 from "../../../../components/charts/LineChart1";
-import type { ProductFilterState } from "../../../../types";
+import type { ProductFilterState, ChartDataRow } from "../../../../types";
 
 const colorPalette = [
   "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
 ];
 
 type GroupApiData = {
-  [key: string]: any;
   group_0: string;
   data_map_0: Record<string, number>;
 };
 
 function pivotGroupApiData(
   apiData: GroupApiData[],
-  groupKey: string = "group_0",
-  valueKey: string = "data_map_0"
-): { chartData: any[]; groupNames: string[] } {
+  groupKey: keyof GroupApiData = "group_0",
+  valueKey: keyof GroupApiData = "data_map_0"
+): { chartData: ChartDataRow[]; groupNames: string[] } {
   const allDatesSet = new Set<string>();
   apiData.forEach((group: GroupApiData) => {
-    Object.keys(group[valueKey]).forEach((date: string) => {
-      const dateOnly = date.split(' ')[0];
-      allDatesSet.add(dateOnly);
-    });
+    const valueMap = group[valueKey];
+    if (typeof valueMap === 'object' && valueMap !== null) {
+      Object.keys(valueMap).forEach((date: string) => {
+        const dateOnly = date.split(' ')[0];
+        allDatesSet.add(dateOnly);
+      });
+    }
   });
   const allDates = Array.from(allDatesSet).sort();
-  const groupNames = apiData.map((group: GroupApiData) => group[groupKey]);
-  const dateMap: Record<string, any> = {};
+  const groupNames = apiData.map((group: GroupApiData) => String(group[groupKey]));
+  const dateMap: Record<string, ChartDataRow> = {};
   allDates.forEach((date: string) => {
     dateMap[date] = { date };
     apiData.forEach((group: GroupApiData) => {
-      // Find the value for this date (may need to search original keys)
-      const valueEntry = Object.entries(group[valueKey]).find(([k]) => k.split(' ')[0] === date);
-      dateMap[date][group[groupKey]] = valueEntry ? valueEntry[1] : 0;
+      const valueMap = group[valueKey];
+      if (typeof valueMap === 'object' && valueMap !== null) {
+        const valueEntry = Object.entries(valueMap).find(([k]) => k.split(' ')[0] === date);
+        dateMap[date][String(group[groupKey])] = valueEntry ? Number(valueEntry[1]) : 0;
+      }
     });
   });
   return {
@@ -47,7 +51,7 @@ interface IAPInstallProps {
 }
 
 const IAPInstall = ({ filters }: IAPInstallProps) => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<ChartDataRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [groupNames, setGroupNames] = useState<string[]>([]);
@@ -68,6 +72,7 @@ const IAPInstall = ({ filters }: IAPInstallProps) => {
       setChartData(chartData);
       setGroupNames(groupNames);
     } catch (err) {
+      console.error(err);
       setError("Failed to load ARPPU data.");
       setChartData([]);
       setGroupNames([]);

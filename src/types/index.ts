@@ -32,3 +32,9 @@ export type ApiBubbleData = {
   ltv_d7: number;
   cost: number;
 };
+
+// Represents a single row of chart data, with a date and dynamic group keys
+export type ChartDataRow = {
+  date: string;
+  [group: string]: number | string;
+};

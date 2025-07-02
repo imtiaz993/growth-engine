@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Select } from "antd";
 import BarCharts from "../../../../components/charts/BarChart";
+import type { ChartDataRow } from "../../../../types";
 
 const metricOptions = [
     { label: "Ad Revenue", value: "adRevenue", color: "#276EF1" },
@@ -14,7 +15,7 @@ const barKeys = metricOptions.map((opt) => ({
     name: opt.label,
 }));
 
-const RevenueTrends = ({ chartData, loading, error }: { chartData: any[]; loading: boolean, error: string | null }) => {
+const RevenueTrends = ({ chartData, loading, error }: { chartData: ChartDataRow[]; loading: boolean, error: string | null }) => {
     const [selectedMetrics, setSelectedMetrics] = useState(metricOptions.map(opt => opt.value));
 
     return (

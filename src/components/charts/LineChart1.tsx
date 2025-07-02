@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import type { TooltipProps } from 'recharts';
 import React from "react";
+import type { ChartDataRow } from "../../types";
 
 // Default line keys for fallback
 const defaultLineKeys = [
@@ -25,7 +26,7 @@ const colorPalette = [
     "#e377c2", "#2ca02c", "#d62728", "#8c564b", "#bcbd22"
 ];
 
-function getLineKeysFromData(data: any[]): { key: string, color: string, name: string }[] {
+function getLineKeysFromData(data: ChartDataRow[]): { key: string, color: string, name: string }[] {
     if (!data || data.length === 0) return defaultLineKeys;
     const allKeys = Object.keys(data[0]).filter(k => k !== "date");
     return allKeys.map((key, idx) => ({
@@ -133,7 +134,7 @@ export interface LineKey {
 }
 
 export interface LineChart1Props {
-    chartData?: any[];
+    chartData?: ChartDataRow[];
     isLoading?: boolean;
     error?: string | null;
     lineKeys?: LineKey[];

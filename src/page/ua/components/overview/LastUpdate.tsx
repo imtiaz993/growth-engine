@@ -18,6 +18,7 @@ const LastUpdate = () => {
       const data = await response.data;
       setBasicData(data.data);
     } catch (error) {
+      console.error(error);
     }
   };
 

@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import React from "react";
 import type { TooltipProps } from "recharts";
+import type { ChartDataRow } from "../../types";
 
 // Default area keys for fallback
 const defaultAreaKeys = [
@@ -20,7 +21,7 @@ const defaultAreaKeys = [
 const colorPalette = [
   "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
 ];
-function getAreaKeysFromData(data: any[]): { key: string, color: string, name: string }[] {
+function getAreaKeysFromData(data: ChartDataRow[]): { key: string, color: string, name: string }[] {
   if (!data || data.length === 0) return defaultAreaKeys;
   const allKeys = Object.keys(data[0]).filter(k => k !== "date");
   return allKeys.map((key, idx) => ({
@@ -124,40 +125,47 @@ const CustomTooltip = ({
 };
 
 interface MultilineAreaChartProps {
-  chartData?: any[];
+  chartData?: ChartDataRow[];
   isLoading?: boolean;
   error?: string | null;
   areaKeys?: { key: string, color: string, name: string }[];
 }
 
 const MultilineAreaChart: React.FC<MultilineAreaChartProps> = ({ chartData, isLoading, error, areaKeys }) => {
-  let data = chartData && chartData.length > 0 ? chartData : [];
+  let data: ChartDataRow[] = chartData && chartData.length > 0 ? chartData : [];
 
   // Detect suit-sdk format (array of group_0/data_map_0)
-  const isSuitSdkFormat = Array.isArray(data) && data.length > 0 && data[0].group_0 && data[0].data_map_0;
-  if (isSuitSdkFormat) {
+  type GroupApiData = { group_0: string; data_map_0: Record<string, number> };
+  function isGroupApiDataArray(arr: unknown[]): arr is GroupApiData[] {
+    return arr.length > 0 &&
+      typeof arr[0] === 'object' && arr[0] !== null &&
+      'group_0' in arr[0] && typeof (arr[0] as { group_0: unknown }).group_0 === 'string' &&
+      'data_map_0' in arr[0] && typeof (arr[0] as { data_map_0: unknown }).data_map_0 === 'object';
+  }
+  if (Array.isArray(data) && isGroupApiDataArray(data)) {
     // Transform to date-centric array
-    const dateMap: Record<string, any> = {};
+    const dateMap: Record<string, ChartDataRow> = {};
     const allGroups = new Set<string>();
-    data.forEach((item: any) => {
-      const group = item.group_0;
+    data.forEach((item) => {
+      const group = String(item.group_0);
       allGroups.add(group);
       const dataMap = item.data_map_0 || {};
       Object.entries(dataMap).forEach(([date, value]) => {
-        if (!dateMap[date]) dateMap[date] = { date };
-        dateMap[date][group] = value;
+        const dateStr = String(date);
+        if (!dateMap[dateStr]) dateMap[dateStr] = { date: dateStr };
+        dateMap[dateStr][group] = Number(value);
       });
     });
     // Fill missing group values with 0 for each date
-    const groupList = Array.from(allGroups);
-    data = Object.values(dateMap).map((row: any) => {
+    const groupList: string[] = Array.from(allGroups);
+    data = Object.values(dateMap).map((row) => {
       groupList.forEach(group => {
         if (!(group in row)) row[group] = 0;
       });
       return row;
     });
     // Sort by date
-    data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    data.sort((a, b) => new Date(a.date as string).getTime() - new Date(b.date as string).getTime());
   }
 
   // Use areaKeys prop if provided, otherwise generate from data

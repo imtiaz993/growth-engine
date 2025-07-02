@@ -3,7 +3,7 @@ import DauTrends from "./DauTrends";
 import ARPUTrends from "./ARPUTrends";
 import RevenueTrends from "./RevenueTrends";
 import { getOverviewTrends } from "../../../../api/product";
-import type { ProductFilterState } from "../../../../types";
+import type { ProductFilterState, ChartDataRow } from "../../../../types";
 
 function stripTime(dateStr: string) {
     return dateStr.split(" ")[0];
@@ -13,10 +13,16 @@ function objectToDateArray(obj: Record<string, number>): { date: string, value: 
     return Object.entries(obj).map(([date, value]) => ({ date: stripTime(date), value }));
 }
 
-function pivotRevenueTrends(revenueTrend: any) {
+type RevenueTrend = {
+    ad_revenue?: Record<string, number>;
+    iap_revenue?: Record<string, number>;
+    total_revenue?: Record<string, number>;
+};
+
+function pivotRevenueTrends(revenueTrend: RevenueTrend) {
     const allDatesSet = new Set<string>();
     ["ad_revenue", "iap_revenue", "total_revenue"].forEach(key => {
-        Object.keys(revenueTrend[key] || {}).forEach(date => allDatesSet.add(date));
+        Object.keys(revenueTrend[key as keyof RevenueTrend] || {}).forEach(date => allDatesSet.add(date));
     });
     const allDates = Array.from(allDatesSet).sort();
     return allDates.map(date => ({
@@ -28,9 +34,9 @@ function pivotRevenueTrends(revenueTrend: any) {
 }
 
 const Overview = ({ filters }: { filters: ProductFilterState }) => {
-    const [dauData, setDauData] = useState<any[]>([]);
-    const [arpuData, setArpuData] = useState<any[]>([]);
-    const [revenueData, setRevenueData] = useState<any[]>([]);
+    const [dauData, setDauData] = useState<ChartDataRow[]>([]);
+    const [arpuData, setArpuData] = useState<ChartDataRow[]>([]);
+    const [revenueData, setRevenueData] = useState<ChartDataRow[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

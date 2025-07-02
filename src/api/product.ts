@@ -54,25 +54,49 @@ export const getDailyIapPayerConversion = (filters: ProductFilterState) => {
 
 export const getDailyIapRevenueStacked = (filters: ProductFilterState) => {
   return sabreService.get("/api/v1/product-dashboard/pay-user/daily_iap_revenue_stacked", {
-    params: {},
+    params: filters ? {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
+    } : {},
   });
 };
 
 export const getDauByPayUser = (filters: ProductFilterState) => {
   return sabreService.get("/api/v1/product-dashboard/pay-user/dau_by_pay_user", {
-    params: {},
+    params: filters ? {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
+    } : {},
   });
 };
 
 export const getDailyIapConversionRate = (filters: ProductFilterState) => {
   return sabreService.get("/api/v1/product-dashboard/pay-user/daily_iap_conversion_rate", {
-    params: {},
+    params: filters ? {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
+    } : {},
   });
 };
 
 export const getDailyArppu = (filters: ProductFilterState) => {
   return sabreService.get("/api/v1/product-dashboard/pay-user/daily_arppu", {
-    params: {},
+    params: filters ? {
+      game: filters.game,
+      start_date: filters.dateRange[0],
+      end_date: filters.dateRange[1],
+      platforms: filters.platforms,
+      countries: filters.countries,
+    } : {},
   });
 };
 

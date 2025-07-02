@@ -204,6 +204,7 @@ const Creative = ({ filters }: CreativeProps) => {
       const data = await response.data;
       setTop10Data(data.data.top_creatives || []);
     } catch (error) {
+      console.error(error);
       setError("Failed to load top creatives data.");
       setTop10Data([]);
     } finally {
@@ -228,6 +229,7 @@ const Creative = ({ filters }: CreativeProps) => {
       setIncreasingData(data.data.top5_increasing || []);
       setDecliningData(data.data.top5_declining || []);
     } catch (error) {
+      console.error(error);
       setError("Failed to load creative trending data.");
       setIncreasingData([]);
       setDecliningData([]);

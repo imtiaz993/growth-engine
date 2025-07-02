@@ -58,6 +58,7 @@ const WeeklyRevenue = ({ filters }: WeeklyROASChartProps) => {
       setChannelColors(newChannelColors);
       setActiveChannels(new Set(allChannels));
     } catch (error) {
+      console.error(error);
       setError("Failed to load chart data.");
       setChartData([]);
       setChannelColors({});

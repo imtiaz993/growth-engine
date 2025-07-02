@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BarChart,
   Bar,
@@ -10,11 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { TooltipProps } from "recharts";
-
-type BarData = {
-  date: string;
-  [key: string]: any;
-};
+import type { ChartDataRow } from "../../types";
 
 export interface BarKey {
   key: string;
@@ -23,7 +18,7 @@ export interface BarKey {
 }
 
 interface BarChartsProps {
-  chartData: BarData[];
+  chartData: ChartDataRow[];
   isLoading: boolean;
   error: string | null;
   barKeys: BarKey[];
@@ -111,7 +106,7 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
 
   const maxValue = Math.max(
     ...chartData.map(item =>
-      barKeys.reduce((sum, { key }) => sum + (item[key] || 0), 0)
+      barKeys.reduce((sum, { key }) => sum + (typeof item[key] === 'number' ? item[key] : 0), 0)
     )
   );
   const autoStep = maxValue > 10000 ? 5000 : maxValue > 1000 ? 1000 : maxValue > 100 ? 100 : 10;

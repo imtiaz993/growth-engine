@@ -1,10 +1,11 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import type { ChartDataRow } from "../../../../types";
 
-const DauTrends = ({ chartData, loading }: { chartData: any[]; loading: boolean }) => {
+const DauTrends = ({ chartData, loading }: { chartData: ChartDataRow[]; loading: boolean }) => {
   return (
     <div className="h-[480px] p-6 bg-white rounded-md shadow-lg relative">
       <h2 className="text-lg font-bold text-gray-800 mb-4">DAU Trends</h2>
-      <ResponsiveContainer width="100%" height={360}>
+      {loading ? <div className="text-center py-8">Loading chart...</div> : <ResponsiveContainer width="100%" height={360}>
         <LineChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 60 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="date" angle={-45} textAnchor="end" height={60} tickMargin={12} tick={{ fill: "#666", fontSize: 11, dx: 10 }} padding={{ left: 0, right: 10 }} tickLine={false} axisLine={false} />
@@ -12,7 +13,7 @@ const DauTrends = ({ chartData, loading }: { chartData: any[]; loading: boolean 
           <Tooltip />
           <Line type="monotone" dataKey="value" stroke="#276EF1" strokeWidth={2} dot={false} />
         </LineChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </div>
   );
 };
