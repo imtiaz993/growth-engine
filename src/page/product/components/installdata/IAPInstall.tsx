@@ -7,6 +7,41 @@ const colorPalette = [
   "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
 ];
 
+type GroupApiData = {
+  [key: string]: any;
+  group_0: string;
+  data_map_0: Record<string, number>;
+};
+
+function pivotGroupApiData(
+  apiData: GroupApiData[],
+  groupKey: string = "group_0",
+  valueKey: string = "data_map_0"
+): { chartData: any[]; groupNames: string[] } {
+  const allDatesSet = new Set<string>();
+  apiData.forEach((group: GroupApiData) => {
+    Object.keys(group[valueKey]).forEach((date: string) => {
+      const dateOnly = date.split(' ')[0];
+      allDatesSet.add(dateOnly);
+    });
+  });
+  const allDates = Array.from(allDatesSet).sort();
+  const groupNames = apiData.map((group: GroupApiData) => group[groupKey]);
+  const dateMap: Record<string, any> = {};
+  allDates.forEach((date: string) => {
+    dateMap[date] = { date };
+    apiData.forEach((group: GroupApiData) => {
+      // Find the value for this date (may need to search original keys)
+      const valueEntry = Object.entries(group[valueKey]).find(([k]) => k.split(' ')[0] === date);
+      dateMap[date][group[groupKey]] = valueEntry ? valueEntry[1] : 0;
+    });
+  });
+  return {
+    chartData: Object.values(dateMap),
+    groupNames,
+  };
+}
+
 interface IAPInstallProps {
   filters: ProductFilterState;
 }
@@ -15,10 +50,9 @@ const IAPInstall = ({ filters }: IAPInstallProps) => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [apiData, setApiData] = useState<any[]>([]);
+  const [groupNames, setGroupNames] = useState<string[]>([]);
 
   const fetchData = async () => {
-    // if (!filters.game || !filters.dateRange[0] || !filters.dateRange[1]) return;
     try {
       setIsLoading(true);
       setError(null);
@@ -30,20 +64,13 @@ const IAPInstall = ({ filters }: IAPInstallProps) => {
       if (!Array.isArray(data)) {
         throw new Error("Invalid response format");
       }
-      setApiData(data);
-      const dateMap: Record<string, any> = {};
-      data.forEach((item: any) => {
-        const date = item.$part_date;
-        if (!dateMap[date]) {
-          dateMap[date] = { date };
-        }
-        dateMap[date][item.age_install_bucket] = item.arppu;
-      });
-      setChartData(Object.values(dateMap));
+      const { chartData, groupNames } = pivotGroupApiData(data);
+      setChartData(chartData);
+      setGroupNames(groupNames);
     } catch (err) {
       setError("Failed to load ARPPU data.");
       setChartData([]);
-      setApiData([]);
+      setGroupNames([]);
     } finally {
       setIsLoading(false);
     }
@@ -59,12 +86,10 @@ const IAPInstall = ({ filters }: IAPInstallProps) => {
     filters.dateRange[1],
   ]);
 
-  // Dynamic legend/value label
-  const bucketNames = Array.from(new Set(apiData.map((item: any) => item.age_install_bucket)));
-  const lineKeys = bucketNames.map((bucket, idx) => ({
-    key: bucket,
+  const lineKeys = groupNames.map((name, idx) => ({
+    key: name,
     color: colorPalette[idx % colorPalette.length],
-    name: bucket
+    name
   }));
 
   return (

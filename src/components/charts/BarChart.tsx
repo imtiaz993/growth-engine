@@ -110,8 +110,8 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
     return <div className="text-center py-8">No data available.</div>;
 
   const maxValue = Math.max(
-    ...chartData.flatMap((item) =>
-      barKeys.map(({ key }) => item[key] || 0)
+    ...chartData.map(item =>
+      barKeys.reduce((sum, { key }) => sum + (item[key] || 0), 0)
     )
   );
   const autoStep = maxValue > 10000 ? 5000 : maxValue > 1000 ? 1000 : maxValue > 100 ? 100 : 10;
@@ -153,11 +153,11 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
                 <text
                   x={0}
                   y={0}
-                  dy={16}
-                  textAnchor="end"
+                  dy={8}
+                  textAnchor="middle"
                   fill="#999"
                   fontSize={11}
-                  transform="rotate(-45)"
+                  // transform="rotate(-45)"
                 >
                   {payload.value}
                 </text>
@@ -199,8 +199,8 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
           }))}
         />
         {barKeys.map(({ key, color, name }) => (
-          <Bar key={key} dataKey={key} fill={color} name={name} />
-        ))}
+          <Bar key={key} dataKey={key} fill={color} name={name} stackId={1} />
+        ))}{console.log(barKeys)}
       </BarChart>
     </ResponsiveContainer>
   );

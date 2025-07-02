@@ -21,8 +21,9 @@ function groupDataToDateCentric(data: any[]): any[] {
         allGroups.add(group);
         const dataMap = item.data_map_0 || {};
         Object.entries(dataMap).forEach(([date, value]) => {
-            if (!dateMap[date]) dateMap[date] = { date };
-            dateMap[date][group] = value;
+            const dateOnly = date.split(' ')[0];
+            if (!dateMap[dateOnly]) dateMap[dateOnly] = { date: dateOnly };
+            dateMap[dateOnly][group] = value;
         });
     });
     // Fill missing group values with 0 for each date

@@ -152,7 +152,7 @@ const Product = () => {
         isLoading={isLoadingFilters}
         error={filterError}
       />
-      <Overview />
+      <Overview filters={filters} />
       <InstallData filters={filters} />
       <PayUserData />
       <LTVReport />

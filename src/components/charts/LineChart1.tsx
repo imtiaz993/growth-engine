@@ -149,11 +149,18 @@ const LineChart1: React.FC<LineChart1Props> = ({ chartData, isLoading, error, li
             )
         )
         : 1;
-    const tickStep = maxDataValue > 1 ? Math.ceil(maxDataValue / 5) : 0.3;
+
+    // Use a dynamic step for small values
+    let tickStep: number;
+    if (maxDataValue > 1) tickStep = Math.ceil(maxDataValue / 5);
+    else if (maxDataValue > 0.1) tickStep = 0.05;
+    else if (maxDataValue > 0.01) tickStep = 0.01;
+    else tickStep = 0.001;
+
     const maxTick = Math.ceil(maxDataValue / tickStep) * tickStep;
     const ticks = Array.from(
         { length: Math.ceil(maxTick / tickStep) + 1 },
-        (_, i) => parseFloat((i * tickStep).toFixed(2))
+        (_, i) => parseFloat((i * tickStep).toFixed(4))
     );
 
     if (isLoading) {
@@ -197,11 +204,11 @@ const LineChart1: React.FC<LineChart1Props> = ({ chartData, isLoading, error, li
                                 <text
                                     x={0}
                                     y={0}
-                                    dy={16}
-                                    textAnchor="end"
+                                    dy={8}
+                                    textAnchor="middle"
                                     fill="#999"
                                     fontSize={11}
-                                    transform="rotate(-45)"
+                                    // transform="rotate(-45)"
                                 >
                                     {payload.value}
                                 </text>
