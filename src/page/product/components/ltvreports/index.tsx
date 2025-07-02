@@ -1,5 +1,5 @@
 import LTVChart from "./LTVChart";
-import LtvDx from "./LtvDx";
+import AdsLtvDx from "./AdsLtvDx";
 import LTVInsightCard from "./LTVInsightCard";
 
 const LTVReport = () => {
@@ -12,8 +12,10 @@ const LTVReport = () => {
           <LTVInsightCard />
           <LTVChart />
         </div>
-
-        <LtvDx />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <AdsLtvDx />
+          <AdsLtvDx />
+        </div>
       </div>
     </div>
   );

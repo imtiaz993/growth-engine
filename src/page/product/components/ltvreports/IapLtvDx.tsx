@@ -48,7 +48,7 @@ const ltvLineKeys = lines.map((line, index) => ({
   name: line,
 }));
 
-const LtvDx = () => {
+const IapLtvDx = () => {
   const [selectedLtv, setSelectedLtv] = useState<string | null>("LTV D30");
   const [selectedRange, setSelectedRange] = useState<string | null>(
     "Last 30 days"
@@ -70,7 +70,7 @@ const LtvDx = () => {
   return (
     <div className="h-[600px] p-6 bg-white rounded-md shadow-lg">
       <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-        <h2 className="text-lg font-bold text-gray-800">LTV Detailed Curve</h2>
+        <h2 className="text-lg font-bold text-gray-800">IAP LTV Detailed Curve</h2>
 
         <div className="flex gap-3 items-center flex-wrap">
           <Select
@@ -98,4 +98,4 @@ const LtvDx = () => {
   );
 };
 
-export default LtvDx;
+export default IapLtvDx;
