@@ -34,3 +34,13 @@
   width: 12px !important;
   height: 12px !important;
 }
+/* ✅ Only change the background color for active items */
+.custom-menu .ant-menu-item-selected {
+  background-color: #F0FDF4 !important;
+  border-radius: 6px;
+}
+
+/* Optional: improve hover styling */
+.custom-menu .ant-menu-item:hover {
+  background-color: #f5f5f5 !important;
+}

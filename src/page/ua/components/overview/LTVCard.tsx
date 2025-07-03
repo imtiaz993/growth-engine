@@ -1,7 +1,8 @@
+import type { FC } from "react";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import InfoCard from "../../../../components/InfoCard";
 
-const LTVCard = () => {
+const LTVCard: FC = () => {
   return (
     <div className="mt-5">
       <InfoCard

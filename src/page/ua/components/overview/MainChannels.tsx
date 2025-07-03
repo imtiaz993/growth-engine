@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { FC } from "react";
 import { getChannelBubble } from "../../../../api/ua";
 import QuadrantChart from "../../../../components/charts/QuadrantChart";
 import type { ApiBubbleData, BubbleData, FilterState } from "../../../../types";
@@ -8,7 +9,7 @@ interface QuadrantBubbleChartsProps {
   filters: FilterState;
 }
 
-const MainChannels = ({ filters }: QuadrantBubbleChartsProps) => {
+const MainChannels: FC<QuadrantBubbleChartsProps> = ({ filters }) => {
   const [channelData, setChannelData] = useState<BubbleData[]>([]);
   const [isLoadingChannels, setIsLoadingChannels] = useState(false);
   const [channelError, setChannelError] = useState<string | null>(null);

@@ -1,7 +1,8 @@
+import type { FC } from "react";
 import { ArrowUpOutlined, BulbOutlined } from "@ant-design/icons";
 import InfoCard from "../../../../components/InfoCard";
 
-const PerformanceCard = () => {
+const PerformanceCard: FC = () => {
   return (
     <InfoCard
       heading="Creative Performance"

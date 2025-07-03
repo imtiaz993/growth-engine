@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import MultilineAreaChart from "../../../../components/charts/MultilineAreaChart";
 import PayValueLabels from "./PayValueLabels";
 import { getDailyArppu } from "../../../../api/product";
-import type { ProductFilterState, ChartDataRow } from "../../../../types";
+import type { ChartDataRow } from "../../../../types";
 
 const colorPalette = [
   "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
@@ -47,11 +47,7 @@ function groupDataToDateCentric(data: GroupApiData[]): ChartDataRow[] {
   return processedData;
 }
 
-interface PayDaysProps {
-  filters: ProductFilterState;
-}
-
-const PayDays = ({ filters }: PayDaysProps) => {
+const PayDays = () => {
   const [chartData, setChartData] = useState<ChartDataRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +58,7 @@ const PayDays = ({ filters }: PayDaysProps) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await getDailyArppu(filters);
+        const response = await getDailyArppu();
         if (response.status !== 200) throw new Error(`HTTP error! Status: ${response.status}`);
         const { data } = response.data;
         if (!Array.isArray(data)) throw new Error("Invalid response format");
@@ -79,7 +75,7 @@ const PayDays = ({ filters }: PayDaysProps) => {
       }
     };
     fetchData();
-  }, [filters]);
+  }, []);
 
   const groupNames = extractGroupsFromApiData(apiData);
   const payGroups = groupNames.map((name, idx) => {

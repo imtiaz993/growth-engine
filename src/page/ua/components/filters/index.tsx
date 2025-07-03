@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import type { FC } from "react";
 import AppToken from "./AppToken";
 import Channel from "./Channel";
 import Country from "./Country";
@@ -15,7 +16,7 @@ interface FiltersProps {
   error: string | null;
 }
 
-const Filters = ({
+const Filters: FC<FiltersProps> = ({
   filters,
   setFilters,
   allChannels,
@@ -23,7 +24,7 @@ const Filters = ({
   allAppTokens,
   isLoading,
   error,
-}: FiltersProps) => {
+}) => {
   // Set first app token when allAppTokens changes and appToken is null
   useEffect(() => {
     if (!filters.appToken && allAppTokens.length > 0 && !isLoading) {

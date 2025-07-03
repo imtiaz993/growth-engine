@@ -1,7 +1,8 @@
+import type { FC } from "react";
 import { ArrowUpOutlined, RiseOutlined } from "@ant-design/icons";
 import InfoCard from "../../../../components/InfoCard";
 
-const RevenueCard = () => {
+const RevenueCard: FC = () => {
   return (
     <InfoCard
       heading="Weekly Revenue"
@@ -15,9 +16,8 @@ const RevenueCard = () => {
       }
       content={
         <p>
-          Your Revenue increase by 5% last week, the key contributors on
-          channels are from Tiktok and Snapchat, with your campaign scaling on
-          Korea and China
+          Your Revenue increased by 5% last week. The key contributors were
+          Tiktok and Snapchat, with strong campaign scaling in Korea and China.
         </p>
       }
     />

@@ -1,18 +1,22 @@
 import { Select } from "antd";
+import type { FC } from "react";
 import type { FilterItem, FilterState } from "../../../../types";
+
 interface CountryProps {
-  allCountries:FilterItem[]
+  allCountries: FilterItem[];
   filters: FilterState;
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
   isLoading: boolean;
 }
 
-const Country = ({
+const Country: FC<CountryProps> = ({
   isLoading,
   allCountries,
   filters,
   setFilters,
-}: CountryProps) => {
+}) => {
+  const isAllSelected = filters.countries.length === allCountries.length;
+
   const handleCountryChange = (value: string[]) => {
     if (value.includes("all")) {
       setFilters((prev) => ({
@@ -35,18 +39,17 @@ const Country = ({
       value={filters.countries}
       onChange={handleCountryChange}
       maxTagCount={filters.countries.length === 1 ? 1 : 0}
-      maxTagPlaceholder={(selected) =>
-        selected.length ? `${selected.length} countries selected` : undefined
+      maxTagPlaceholder={() =>
+        isAllSelected
+          ? "All Selected Country"
+          : `${filters.countries.length} countries selected`
       }
       allowClear
       options={
         allCountries.length
           ? [
               {
-                label:
-                  filters.countries.length !== allCountries.length
-                    ? "Select All"
-                    : "Unselect All",
+                label: isAllSelected ? "Unselect All" : "Select All",
                 value: "all",
               },
               ...allCountries.map((country) => ({

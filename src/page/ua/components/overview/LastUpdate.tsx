@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { FC } from "react";
 import { Tooltip } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { getBasicInfo } from "../../../../api/ua";
@@ -7,7 +8,7 @@ interface BasicData {
   adjust_latest_data_date: string;
 }
 
-const LastUpdate = () => {
+const LastUpdate: FC = () => {
   const [basicData, setBasicData] = useState<BasicData | null>(null);
   const getBasicData = async () => {
     try {

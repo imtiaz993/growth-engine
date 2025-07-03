@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { FC } from "react";
 import { getChannelWeeklyROAS } from "../../../../api/ua";
 import { generateChannelColors } from "../../../../utils";
 import ChannelsChart from "../../../../components/charts/ChannelsChart";
@@ -14,11 +15,9 @@ interface WeeklyROASChartProps {
   filters: FilterState;
 }
 
-const WeeklyRevenue = ({ filters }: WeeklyROASChartProps) => {
+const WeeklyRevenue: FC<WeeklyROASChartProps> = ({ filters }) => {
   const [chartData, setChartData] = useState<ChartData[]>([]);
-  const [channelColors, setChannelColors] = useState<Record<string, string>>(
-    {}
-  );
+  const [channelColors, setChannelColors] = useState<Record<string, string>>({});
   const [activeChannels, setActiveChannels] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

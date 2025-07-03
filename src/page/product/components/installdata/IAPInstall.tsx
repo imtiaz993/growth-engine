@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
 import { getIapArppuByInstallAge } from "../../../../api/product";
-import LineChart1 from "../../../../components/charts/LineChart1";
-import type { ProductFilterState, ChartDataRow } from "../../../../types";
+import type { ChartDataRow } from "../../../../types";
+import { Spin } from "antd";
+import LineCharts from "../../../../components/charts/LineCharts";
 
 const colorPalette = [
-  "#276EF1", "#F37D38", "#66C2A5", "#5E72E4", "#F1C40F", "#8E44AD", "#2ECC71"
+  "#276EF1",
+  "#F37D38",
+  "#66C2A5",
+  "#5E72E4",
+  "#F1C40F",
+  "#8E44AD",
+  "#2ECC71",
 ];
 
 type GroupApiData = {
@@ -20,23 +27,29 @@ function pivotGroupApiData(
   const allDatesSet = new Set<string>();
   apiData.forEach((group: GroupApiData) => {
     const valueMap = group[valueKey];
-    if (typeof valueMap === 'object' && valueMap !== null) {
+    if (typeof valueMap === "object" && valueMap !== null) {
       Object.keys(valueMap).forEach((date: string) => {
-        const dateOnly = date.split(' ')[0];
+        const dateOnly = date.split(" ")[0];
         allDatesSet.add(dateOnly);
       });
     }
   });
   const allDates = Array.from(allDatesSet).sort();
-  const groupNames = apiData.map((group: GroupApiData) => String(group[groupKey]));
+  const groupNames = apiData.map((group: GroupApiData) =>
+    String(group[groupKey])
+  );
   const dateMap: Record<string, ChartDataRow> = {};
   allDates.forEach((date: string) => {
     dateMap[date] = { date };
     apiData.forEach((group: GroupApiData) => {
       const valueMap = group[valueKey];
-      if (typeof valueMap === 'object' && valueMap !== null) {
-        const valueEntry = Object.entries(valueMap).find(([k]) => k.split(' ')[0] === date);
-        dateMap[date][String(group[groupKey])] = valueEntry ? Number(valueEntry[1]) : 0;
+      if (typeof valueMap === "object" && valueMap !== null) {
+        const valueEntry = Object.entries(valueMap).find(
+          ([k]) => k.split(" ")[0] === date
+        );
+        dateMap[date][String(group[groupKey])] = valueEntry
+          ? Number(valueEntry[1])
+          : 0;
       }
     });
   });
@@ -46,11 +59,7 @@ function pivotGroupApiData(
   };
 }
 
-interface IAPInstallProps {
-  filters: ProductFilterState;
-}
-
-const IAPInstall = ({ filters }: IAPInstallProps) => {
+const IAPInstall = () => {
   const [chartData, setChartData] = useState<ChartDataRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +69,7 @@ const IAPInstall = ({ filters }: IAPInstallProps) => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await getIapArppuByInstallAge(filters);
+      const response = await getIapArppuByInstallAge();
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -83,27 +92,29 @@ const IAPInstall = ({ filters }: IAPInstallProps) => {
 
   useEffect(() => {
     fetchData();
-  }, [
-    filters.game,
-    filters.platforms,
-    filters.countries,
-    filters.dateRange[0],
-    filters.dateRange[1],
-  ]);
+  }, []);
 
   const lineKeys = groupNames.map((name, idx) => ({
     key: name,
     color: colorPalette[idx % colorPalette.length],
-    name
+    name,
   }));
 
   return (
-    <div className="h-[500px] p-6 bg-white rounded-md shadow-lg flex flex-col justify-between relative z-10">
+    <div className="h-[400px] p-6 bg-white rounded-md shadow-lg flex flex-col justify-between relative z-10">
       <div className="flex-1">
         <h2 className="text-lg font-bold text-gray-800 mb-2">
           IAP ARPPU by Install Age - Last 40 days
         </h2>
-        <LineChart1 chartData={chartData} isLoading={isLoading} error={error} lineKeys={lineKeys} />
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[400px]">
+            <Spin tip="Loading chart..." size="large" className="!top-1/10" />
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-600 py-8">{error}</div>
+        ) : (
+          <LineCharts data={chartData} lineKeys={lineKeys} xKey="date" />
+        )}
       </div>
     </div>
   );

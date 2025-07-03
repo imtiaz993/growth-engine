@@ -18,16 +18,18 @@ const ltvLineKeys = [
 
 const LTVChart = () => {
   return (
-    <div className="h-[450px] p-6 bg-white rounded-md shadow-lg">
+ <div className="h-[390px] p-6 bg-white rounded-md shadow-lg">
       <h2 className="text-ls font-bold text-gray-800 !mb-4">
         Ads LTV vs IAP LTV by Days Since Install
       </h2>
-      <DynamicLineChart
-        data={ltvData}
-        lineKeys={ltvLineKeys}
-        xKey="day"
-        yDomain={[0, 0.035]}
-      />
+      {/* 👇 this relative wrapper is required */}
+      <div className="relative w-full h-[300px]">
+        <DynamicLineChart
+          data={ltvData}
+          lineKeys={ltvLineKeys}
+          xKey="day"
+        />
+      </div>
     </div>
   );
 };

@@ -3,19 +3,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { getFilters } from "../../api/product";
-
+import { useLocation } from "react-router-dom";
 import ProductFilters from "./components/filters";
 import InstallData from "./components/installdata";
 import LTVReport from "./components/ltvreports";
 import Overview from "./components/overview";
 import PayUserData from "./components/payuserdata";
-
-interface FilterState {
-  game: string | null;
-  platforms: string[];
-  countries: string[];
-  dateRange: [string | null, string | null];
-}
+import type { ProductFilterState } from "../../types";
 
 interface FilterItem {
   label: string;
@@ -25,10 +19,9 @@ interface FilterItem {
 const Product = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
-  const [filters, setFilters] = useState<FilterState>({
+  const location = useLocation();
+  const [filters, setFilters] = useState<ProductFilterState>({
     game: searchParams.get("game") || null,
-    platforms: searchParams.get("platforms")?.split(",").filter(Boolean) || [],
     countries: searchParams.get("countries")?.split(",").filter(Boolean) || [],
     dateRange: [
       searchParams.get("start_date") ||
@@ -38,7 +31,6 @@ const Product = () => {
   });
 
   const [allGames, setAllGames] = useState<FilterItem[]>([]);
-  const [allPlatforms, setAllPlatforms] = useState<FilterItem[]>([]);
   const [allCountries, setAllCountries] = useState<FilterItem[]>([]);
   const [isLoadingFilters, setIsLoadingFilters] = useState(false);
   const [filterError, setFilterError] = useState<string | null>(null);
@@ -55,31 +47,14 @@ const Product = () => {
         label: g,
         value: g.toLowerCase().replace(/\s+/g, "_"),
       }));
-      const platformOptions = data.platforms.map((p: string) => ({
-        label: p,
-        value: p.toLowerCase(),
-      }));
+
       const countryOptions = data.countries.map((c: string) => ({
         label: c,
         value: c.toLowerCase(),
       }));
 
       setAllGames(gameOptions);
-      setAllPlatforms(platformOptions);
       setAllCountries(countryOptions);
-
-      // handle ?platforms=all
-      if (
-        searchParams.get("platforms") === "all" &&
-        platformOptions.length > 0
-      ) {
-        setFilters((prev) => ({
-          ...prev,
-          platforms: platformOptions.map(
-            (p: { label: string; value: string }) => p.value
-          ),
-        }));
-      }
 
       if (
         searchParams.get("countries") === "all" &&
@@ -101,13 +76,21 @@ const Product = () => {
       }
       setFilterError("Failed to load filters.");
       setAllGames([]);
-      setAllPlatforms([]);
       setAllCountries([]);
     } finally {
       setIsLoadingFilters(false);
     }
   };
-
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.slice(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
+  }, [location]);
   useEffect(() => {
     getFiltersData();
   }, []);
@@ -115,15 +98,6 @@ const Product = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams();
     if (filters.game) queryParams.set("game", filters.game);
-
-    if (
-      filters.platforms.length === allPlatforms.length &&
-      allPlatforms.length > 0
-    ) {
-      queryParams.set("platforms", "all");
-    } else if (filters.platforms.length) {
-      queryParams.set("platforms", filters.platforms.join(","));
-    }
 
     if (
       filters.countries.length === allCountries.length &&
@@ -139,7 +113,7 @@ const Product = () => {
     if (filters.dateRange[1]) queryParams.set("end_date", filters.dateRange[1]);
 
     navigate(`?${queryParams.toString()}`, { replace: true });
-  }, [filters, allCountries, allPlatforms, navigate]);
+  }, [filters, allCountries, navigate]);
 
   return (
     <div className="p-4 pt-0">
@@ -147,15 +121,25 @@ const Product = () => {
         filters={filters}
         setFilters={setFilters}
         allGames={allGames}
-        allPlatforms={allPlatforms}
         allCountries={allCountries}
         isLoading={isLoadingFilters}
         error={filterError}
       />
-      <Overview filters={filters} />
-      <InstallData filters={filters} />
-      <PayUserData />
-      <LTVReport />
+      {/* <div id="product-overview">
+        <Overview />
+      </div>
+
+      <div id="product-installdata">
+        <InstallData />
+      </div>
+
+      <div id="product-payuserdata">
+        <PayUserData />
+      </div> */}
+
+      <div id="product-ltv">
+        <LTVReport />
+      </div>
     </div>
   );
 };

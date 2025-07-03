@@ -1,113 +1,68 @@
 import { sabreService } from "./service";
-import type { ProductFilterState } from "../types";
 export const getFilters = () => {
   return sabreService.get("/mockdata.json");
 };
 
-export const getIapArppuByInstallAge = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/install/iap_arppu_by_install_age", {
-    params: {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    },
-  });
+export const getIapArppuByInstallAge = () => {
+  return sabreService.get(
+    "/api/v1/product-dashboard/install/iap_arppu_by_install_age"
+  );
 };
 
-export const getDailyIapRevenueByInstallAge = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/install/daily_iap_revenue_by_install_age", {
-    params: {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    },
-  });
+export const getDailyIapRevenueByInstallAge = () => {
+  return sabreService.get(
+    "/api/v1/product-dashboard/install/daily_iap_revenue_by_install_age",
+    {}
+  );
 };
 
-export const getDauByInstallAge = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/install/dau_by_install_age", {
-    params: {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    },
-  });
+export const getDauByInstallAge = () => {
+  return sabreService.get(
+    "/api/v1/product-dashboard/install/dau_by_install_age",
+    {}
+  );
 };
 
-export const getDailyIapPayerConversion = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/install/daily_iap_payer_conversion", {
-    params: {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    },
-  });
+export const getDailyIapPayerConversion = () => {
+  return sabreService.get(
+    "/api/v1/product-dashboard/install/daily_iap_payer_conversion",
+    {}
+  );
 };
 
-export const getDailyIapRevenueStacked = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/pay-user/daily_iap_revenue_stacked", {
-    params: filters ? {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    } : {},
-  });
+export const getDailyIapRevenueStacked = () => {
+  return sabreService.get(
+    "/api/v1/product-dashboard/pay-user/daily_iap_revenue_stacked",
+    {}
+  );
 };
 
-export const getDauByPayUser = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/pay-user/dau_by_pay_user", {
-    params: filters ? {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    } : {},
-  });
+export const getDauByPayUser = () => {
+  return sabreService.get(
+    "/api/v1/product-dashboard/pay-user/dau_by_pay_user",
+    {}
+  );
 };
 
-export const getDailyIapConversionRate = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/pay-user/daily_iap_conversion_rate", {
-    params: filters ? {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    } : {},
-  });
+export const getDailyIapConversionRate = () => {
+  return sabreService.get(
+    "/api/v1/product-dashboard/pay-user/daily_iap_conversion_rate",
+    {}
+  );
 };
 
-export const getDailyArppu = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/pay-user/daily_arppu", {
-    params: filters ? {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    } : {},
-  });
+export const getDailyArppu = () => {
+  return sabreService.get("/api/v1/product-dashboard/pay-user/daily_arppu", {});
 };
 
-export const getOverviewTrends = (filters: ProductFilterState) => {
-  return sabreService.get("/api/v1/product-dashboard/overview", {
-    params: {
-      game: filters.game,
-      start_date: filters.dateRange[0],
-      end_date: filters.dateRange[1],
-      platforms: filters.platforms,
-      countries: filters.countries,
-    },
-  });
+export const getOverviewTrends = () => {
+  return sabreService.get("/api/v1/product-dashboard/overview", {});
+};
+
+export const getIapLtvDetail = () => {
+  return sabreService.get("/api/v1/product-dashboard/ltv/iap_ltv_detail", {});
+};
+
+export const getAdsLtvDetail = () => {
+  return sabreService.get("/api/v1/product-dashboard/ltv/ads_ltv_detail", {});
 };

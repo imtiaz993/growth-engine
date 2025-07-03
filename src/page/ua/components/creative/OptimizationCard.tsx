@@ -1,7 +1,9 @@
+import type { FC } from "react";
+
 import { RocketOutlined } from "@ant-design/icons";
 import InfoCard from "../../../../components/InfoCard";
 
-const OptimizationCard = () => {
+const OptimizationCard: FC = () => {
   return (
     <InfoCard
       heading="Optimization Tip"

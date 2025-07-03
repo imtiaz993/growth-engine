@@ -8,20 +8,42 @@ interface CountryProps {
 }
 
 const CountryFilter: FC<CountryProps> = ({ value, onChange, options }) => {
+  const handleChange = (val: string[]) => {
+    if (val.includes("all")) {
+      const isAllSelected = value.length === options.length;
+      onChange(isAllSelected ? [] : options.map((opt) => opt.value));
+      return;
+    }
+    onChange(val);
+  };
+
+  const dropdownOptions = options.length
+    ? [
+        {
+          label:
+            value.length !== options.length ? "Select All" : "Unselect All",
+          value: "all",
+        },
+        ...options,
+      ]
+    : [];
+
   return (
     <Select
       mode="multiple"
       placeholder="Select Country"
-      options={options}
+      options={dropdownOptions}
       className="w-52"
       value={value}
-      onChange={onChange}
+      onChange={handleChange}
       allowClear
       maxTagCount={0}
       maxTagPlaceholder={() => {
-        return value.length === 1
-          ? options.find((opt) => opt.value === value[0])?.label
-          : `${value.length} countries selected`;
+        if (value.length === options.length) return "All Selected";
+        if (value.length === 1) {
+          return options.find((opt) => opt.value === value[0])?.label;
+        }
+        return `${value.length} countries selected`;
       }}
     />
   );

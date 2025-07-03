@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { FC } from "react";
 import { getGeoBubble } from "../../../../api/ua";
 import QuadrantChart from "../../../../components/charts/QuadrantChart";
 import type { ApiBubbleData, BubbleData, FilterState } from "../../../../types";
@@ -8,7 +9,7 @@ interface QuadrantBubbleChartsProps {
   filters: FilterState;
 }
 
-const MainGeos = ({ filters }: QuadrantBubbleChartsProps) => {
+const MainGeos: FC<QuadrantBubbleChartsProps> = ({ filters }) => {
   const [geoData, setGeoData] = useState<BubbleData[]>([]);
   const [isLoadingGeos, setIsLoadingGeos] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
@@ -36,9 +37,9 @@ const MainGeos = ({ filters }: QuadrantBubbleChartsProps) => {
       const processedData: BubbleData[] = data.map(
         (item: ApiBubbleData, index: number) => ({
           name: item.name,
-          roi: item.roas_d7, // ROAS D7 for X-axis
-          investment: Math.min(item.ltv_d7, 10000), // LTV D7 for Y-axis, capped at 10,000
-          contribution: item.cost, // Cost for bubble size
+          roi: item.roas_d7,
+          investment: Math.min(item.ltv_d7, 10000),
+          contribution: item.cost,
           color: "",
           key: index.toString(),
         })
@@ -55,8 +56,7 @@ const MainGeos = ({ filters }: QuadrantBubbleChartsProps) => {
       setGeoData(finalData);
     } catch (error) {
       console.error(error);
-      const errorMessage = `Failed to load geo bubble data.`;
-      setGeoError(errorMessage);
+      setGeoError("Failed to load geo bubble data.");
       setGeoData([]);
     } finally {
       setIsLoadingGeos(false);

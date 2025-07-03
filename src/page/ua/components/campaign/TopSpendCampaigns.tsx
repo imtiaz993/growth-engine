@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import { Table } from "antd";
 import { customToFixed } from "../../../../utils";
 
@@ -83,10 +84,10 @@ const top10columns = [
   },
 ];
 
-const TopSpendCampaigns = ({
+const TopSpendCampaigns: FC<TopSpendCampaignsProps> = ({
   top10Data,
   isLoading,
-}: TopSpendCampaignsProps) => {
+}) => {
   return (
     <div className="bg-white p-3 rounded-md shadow-xl">
       <p className="font-medium !my-3">

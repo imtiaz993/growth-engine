@@ -1,3 +1,4 @@
+import { Spin } from "antd";
 import {
   BarChart,
   Bar,
@@ -10,6 +11,8 @@ import {
 } from "recharts";
 import type { TooltipProps } from "recharts";
 import type { ChartDataRow } from "../../types";
+import { useEffect, useState } from "react";
+import { customToFixed } from "../../utils";
 
 export interface BarKey {
   key: string;
@@ -22,20 +25,52 @@ interface BarChartsProps {
   isLoading: boolean;
   error: string | null;
   barKeys: BarKey[];
+  height?: number;
 }
+
+const CustomLegend = ({
+  lineKeys,
+  toggleBar,
+  visibleBars,
+}: {
+  lineKeys: BarKey[];
+  toggleBar: (key: string) => void;
+  visibleBars: string[];
+}) => (
+  <div className="flex justify-center">
+    <div className="flex gap-6 overflow-auto justify-start pt-2">
+      {lineKeys.map(({ key, color, name }) => (
+        <div
+          key={key}
+          className={`flex items-center gap-2 cursor-pointer ${
+            visibleBars.includes(key) ? "" : "line-through"
+          }`}
+          onClick={() => toggleBar(key)}
+        >
+          <div className="w-3 h-3" style={{ backgroundColor: color }} />
+          <span className="text-[12px] whitespace-nowrap" style={{ color }}>
+            {name}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 const CustomTooltip = ({
   active,
   payload,
   label,
   coordinate,
-  barKeys
+  barKeys,
 }: TooltipProps<number, string> & { barKeys: BarKey[] }) => {
   if (!active || !payload?.length || !coordinate) return null;
   const tooltipWidth = 200;
   const tooltipHeight = 140;
   const minMargin = 8;
-  const chartWrapper = document.querySelector(".recharts-wrapper") as HTMLElement;
+  const chartWrapper = document.querySelector(
+    ".recharts-wrapper"
+  ) as HTMLElement;
   const chartWidth = chartWrapper?.offsetWidth || 800;
   const chartHeight = chartWrapper?.offsetHeight || 400;
   const x = coordinate?.x ?? 0;
@@ -86,7 +121,7 @@ const CustomTooltip = ({
                 </span>
               </div>
               <span className="text-[11px] font-medium text-gray-800">
-                {Number(entry.value).toLocaleString()}
+                {customToFixed(Number(entry.value))}
               </span>
             </div>
           );
@@ -96,20 +131,54 @@ const CustomTooltip = ({
   );
 };
 
-const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => {
-  if (isLoading)
-    return <div className="text-center py-8">Loading chart...</div>;
+const BarCharts = ({
+  chartData,
+  isLoading,
+  error,
+  barKeys,
+  height,
+}: BarChartsProps) => {
+  const [visibleBars, setVisibleBars] = useState<string[]>([]);
+
+  useEffect(() => {
+    setVisibleBars(barKeys.map((b) => b.key));
+  }, [barKeys]);
+
+  const toggleBar = (key: string) => {
+    setVisibleBars((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[400px]">
+        <Spin tip="Loading chart..." className="!top-1/10" size="large" />
+      </div>
+    );
+  }
+
   if (error)
     return <div className="text-center text-red-600 py-8">{error}</div>;
   if (!chartData.length)
     return <div className="text-center py-8">No data available.</div>;
 
   const maxValue = Math.max(
-    ...chartData.map(item =>
-      barKeys.reduce((sum, { key }) => sum + (typeof item[key] === 'number' ? item[key] : 0), 0)
+    ...chartData.map((item) =>
+      barKeys.reduce(
+        (sum, { key }) => sum + (typeof item[key] === "number" ? item[key] : 0),
+        0
+      )
     )
   );
-  const autoStep = maxValue > 10000 ? 5000 : maxValue > 1000 ? 1000 : maxValue > 100 ? 100 : 10;
+  const autoStep =
+    maxValue > 10000
+      ? 5000
+      : maxValue > 1000
+      ? 1000
+      : maxValue > 100
+      ? 100
+      : 10;
   const tickStep = autoStep;
   const maxTick = Math.ceil(maxValue / tickStep) * tickStep;
   const ticks = Array.from(
@@ -118,10 +187,10 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
   );
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={height ? height : 300}>
       <BarChart
         data={chartData}
-        margin={{ top: 20, right: 10, left: 5, bottom: 60 }}
+        margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
       >
         <CartesianGrid
           strokeDasharray="3 3"
@@ -136,11 +205,13 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
           interval={0}
           angle={-45}
           textAnchor="end"
-          height={60}
           tickMargin={12}
           tick={(props) => {
             const { x, y, payload, index } = props;
-            const total = props && props.payload && props.payload.length ? props.payload.length : (chartData?.length || 0);
+            const total =
+              props && props.payload && props.payload.length
+                ? props.payload.length
+                : chartData?.length || 0;
             const shouldShow = total > 20 ? index % 2 === 0 : true;
             if (!shouldShow) return <g />;
             return (
@@ -152,7 +223,6 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
                   textAnchor="middle"
                   fill="#999"
                   fontSize={11}
-                  // transform="rotate(-45)"
                 >
                   {payload.value}
                 </text>
@@ -168,34 +238,31 @@ const BarCharts = ({ chartData, isLoading, error, barKeys }: BarChartsProps) => 
           domain={[0, maxTick]}
           ticks={ticks}
         />
-        <Tooltip
-          content={<CustomTooltip barKeys={barKeys} />}
-          cursor={{ fill: "transparent" }}
-          wrapperStyle={{ overflow: "visible", pointerEvents: "none" }}
-        />
+
+        <Tooltip content={<CustomTooltip barKeys={barKeys} />} cursor={false} />
         <Legend
           verticalAlign="bottom"
-          height={70}
-          wrapperStyle={{
-            paddingTop: 8,
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            rowGap: 12,
-            columnGap: 24,
-            fontSize: 12,
-            width: "100%",
-          }}
-          payload={barKeys.map(({ key, color, name }) => ({
-            value: name,
-            type: "rect",
-            id: key,
-            color,
-          }))}
+          height={10}
+          content={
+            <CustomLegend
+              lineKeys={barKeys}
+              toggleBar={toggleBar}
+              visibleBars={visibleBars}
+            />
+          }
         />
-        {barKeys.map(({ key, color, name }) => (
-          <Bar key={key} dataKey={key} fill={color} name={name} stackId={1} />
-        ))}{console.log(barKeys)}
+        {barKeys.map(
+          ({ key, color, name }) =>
+            visibleBars.includes(key) && (
+              <Bar
+                key={key}
+                dataKey={key}
+                fill={color}
+                name={name}
+                stackId={1}
+              />
+            )
+        )}
       </BarChart>
     </ResponsiveContainer>
   );

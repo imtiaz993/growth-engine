@@ -6,13 +6,9 @@ import IAPInstall from "./IAPInstall";
 import ConversionInstall from "./ConversionInstall";
 import SegmentationCard from "./SegmentationCard";
 import MetricBreakdownCard from "./MetricBreakdownCard";
-import type { ProductFilterState } from "../../../../types";
 
-interface InstallDataProps {
-  filters: ProductFilterState;
-}
 
-const InstallData:FC<InstallDataProps> = ({ filters }: InstallDataProps) => {
+const InstallData:FC = () => {
   return (
     <div>
       <h1 className="font-bold text-xl pt-10">Install Data</h1>
@@ -21,10 +17,10 @@ const InstallData:FC<InstallDataProps> = ({ filters }: InstallDataProps) => {
         <MetricBreakdownCard />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-4">
-        <InstallAge filters={filters} />
-        <InstallDays  filters={filters} />
-        <IAPInstall filters={filters} />
-        <ConversionInstall filters={filters} />
+        <InstallAge />
+        <InstallDays />
+        <IAPInstall />
+        <ConversionInstall />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { DatePicker } from "antd";
 import dayjs, { Dayjs } from "dayjs";
+import type { FC } from "react";
 import type { FilterState } from "../../../../types";
 
 const { RangePicker } = DatePicker;
@@ -10,7 +11,7 @@ interface DateRangeProps {
   isLoading: boolean;
 }
 
-const DateRange = ({ isLoading, filters, setFilters }: DateRangeProps) => {
+const DateRange: FC<DateRangeProps> = ({ isLoading, filters, setFilters }) => {
   const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
     setFilters((prev: FilterState) => ({
       ...prev,

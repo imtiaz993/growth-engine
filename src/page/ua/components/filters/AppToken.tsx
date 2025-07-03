@@ -1,4 +1,5 @@
 import { Select } from "antd";
+import type { FC } from "react";
 import type { FilterItem, FilterState } from "../../../../types";
 
 interface AppTokenProps {
@@ -8,12 +9,12 @@ interface AppTokenProps {
   isLoading: boolean;
 }
 
-const AppToken = ({
+const AppToken: FC<AppTokenProps> = ({
   allAppTokens,
   isLoading,
   filters,
   setFilters,
-}: AppTokenProps) => {
+}) => {
   return (
     <Select
       placeholder="Select App"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { FC } from "react";
 import { getCreativeTrending, getTop10Creatives } from "../../../../api/ua";
 import { customToFixed } from "../../../../utils";
 import type { FilterState } from "../../../../types";
@@ -181,7 +182,7 @@ const comparingColumns = [
   },
 ];
 
-const Creative = ({ filters }: CreativeProps) => {
+const Creative: FC<CreativeProps> = ({ filters }) => {
   const [top10Data, setTop10Data] = useState([]);
   const [increasingData, setIncreasingData] = useState([]);
   const [decliningData, setDecliningData] = useState([]);

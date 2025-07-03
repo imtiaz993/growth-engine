@@ -1,19 +1,22 @@
 import { Select } from "antd";
+import type { FC } from "react";
 import type { FilterItem, FilterState } from "../../../../types";
 
 interface ChannelProps {
-  allChannels:FilterItem[];
+  allChannels: FilterItem[];
   filters: FilterState;
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
   isLoading: boolean;
 }
 
-const Channel = ({
+const Channel: FC<ChannelProps> = ({
   isLoading,
   allChannels,
   filters,
   setFilters,
-}: ChannelProps) => {
+}) => {
+  const isAllSelected = filters.channels.length === allChannels.length;
+
   const handleChannelChange = (value: string[]) => {
     if (value.includes("all")) {
       setFilters((prev) => ({
@@ -35,17 +38,16 @@ const Channel = ({
       value={filters.channels}
       onChange={handleChannelChange}
       maxTagCount={filters.channels.length === 1 ? 1 : 0}
-      maxTagPlaceholder={(selected) =>
-        selected.length > 1 ? `${selected.length} channels selected` : undefined
+      maxTagPlaceholder={() =>
+        isAllSelected
+          ? "All Selected Channel"
+          : `${filters.channels.length} channels selected`
       }
       options={
         allChannels.length
           ? [
               {
-                label:
-                  filters.channels.length !== allChannels.length
-                    ? "Select All"
-                    : "Unselect All",
+                label: isAllSelected ? "Unselect All" : "Select All",
                 value: "all",
               },
               ...allChannels.map((channel) => ({

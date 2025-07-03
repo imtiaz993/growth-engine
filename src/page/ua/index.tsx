@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import type { FC } from "react";
 import dayjs from "dayjs";
 import { getFilters } from "../../api/ua";
 import Filters from "./components/filters";
@@ -26,7 +27,8 @@ interface FiltersResponse {
   errors: null;
 }
 
-const Page = () => {
+const Page: FC = () => {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [filters, setFilters] = useState<FilterState>({
@@ -64,33 +66,26 @@ const Page = () => {
         setAllCountries(responseData.data.countries);
         setAllAppTokens(responseData.data.app_tokens);
 
-        // If URL has channels=all, set channels to all values after API fetch
         if (
           searchParams.get("channels") === "all" &&
           responseData.data.channels.length > 0
         ) {
-          setFilters((prev: FilterState) => ({
+          setFilters((prev) => ({
             ...prev,
-            channels: responseData.data.channels.map(
-              (channel) => channel.value
-            ),
+            channels: responseData.data.channels.map((c) => c.value),
           }));
         }
 
-        // If URL has countries=all, set countries to all values after API fetch
         if (
           searchParams.get("countries") === "all" &&
           responseData.data.countries.length > 0
         ) {
-          setFilters((prev: FilterState) => ({
+          setFilters((prev) => ({
             ...prev,
-            countries: responseData.data.countries.map(
-              (country) => country.value
-            ),
+            countries: responseData.data.countries.map((c) => c.value),
           }));
         }
 
-        // Set first app token if none is selected
         if (
           !searchParams.get("app_token") &&
           responseData.data.app_tokens.length > 0
@@ -104,15 +99,26 @@ const Page = () => {
         throw new Error("Invalid response format");
       }
     } catch (error) {
+      console.error(error);
       setFilterError("Failed to load filters. Please try again.");
       setAllChannels([]);
       setAllCountries([]);
       setAllAppTokens([]);
-      console.error(error);
     } finally {
       setIsLoadingFilters(false);
     }
   };
+
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.slice(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
+  }, [location]);
 
   useEffect(() => {
     getFiltersData();
@@ -120,7 +126,9 @@ const Page = () => {
 
   useEffect(() => {
     const queryParams = new URLSearchParams();
+
     if (filters.appToken) queryParams.set("app_token", filters.appToken);
+
     if (
       filters.channels.length &&
       filters.channels.length === allChannels.length &&
@@ -130,6 +138,7 @@ const Page = () => {
     } else if (filters.channels.length) {
       queryParams.set("channels", filters.channels.join(","));
     }
+
     if (
       filters.countries.length &&
       filters.countries.length === allCountries.length &&
@@ -139,8 +148,10 @@ const Page = () => {
     } else if (filters.countries.length) {
       queryParams.set("countries", filters.countries.join(","));
     }
+
     if (filters.startDate) queryParams.set("start_date", filters.startDate);
     if (filters.endDate) queryParams.set("end_date", filters.endDate);
+
     const queryString = queryParams.toString();
     navigate(queryString ? `?${queryString}` : "", { replace: true });
   }, [filters, allChannels, allCountries, navigate]);
@@ -156,9 +167,18 @@ const Page = () => {
         isLoading={isLoadingFilters}
         error={filterError}
       />
-      <Overview filters={filters} />
-      <Campaign filters={filters} />
-      <Creative filters={filters} />
+
+      <div id="ua-overview">
+        <Overview filters={filters} />
+      </div>
+
+      <div id="ua-campaign">
+        <Campaign filters={filters} />
+      </div>
+
+      <div id="ua-creative">
+        <Creative filters={filters} />
+      </div>
     </div>
   );
 };

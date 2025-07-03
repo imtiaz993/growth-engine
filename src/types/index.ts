@@ -12,7 +12,6 @@ export type FilterState = {
 };
   export type ProductFilterState = { 
   game: string | null;
-  platforms: string[];
   countries: string[];
   dateRange: [string | null, string | null];
 };

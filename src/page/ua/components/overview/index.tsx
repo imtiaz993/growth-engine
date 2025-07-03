@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import LastUpdate from "./LastUpdate";
 import ROASCard from "./ROASCard";
 import RevenueCard from "./RevenueCard";
@@ -11,7 +12,7 @@ interface OverviewProps {
   filters: FilterState;
 }
 
-const Overview = ({ filters }: OverviewProps) => {
+const Overview: FC<OverviewProps> = ({ filters }) => {
   return (
     <div>
       <div className="flex justify-between pt-5">

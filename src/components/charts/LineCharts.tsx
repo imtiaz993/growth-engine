@@ -1,4 +1,3 @@
-
 import {
   LineChart,
   Line,
@@ -10,6 +9,8 @@ import {
   Legend,
 } from "recharts";
 import type { TooltipProps } from "recharts";
+import { customToFixed } from "../../utils";
+import { useEffect, useState } from "react";
 
 interface LineKey {
   key: string;
@@ -23,18 +24,34 @@ interface DynamicLineChartProps {
   yDomain?: [number, number];
 }
 
-
-const CustomLegend = ({ lineKeys }: { lineKeys: LineKey[] }) => (
-  <div className="flex justify-center gap-6 pt-2 text-sm">
-    {lineKeys.map(({ key, color, name }) => (
-      <div key={key} className="flex items-center gap-2">
-        <div className="w-3 h-3" style={{ backgroundColor: color }} />
-        <span style={{ color }}>{name}</span>
-      </div>
-    ))}
+const CustomLegend = ({
+  lineKeys,
+  toggleLine,
+  visibleBars,
+}: {
+  lineKeys: LineKey[];
+  toggleLine: (key: string) => void;
+  visibleBars: string[];
+}) => (
+  <div className="flex justify-center">
+    <div className="flex gap-6 overflow-auto justify-start pt-2">
+      {lineKeys.map(({ key, color, name }) => (
+        <div
+          key={key}
+          className={`flex items-center gap-2 cursor-pointer ${
+            visibleBars.includes(key) ? "" : "line-through"
+          }`}
+          onClick={() => toggleLine(key)}
+        >
+          <div className="w-3 h-3" style={{ backgroundColor: color }} />
+          <span className="text-[12px] whitespace-nowrap" style={{ color }}>
+            {name}
+          </span>
+        </div>
+      ))}
+    </div>
   </div>
 );
-
 const CustomTooltip = ({
   active,
   payload,
@@ -54,7 +71,9 @@ const CustomTooltip = ({
   const tooltipWidth = 260;
   const tooltipHeight = 200;
   const minMargin = 10;
-  const chartContainer = document.querySelector(".recharts-wrapper") as HTMLElement;
+  const chartContainer = document.querySelector(
+    ".recharts-wrapper"
+  ) as HTMLElement;
   const containerBox = chartContainer?.getBoundingClientRect();
   if (!containerBox) return null;
 
@@ -68,7 +87,8 @@ const CustomTooltip = ({
     left = coordinate.x - tooltipWidth - 10;
   }
   if (left < minMargin) left = minMargin;
-  if (top + tooltipHeight > containerHeight) top = containerHeight - tooltipHeight - 10;
+  if (top + tooltipHeight > containerHeight)
+    top = containerHeight - tooltipHeight - 10;
   if (top < minMargin) top = minMargin;
 
   return (
@@ -101,7 +121,7 @@ const CustomTooltip = ({
               <span className="text-gray-700">{entry.name}</span>
             </div>
             <span className="font-medium text-gray-800">
-              {(Number(entry.value) * 10000).toLocaleString()}
+              {customToFixed(Number(entry.value))}
             </span>
           </div>
         ))}
@@ -110,40 +130,76 @@ const CustomTooltip = ({
   );
 };
 
-const LineCharts = ({ data, lineKeys, xKey, yDomain }: DynamicLineChartProps) => {
+const LineCharts = ({
+  data,
+  lineKeys,
+  xKey,
+  yDomain,
+}: DynamicLineChartProps) => {
+  const [visibleLines, setVisibleLines] = useState<string[]>([]);
+
+  useEffect(() => {
+    setVisibleLines(lineKeys.map((l) => l.key));
+  }, [lineKeys]);
+
+  const toggleLine = (key: string) => {
+    setVisibleLines((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-        <XAxis
-          dataKey={xKey}
-          tick={{ fill: "#999", fontSize: 11, dx: 10 }}
-          padding={{ left: 10, right: 10 }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <YAxis
-          domain={yDomain || ['auto', 'auto']}
-          tick={{ fill: "#999", fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend verticalAlign="bottom" height={36} content={<CustomLegend lineKeys={lineKeys} />} />
-        {lineKeys.map(({ key, color, name }) => (
-          <Line
-            key={key}
-            type="monotone"
-            dataKey={key}
-            stroke={color}
-            strokeWidth={2}
-            name={name}
-            dot={{ r: 3 }}
-            activeDot={{ r: 5 }}
+    <div className="relative">
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart
+          data={data}
+          margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+          <XAxis
+            dataKey={xKey}
+            tick={{ fill: "#999", fontSize: 11, dx: 10 }}
+            padding={{ left: 10, right: 10 }}
+            axisLine={false}
+            tickLine={false}
           />
-        ))}
-      </LineChart>
-    </ResponsiveContainer>
+          <YAxis
+            domain={yDomain || ["auto", "auto"]}
+            tick={{ fill: "#999", fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip content={<CustomTooltip />} cursor={false} />
+          <Legend
+            verticalAlign="bottom"
+            height={10}
+            content={
+              <CustomLegend
+                lineKeys={lineKeys}
+                toggleLine={toggleLine}
+                visibleBars={visibleLines}
+              />
+            }
+          />
+
+          {lineKeys.map(
+            ({ key, color, name }) =>
+              visibleLines.includes(key) && (
+                <Line
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={color}
+                  strokeWidth={2}
+                  name={name}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              )
+          )}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
