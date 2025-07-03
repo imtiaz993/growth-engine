@@ -1,6 +1,9 @@
-import { useState } from "react";
-import { Select } from "antd";
+import { useState, useEffect } from "react";
+import { Select, Spin } from "antd";
 import DynamicLineChart from "../../../../components/charts/LineCharts";
+import type { ChartDataRow } from "../../../../types";
+import { getIapLtvDetail } from "../../../../api/product";
+
 const colors = [
   "#f57c00",
   "#1976d2",
@@ -11,48 +14,47 @@ const colors = [
   "#d32f2f",
   "#5e35b1",
 ];
-const lines = [
-  "2025-05-20",
-  "2025-05-21",
-  "2025-05-22",
-  "2025-05-23",
-  "2025-05-24",
-  "2025-05-25",
-  "2025-05-26",
-];
-type ChartData = {
-  day: number;
-  dayLabel: string;
-  [key: string]: number | string | null;
-};
-const chartData: ChartData[] = Array.from({ length: 31 }, (_, i) => {
-  const entry: ChartData = { day: i, dayLabel: `Day ${i}` };
-  lines.forEach((line, idx) => {
-    const maxDaysAvailable = 31 - idx;
-    entry[line] =
-      i <= maxDaysAvailable
-        ? Math.max(
-            0,
-            Math.round(
-              100 + i * 20 + Math.sin(i + idx) * 50 + Math.random() * 40 - 20
-            )
-          )
-        : null;
-  });
-  return entry;
-});
-
-const ltvLineKeys = lines.map((line, index) => ({
-  key: line,
-  color: colors[index % colors.length],
-  name: line,
-}));
 
 const IapLtvDx = () => {
   const [selectedLtv, setSelectedLtv] = useState<string | null>("LTV D30");
-  const [selectedRange, setSelectedRange] = useState<string | null>(
-    "Last 30 days"
-  );
+  const [selectedRange, setSelectedRange] = useState<string | null>("Last 30 days");
+  const [chartData, setChartData] = useState<ChartDataRow[]>([]);
+  const [lineKeys, setLineKeys] = useState<{ key: string; color: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await getIapLtvDetail();
+        if (response.status !== 200) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = response.data.data || [];
+        if (!Array.isArray(data)) throw new Error("Invalid response format");
+        setChartData(data);
+        // Dynamically get all keys except 'date' and 'ta_app_install_count'
+        const keys = Object.keys(data[0] || {}).filter(
+          (k) => k !== "date" && k !== "ta_app_install_count"
+        );
+        setLineKeys(
+          keys.map((key, idx) => ({
+            key,
+            color: colors[idx % colors.length],
+            name: key,
+          }))
+        );
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load LTV data.");
+        setChartData([]);
+        setLineKeys([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const ltvOptions = [
     { label: "LTV D0", value: "LTV D0" },
@@ -68,10 +70,11 @@ const IapLtvDx = () => {
   ];
 
   return (
-    <div className="h-[600px] p-6 bg-white rounded-md shadow-lg">
+    <div className="h-[400px] p-6 bg-white rounded-md shadow-lg">
       <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-        <h2 className="text-lg font-bold text-gray-800">IAP LTV Detailed Curve</h2>
-
+        <h2 className="text-lg font-bold text-gray-800">
+          IAP LTV Detailed Curve
+        </h2>
         <div className="flex gap-3 items-center flex-wrap">
           <Select
             value={selectedLtv}
@@ -87,13 +90,19 @@ const IapLtvDx = () => {
           />
         </div>
       </div>
-
-      <DynamicLineChart
-        data={chartData}
-        lineKeys={ltvLineKeys}
-        xKey="dayLabel"
-        yDomain={[0, 800]}
-      />
+      {loading ? (
+        <div className="flex justify-center items-center h-[300px]">
+          <Spin tip="Loading chart..." size="large" />
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-600 py-8">{error}</div>
+      ) : (
+        <DynamicLineChart
+          data={chartData}
+          lineKeys={lineKeys}
+          xKey="date"
+        />
+      )}
     </div>
   );
 };

@@ -66,3 +66,7 @@ export const getIapLtvDetail = () => {
 export const getAdsLtvDetail = () => {
   return sabreService.get("/api/v1/product-dashboard/ltv/ads_ltv_detail", {});
 };
+
+export const getOverallLtvDetail = () => {
+  return sabreService.get("/api/v1/product-dashboard/ltv/overall", {});
+};

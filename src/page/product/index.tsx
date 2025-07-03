@@ -125,7 +125,7 @@ const Product = () => {
         isLoading={isLoadingFilters}
         error={filterError}
       />
-      {/* <div id="product-overview">
+      <div id="product-overview">
         <Overview />
       </div>
 
@@ -135,7 +135,7 @@ const Product = () => {
 
       <div id="product-payuserdata">
         <PayUserData />
-      </div> */}
+      </div>
 
       <div id="product-ltv">
         <LTVReport />

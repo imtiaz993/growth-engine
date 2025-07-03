@@ -5,7 +5,7 @@ import { getToken } from "../utils/auth";
 
 const sabreService = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,
-  timeout: 60 * 1000,
+  timeout: 600 * 1000,
 });
 
 sabreService.interceptors.request.use(
